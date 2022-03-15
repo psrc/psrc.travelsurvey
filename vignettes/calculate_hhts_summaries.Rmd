@@ -1,0 +1,120 @@
+---
+title: "Calculate Household Travel Survey summaries"
+description: >
+  Learn how to quickly generate statistics from PSRC's signature survey
+output: html_vignette
+vignette: >
+  %\VignetteIndexEntry{Calculate PUMS summaries}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(psrc.travelsurvey)
+library(magrittr)
+library(knitr)
+```
+
+## Role and extent of the PSRC Household Travel Survey
+
+[Add text here.]
+
+
+## Retrieve Household Travel Survey data: *get_hhts()*
+
+The **psrc.travelsurvey** package is designed to facilitate analysis using the survey data at stored geographic scales. Data analysis with the **psrccensus** package involves two steps:
+
+The first step consists of retrieving the data of interest via the **get_hhts()** function. The arguments are:
+
+  * **dyear** - aka data year; if weights exist for a combination of years, you can specify them as a vector, e.g. c(2017,2019)
+  * **level** - the unit of analysis: "p" for persons, "h" for households, "t" for trips, or "v" for vehicles
+  * **vars**  - either a single variable or a character vector of variables (including geographic units), with lowercase names precisely matching the data dictionary
+
+The result of **get_hhts()** is a dataframe that includes the set of potential sampling weights that match your requested variables, as well as those variables themselves. Any manipulation of the object must take the weights into account. Also note that categorical variables are encoded as factor datatype and must be recast (using as.character() ) before reclassifying them into custom categories. 
+  
+**get_hhts()** can be called once for each combination of **dyear - level** you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (year), you will still need to use **get_hhts()** once for households (level="h") and a second time for persons ('level'="p"). When you invoke **get_hhts()** we suggest you assign a name that helps you differentiate between whatever **dyear - level** combinations are relevant to your analysis.
+
+Although most Household Travel Survey variables are specific to a particular unit, household attributes can be associated with people, days, trips and vehicles; person attributes can be associated with days and trips, which can also be associated with one another. 
+
+## Generate summary statistics
+
+The second step in an analysis involves calculating summary statistics from the result of the prior step. Since the Household Travel Survey is a stratified sample, summary statistics must use a particular sampling weight in order to be accurately expanded to the full population.
+
+There are four relevant statistical functions, along with a summary function that gives all four in the same table. 
+
+|          **hhts_count()** - provides both counts and percentages 
+|          **hhts_sum()** 
+|          **hhts_median()**  
+|          **hhts_mean()**
+|          **hhts_summary()** - provides all the above statistics in one table
+
+The arguments for each summary function are identical:
+
+  * **df**              - The dataframe returned by **get_hhts()**
+  * **target_var**      - For sum, median or mean, the numeric variable to be summarized
+  * **group_vars**      - Any grouping variable/s (if multiple, as a character vector)
+  * **geographic_unit** - A standard geography; this is basically another grouping variable that is subtotaled and ordered in the result set
+
+Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them. 
+
+Note that a **target_var** must be numeric and any **group_vars** must not be continuous (i.e., they must be categorical or interval). The target_var argument is ignored by the count function (for which the numeric variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).
+
+**psrc.travelsurvey** handles the selection and application of sampling weights internally, to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled '_moe' column. 
+
+
+### Examples
+
+As an example, to calculate the median trip distance, you would use the following function calls:
+```{r median trip distance, message=FALSE, eval=FALSE}
+t_2017_19a      <- get_hhts(dyear=c(2017,2019),
+                            level="t",
+                            vars="trip_path_distance")
+
+rs_median_dist  <- hhts_median(df=t_2017_19a, 
+                               target_var="trip_path_distance")
+```
+
+
+To calculate by a subgroup category (here, travel mode), use the optional grouping variable argument.
+```{r count by race, message=FALSE, eval=FALSE}
+t_2017_19b             <- get_hhts(c(2017,2019), "t", c("mode_1", "trip_path_distance"))
+rs_median_dist_x_mode  <- hhts_median(t_2017_19b, "trip_path_distance", "mode_1")
+```
+
+
+The count function tabulates the number of units of analysis, depending on the level you specified in **get_hhts**. The result represents the region (via weighting), not the survey sample. If you intend to count things other than households, people, travel days, trips or vehicles, you should use the 'total' function instead, which sums the target variable. The hhts_count() function also provides percentages. Notice that because the target_var is implicit for counts, any group_vars argument must be specified.
+```{r count by race, message=FALSE, eval=FALSE}
+h_2017_19a      <- get_hhts(c(2017,2019), "h", "hh_race_category")
+rs_race_region  <- hhts_count(h_2017_19a, group_vars="hh_race_category")
+```
+
+
+To report by a subregional geography, you must include that variable in the **vars** argument of **get_hhts()** . It makes sense to request as many attributes per **dyear-level** combination you need, as you can run statistical functions independently on that same dataframe--including multiple geographic scales. Each statistical call will also provide the regional total as the last line, for context/comparison.
+```{r race by subregional geographies, message=FALSE, eval=FALSE}
+h_2017_19b       <- get_hhts(c(2017,2019), "h", c("hh_race_category", "final_home_tract", "home_city_name")
+rs_race_tract    <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="final_home_tract")
+rs_race_city     <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="home_city_name")
+```
+
+
+## Sample sizes, confidence, and error margins
+
+Although **psrc.travelsurvey** allows you to specify multiple grouping variables, you'll need to keep in mind that there are limits to what can be usefully determined from small subsets of respondents. To draw responsible conclusions, you'll need to examine the margins of error (MOE) **psrc.travelsurvey** calculates along with the estimate.
+
+If there are very few respondents in a category combination, the margin of error may be beyond calculation (NaN, or 'not a number'), or so large that the estimate itself has little practical value. In these cases, you may want to potentially analyze dimensions of the data separately rather than in combination.
+
+### Determining difference
+Is there an actual difference between two statistics generated from Household Travel Survey data? To know, you'll need to examine the margins of error. As a rule of thumb, if there is overlap in the 90 percent confidence intervals of the two estimates, you cannot conclude the values are different. To perform a more careful test, you can calculate the Z score:
+\[\frac{|Est_{1} - Est_{2}|}{\sqrt{MOE_{est1}^2 + MOE_{est2}^2}}\]
+There is only a meaningful difference between two estimates if the Z score is greater than 1. This test can be applied between different years, or between PUMS and ACS. However, please remember Census warns against drawing comparisons between estimates generated from different spans (e.g. 1yr with 5yr), especially if they overlap (as the same observations may be exist in both).
+
+The `z_score()` convenience function performs this calculation:
+```{r z score calculation, message=FALSE, eval=FALSE}
+t_2017_19c  <- get_hhts(c(2017,2019), "t", c("mode_1","trip_path_distance","travel_time")
+rs          <- hhts_median(t_2017_19c, "travel_time", "mode_1")
+c1          <- rs[1,(ncol(rs)-1):ncol(rs)]       # First-line estimate and its MOE (as numeric vector)
+c2          <- rs[3,(ncol(rs)-1):ncol(rs)]       # Third-line estimate and its MOE (as numeric vector)
+z_score(c1, c2)                                  # A true difference is indicated by score > 1
+
+```

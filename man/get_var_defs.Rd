@@ -4,7 +4,7 @@
 \alias{get_var_defs}
 \title{Retrieve HHTS variable definitions}
 \usage{
-get_var_defs(vars)
+get_var_defs(dyear, vars)
 }
 \arguments{
 \item{vars}{character vector with requested variables}

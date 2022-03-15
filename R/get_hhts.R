@@ -157,7 +157,7 @@ hhts_stat <- function(df, stat_type, target_var, group_vars, geographic_unit=NUL
 #'
 #' Separate function for total, count, median, mean
 #'
-#' @param so The srvyr object
+#' @param df the dataframe returned by \code{\link{get_hhts}}
 #' @param target_var The exact HHTS target variable intended
 #' @param group_vars Factor variable/s for grouping
 #' @param geographic_unit Default="region"

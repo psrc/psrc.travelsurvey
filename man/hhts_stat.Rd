@@ -31,8 +31,6 @@ hhts_summary(df, target_var, group_vars = NULL, geographic_unit = NULL)
 \item{group_vars}{Factor variable/s for grouping}
 
 \item{geographic_unit}{Default="region"}
-
-\item{so}{The srvyr object}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error

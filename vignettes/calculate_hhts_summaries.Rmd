@@ -77,7 +77,7 @@ rs_median_dist  <- hhts_median(df=t_2017_19a,
 
 
 To calculate by a subgroup category (here, travel mode), use the optional grouping variable argument.
-```{r count by race, message=FALSE, eval=FALSE}
+```{r median trip distance by mode, message=FALSE, eval=FALSE}
 t_2017_19b             <- get_hhts(c(2017,2019), "t", c("mode_1", "trip_path_distance"))
 rs_median_dist_x_mode  <- hhts_median(t_2017_19b, "trip_path_distance", "mode_1")
 ```

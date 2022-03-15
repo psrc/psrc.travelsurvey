@@ -9,17 +9,54 @@
 \alias{hhts_summary}
 \title{Generic call for HHTS summary statistics}
 \usage{
-hhts_stat(df, stat_type, target_var, group_vars, geographic_unit = NULL)
+hhts_stat(
+  df,
+  stat_type,
+  target_var,
+  group_vars,
+  geographic_unit = NULL,
+  spec_wgt = NULL
+)
 
-hhts_count(df, target_var = NULL, group_vars = NULL, geographic_unit = NULL)
+hhts_count(
+  df,
+  target_var = NULL,
+  group_vars = NULL,
+  geographic_unit = NULL,
+  spec_wgt = NULL
+)
 
-hhts_sum(df, target_var, group_vars = NULL, geographic_unit = NULL)
+hhts_sum(
+  df,
+  target_var,
+  group_vars = NULL,
+  geographic_unit = NULL,
+  spec_wgt = NULL
+)
 
-hhts_median(df, target_var, group_vars = NULL, geographic_unit = NULL)
+hhts_median(
+  df,
+  target_var,
+  group_vars = NULL,
+  geographic_unit = NULL,
+  spec_wgt = NULL
+)
 
-hhts_mean(df, target_var, group_vars = NULL, geographic_unit = NULL)
+hhts_mean(
+  df,
+  target_var,
+  group_vars = NULL,
+  geographic_unit = NULL,
+  spec_wgt = NULL
+)
 
-hhts_summary(df, target_var, group_vars = NULL, geographic_unit = NULL)
+hhts_summary(
+  df,
+  target_var,
+  group_vars = NULL,
+  geographic_unit = NULL,
+  spec_wgt = NULL
+)
 }
 \arguments{
 \item{df}{the dataframe returned by \code{\link{get_hhts}}}
@@ -31,6 +68,8 @@ hhts_summary(df, target_var, group_vars = NULL, geographic_unit = NULL)
 \item{group_vars}{Factor variable/s for grouping}
 
 \item{geographic_unit}{Default="region"}
+
+\item{spec_wgt}{optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call.}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error

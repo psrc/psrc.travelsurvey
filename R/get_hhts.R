@@ -78,25 +78,30 @@ get_hhts <- function(dyear, level, vars){
 #' HHTS to srvyr
 #'
 #' Creates srvyr object from HHTS
-#' @param df input dataframe
+#' @param df the dataframe returned by \code{\link{get_hhts}}
 #' @param dyear data year or data year vector, e.g. c(2017, 2019)
 #' @param vars character vector with requested variables
+#' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @return srvyr object with sampling weights
 #'
 #' @import data.table
 #' @importFrom tidyselect all_of
 #' @importFrom rlang is_empty
-hhts2srvyr <- function(df, dyear, vars){
+hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
   var_defs <- get_var_defs(dyear, vars)
   num_vars <- copy(var_defs) %>% .[dtype=="fact", .(variable)] %>% unique() %>% .[[1]]
   ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(variable)] %>% unique() %>% .[[1]]
-  wgt_var  <- copy(var_defs) %>% .[variable %in% vars, .(weight_name, weight_priority)] %>%        # Expansion weight depends on variable hierarchy
+  if(!is.null(spec_wgt)){
+    wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight  
+  }else{
+    wgt_var  <- copy(var_defs) %>% .[variable %in% vars, .(weight_name, weight_priority)] %>%      # Standard weighting determined by variable hierarchy
     unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
+  }
   keep_vars <- c(survey_year, unlist(vars))
   df %<>% setDT() %>% .[!is.null(get(wgt_var)) & !is.na(get(wgt_var))] %>% 
     .[, colnames(.) %in% keep_vars, with=FALSE]
   if(!is_empty(num_vars)){df[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
-  if(!is_empty(ftr_vars)){df[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]}               # srvyr package requires grouping variables as factors
+  if(!is_empty(ftr_vars)){df[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]}              # srvyr package requires grouping variables as factors
   df %<>% setDF()
   so <- srvyr::as_survey_design(df, variables=all_of(keep_vars), weights=all_of(wgt_var))
   return(so)
@@ -110,14 +115,15 @@ hhts2srvyr <- function(df, dyear, vars){
 #' @param target_var The exact HHTS target variable intended
 #' @param group_vars Factor variable/s for grouping
 #' @param geographic_unit Geographic grouping, i.e. units smaller than PSRC region
+#' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @import data.table
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-hhts_stat <- function(df, stat_type, target_var, group_vars, geographic_unit=NULL){
+hhts_stat <- function(df, stat_type, target_var, group_vars, geographic_unit=NULL, spec_wgt=NULL){
   vars <- c(geographic_unit, target_var, unlist(group_vars)) %>% unique()
   dyear <- df[, .(survey_year)] %>% unique() %>% .[[1]]
-  so <- hhts2srvyr(df, vars) %>% dplyr::ungroup()
+  so <- hhts2srvyr(df, vars, spec_wgt) %>% dplyr::ungroup()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   if(!is.null(group_vars)){
     so %<>% srvyr::group_by(dplyr::across(tidyselect::all_of(group_vars)))                         # Apply grouping
@@ -163,6 +169,7 @@ hhts_stat <- function(df, stat_type, target_var, group_vars, geographic_unit=NUL
 #' @param target_var The exact HHTS target variable intended
 #' @param group_vars Factor variable/s for grouping
 #' @param geographic_unit Default="region"
+#' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @name hhts_stat
 #' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
@@ -170,15 +177,15 @@ NULL
 #' @rdname hhts_stat
 #' @title HHTS counts
 #' @export
-hhts_count <- function(df, target_var=NULL, group_vars=NULL, geographic_unit=NULL){
-  rs <- hhts_stat(df=df, stat_type="count", target_var=NULL, group_vars=group_vars, geographic_unit=geographic_unit)
+hhts_count <- function(df, target_var=NULL, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
+  rs <- hhts_stat(df=df, stat_type="count", target_var=NULL, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)
   return(rs)
 }
 #' @rdname hhts_stat
 #' @title HHTS totals
 #' @export
-hhts_sum <- function(df, target_var, group_vars=NULL, geographic_unit=NULL){
-  rs <- hhts_stat(df=df, stat_type="total", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit)
+hhts_sum <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
+  rs <- hhts_stat(df=df, stat_type="total", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)
   return(rs)
 }
 
@@ -186,24 +193,24 @@ hhts_sum <- function(df, target_var, group_vars=NULL, geographic_unit=NULL){
 #' @title HHTS medians
 #'
 #' @export
-hhts_median <- function(df, target_var, group_vars=NULL, geographic_unit=NULL){
-  rs <- hhts_stat(df=df, stat_type="median", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit)
+hhts_median <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
+  rs <- hhts_stat(df=df, stat_type="median", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)
   return(rs)
 }
 
 #' @rdname hhts_stat
 #' @title HHTS means
 #' @export
-hhts_mean <- function(df, target_var, group_vars=NULL, geographic_unit=NULL){
-  rs <- hhts_stat(df=df, stat_type="mean", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit)
+hhts_mean <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
+  rs <- hhts_stat(df=df, stat_type="mean", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)
   return(rs)
 }
 
 #' @rdname hhts_stat
 #' @title HHTS combined summary statistics
 #' @export
-hhts_summary <- function(df, target_var, group_vars=NULL, geographic_unit=NULL){
-  rs <- hhts_stat(df=df, stat_type="summary", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit)
+hhts_summary <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
+  rs <- hhts_stat(df=df, stat_type="summary", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)
   return(rs)
 }
 

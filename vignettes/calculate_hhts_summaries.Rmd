@@ -118,3 +118,7 @@ c2          <- rs[3,(ncol(rs)-1):ncol(rs)]       # Third-line estimate and its M
 z_score(c1, c2)                                  # A true difference is indicated by score > 1
 
 ```
+
+***
+**_NOTE FOR POWER USERS:_**
+For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the **vars** argument of **get_hhts()**, then use the `swgt=` option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the `swgt=` option specified.

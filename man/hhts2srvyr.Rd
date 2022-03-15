@@ -4,14 +4,16 @@
 \alias{hhts2srvyr}
 \title{HHTS to srvyr}
 \usage{
-hhts2srvyr(df, dyear, vars)
+hhts2srvyr(df, dyear, vars, spec_wgt = NULL)
 }
 \arguments{
-\item{df}{input dataframe}
+\item{df}{the dataframe returned by \code{\link{get_hhts}}}
 
 \item{dyear}{data year or data year vector, e.g. c(2017, 2019)}
 
 \item{vars}{character vector with requested variables}
+
+\item{spec_wgt}{optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call.}
 }
 \value{
 srvyr object with sampling weights

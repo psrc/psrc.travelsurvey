@@ -7,6 +7,8 @@
 get_var_defs(dyear, vars)
 }
 \arguments{
+\item{dyear}{data year or data year vector, e.g. c(2017, 2019)}
+
 \item{vars}{character vector with requested variables}
 }
 \value{

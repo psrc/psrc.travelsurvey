@@ -4,7 +4,7 @@
 \alias{hhts2srvyr}
 \title{HHTS to srvyr}
 \usage{
-hhts2srvyr(df, vars)
+hhts2srvyr(df, dyear, vars)
 }
 \arguments{
 \item{df}{input dataframe}

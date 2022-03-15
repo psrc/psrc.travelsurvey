@@ -15,6 +15,7 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
 #' Retrieve HHTS variable definitions
 #'
 #' Gets requested variable attributes--e.g. data type, associated weight name & priority
+#' @param dyear data year or data year vector, e.g. c(2017, 2019)
 #' @param vars character vector with requested variables
 #' @return data.table of filtered variable attributes
 #' 
@@ -49,7 +50,7 @@ hhts_recode_na <- function(dt){
 #' HHTS data retrieval
 #'
 #' Gets requested Household Travel Survey variables
-#' @param dyear data year or combined data year pattern (e.g. 2017_2019)
+#' @param dyear data year or data year vector, e.g. c(2017, 2019)
 #' @param level either "h" (household), "p" (person), "d" (day), "t" (trip), or "v" (vehicle) 
 #' @param vars character vector with requested variables
 #' @return dataframe with variables and necessary weights
@@ -78,6 +79,7 @@ get_hhts <- function(dyear, level, vars){
 #'
 #' Creates srvyr object from HHTS
 #' @param df input dataframe
+#' @param dyear data year or data year vector, e.g. c(2017, 2019)
 #' @param vars character vector with requested variables
 #' @return srvyr object with sampling weights
 #'

@@ -1,0 +1,35 @@
+Package: psrc.travelsurvey
+Type: Package
+Title: Utilize PSRC Household Travel Survey data
+Version: 0.1.0
+Authors@R: c(
+    person("Craig", "Helmann", email = "chelmann@psrc.org", role = "aut"),
+    person("Christy", "Lam", email = "clam@psrc.org", role = "aut"),
+    person("Suzanne", "Childress", email = "schildress@psrc.org", role = "aut"),
+    person("Michael", "Jensen", email = "mjensen@psrc.org", role = "cre"))
+Maintainer: Michael Jensen <mjensen@psrc.org>
+Description: Various functions to pull, process and visualize PSRC's Household Travel Survey data for geographies in the Central Puget Sund Region.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.2
+Imports:
+    magrittr, 
+    DBI,
+    odbc,
+    data.table,
+    survey,
+    stats,
+    srvyr,
+    tidyselect,
+    purrr,
+    dplyr,
+    rlang,
+    stringr
+Suggests: 
+    rmarkdown,
+    knitr,
+    testthat (>= 3.0.0),
+    R.utils
+VignetteBuilder: knitr
+Config/testthat/edition: 3

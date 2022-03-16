@@ -33,3 +33,4 @@ Suggests:
     R.utils
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+URL: https://psrc.github.io/psrc.travelsurvey/

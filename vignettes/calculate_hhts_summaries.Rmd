@@ -4,7 +4,7 @@ description: >
   Learn how to quickly generate statistics from PSRC's signature survey
 output: html_vignette
 vignette: >
-  %\VignetteIndexEntry{Calculate PUMS summaries}
+  %\VignetteIndexEntry{Calculate Household Travel Survey summaries}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -1,5 +1,6 @@
 #' @importFrom magrittr %<>% %>%
 #' @author Michael Jensen
+
 NULL
 
 `%not_in%` <- Negate(`%in%`)
@@ -67,7 +68,7 @@ get_hhts <- function(dyear, level, vars){
                                       "HHSurvey.v_vehicle")) %>% setDT()
     elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]
     elmer_sql <- paste("SELECT * FROM",elmer_tbl_ref,"WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
-    keep_vars <- get_var_defs(dyear, vars) %>% .[, .(weight_name)] %>% c(survey_year, unlist(.), unlist(vars))
+    keep_vars <- get_var_defs(dyear, vars) %>% .[, .(weight_name)] %>% c("survey_year", unlist(.), unlist(vars))
     elmer_connection <- elmer_connect()
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%
         .[, colnames(.) %in% keep_vars, with=FALSE] %>% hhts_recode_na() %>% setDF()                                # Filter variables; recode NA
@@ -97,7 +98,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
     wgt_var  <- copy(var_defs) %>% .[variable %in% vars, .(weight_name, weight_priority)] %>%      # Standard weighting determined by variable hierarchy
     unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }
-  keep_vars <- c(survey_year, unlist(vars))
+  keep_vars <- c("survey_year", unlist(vars))
   df %<>% setDT() %>% .[!is.null(get(wgt_var)) & !is.na(get(wgt_var))] %>% 
     .[, colnames(.) %in% keep_vars, with=FALSE]
   if(!is_empty(num_vars)){df[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}

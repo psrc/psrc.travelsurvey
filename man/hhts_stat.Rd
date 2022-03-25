@@ -13,7 +13,7 @@ hhts_stat(
   df,
   stat_type,
   target_var,
-  group_vars,
+  group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL
 )

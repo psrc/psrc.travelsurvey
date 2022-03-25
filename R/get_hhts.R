@@ -71,7 +71,7 @@ get_hhts <- function(dyear, level, vars){
     keep_vars <- get_var_defs(dyear, vars) %>% .[, .(weight_name)] %>% c("survey_year", unlist(.), unlist(vars))
     elmer_connection <- elmer_connect()
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%
-        .[, colnames(.) %in% keep_vars, with=FALSE] %>% hhts_recode_na() %>% setDF()                                # Filter variables; recode NA
+        .[, colnames(.) %in% keep_vars, with=FALSE] %>% hhts_recode_na() %>% setDF()               # Filter variables; recode NA
     DBI::dbDisconnect(elmer_connection)
     return(df)   
 }    
@@ -99,32 +99,31 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
     unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }
   keep_vars <- c("survey_year", unlist(vars), wgt_var)
-  df %<>% setDT() %>% .[!is.null(get(wgt_var)) & !is.na(get(wgt_var))] %>% 
-    .[, colnames(.) %in% keep_vars, with=FALSE]
-  if(!is_empty(num_vars)){df[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
-  if(!is_empty(ftr_vars)){df[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]}              # srvyr package requires grouping variables as factors
-  df %<>% setDF()
-  so <- srvyr::as_survey_design(df, variables=all_of(keep_vars), weights=all_of(wgt_var))
+  df2 <- copy(df) %>% setDT() %>% 
+    .[(!is.null(get(wgt_var)) & !is.na(get(wgt_var))), colnames(.) %in% keep_vars, with=FALSE]     # Keep only necessary elements/records 
+  if(!is_empty(num_vars)){df2[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
+  if(!is_empty(ftr_vars)){df2[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]}             # srvyr package requires grouping variables as factors
+  df2 %<>% setDF()
+  so <- srvyr::as_survey_design(df2, variables=all_of(keep_vars), weights=all_of(wgt_var))
   return(so)
 }    
 
 #' Generic call for HHTS summary statistics
 #'
 #' Given specific form by related \code{\link{hhts_stat}} functions.
-#' @param stat_type Desired survey statistic
 #' @param df the dataframe returned by \code{\link{get_hhts}}
+#' @param stat_type Desired survey statistic
 #' @param target_var The exact HHTS target variable intended
 #' @param group_vars Factor variable/s for grouping
 #' @param geographic_unit Geographic grouping, i.e. units smaller than PSRC region
 #' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
-#' @import data.table
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-hhts_stat <- function(df, stat_type, target_var, group_vars, geographic_unit=NULL, spec_wgt=NULL){
+hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
   vars <- c(geographic_unit, target_var, unlist(group_vars)) %>% unique()
-  dyear <- df %>% setDT() %>% .[, .(survey_year)] %>% unique() %>% .[[1]]
-  so <- hhts2srvyr(df, vars, spec_wgt) %>% dplyr::ungroup()
+  data_year <- dplyr::pull(df, survey_year) %>% unique()
+  so <- hhts2srvyr(df, data_year, vars, spec_wgt) %>% dplyr::ungroup()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   if(!is.null(group_vars)){
     so %<>% srvyr::group_by(dplyr::across(tidyselect::all_of(group_vars)))                         # Apply grouping

@@ -123,7 +123,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 hhts_stat <- function(df, stat_type, target_var, group_vars, geographic_unit=NULL, spec_wgt=NULL){
   vars <- c(geographic_unit, target_var, unlist(group_vars)) %>% unique()
-  dyear <- df[, .(survey_year)] %>% unique() %>% .[[1]]
+  dyear <- df %>% setDT() %>% .[, .(survey_year)] %>% unique() %>% .[[1]]
   so <- hhts2srvyr(df, vars, spec_wgt) %>% dplyr::ungroup()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   if(!is.null(group_vars)){

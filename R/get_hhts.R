@@ -40,7 +40,7 @@ return(var_defs)
 hhts_recode_na <- function(dt){
   na_codes <- c("^Missing: Technical Error$",
                 "^Missing: Non-response$",
-                "^Missing: Skip logic$",
+                "^Missing: Skip Logic$",
                 "^Children or missing$") %>% 
     unique() %>% paste0(collapse="|")
   for(col in colnames(dt)) 
@@ -133,7 +133,8 @@ hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_uni
     rs <- suppressMessages(
             cascade(so,
               count:=survey_total(na.rm=TRUE),
-              share:=survey_prop()))
+              share:=survey_prop(),
+              sample_size:=srvyr::unweighted(dplyr::n())))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(
             cascade(so, count:=survey_total(na.rm=TRUE),
@@ -213,6 +214,17 @@ hhts_summary <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, 
   rs <- hhts_stat(df=df, stat_type="summary", target_var=target_var, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)
   return(rs)
 }
+
+#' Unweighted sample count
+#'
+#' @param df the dataframe returned by \code{\link{get_hhts}}
+#' @param group_vars Factor variable/s for grouping
+#' @param geographic_unit Geographic grouping, i.e. units smaller than PSRC region
+#' @return A summary tibble with sample counts
+#'
+#' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
+
+
 
 #' Z Score
 #'

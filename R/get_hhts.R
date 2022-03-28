@@ -215,6 +215,17 @@ hhts_summary <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, 
   return(rs)
 }
 
+#' Unweighted sample count
+#'
+#' @param df the dataframe returned by \code{\link{get_hhts}}
+#' @param group_vars Factor variable/s for grouping
+#' @param geographic_unit Geographic grouping, i.e. units smaller than PSRC region
+#' @return A summary tibble with sample counts
+#'
+#' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
+
+
+
 #' Z Score
 #'
 #' Stat to determine if two estimates are different

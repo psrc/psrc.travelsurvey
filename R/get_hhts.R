@@ -40,7 +40,7 @@ return(var_defs)
 hhts_recode_na <- function(dt){
   na_codes <- c("^Missing: Technical Error$",
                 "^Missing: Non-response$",
-                "^Missing: Skip logic$",
+                "^Missing: Skip Logic$",
                 "^Children or missing$") %>% 
     unique() %>% paste0(collapse="|")
   for(col in colnames(dt)) 
@@ -133,7 +133,8 @@ hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_uni
     rs <- suppressMessages(
             cascade(so,
               count:=survey_total(na.rm=TRUE),
-              share:=survey_prop()))
+              share:=survey_prop(),
+              sample_size:=srvyr::unweighted(dplyr::n())))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(
             cascade(so, count:=survey_total(na.rm=TRUE),

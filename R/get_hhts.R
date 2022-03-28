@@ -22,8 +22,8 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
 #' 
 #' @import data.table
 get_var_defs <- function(dyear, vars){
-var_def_sql <- paste("SELECT variable_id, survey_year, variable, dtype, weight_name, weight_priority",
-                      "FROM HHSurvey.data_explorer_variables_w_reasons_for_moving;")
+var_def_sql <- paste("SELECT variable_id, survey_year, variable, table_name, dtype, weight_name, weight_priority",
+                      "FROM HHSurvey.variable_metadata;")
 elmer_connection <- elmer_connect()
 var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[variable %in% vars & survey_year %in% dyear]
 DBI::dbDisconnect(elmer_connection)
@@ -94,10 +94,17 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
   ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(variable)] %>% unique() %>% .[[1]]
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight  
+  }else if (dyear==2021){
+    wgt_var  <- copy(var_defs) %>% .[variable %in% vars, .(table_name, weight_priority)] %>%       # Weird 2021 weighting determined by variable hierarchy
+      unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }else{
-    wgt_var  <- copy(var_defs) %>% .[variable %in% vars, .(weight_name, weight_priority)] %>%      # Standard weighting determined by variable hierarchy
-    unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
+    tbl_name <- copy(var_defs) %>% .[variable %in% vars, .(weight_name, weight_priority)] %>%      # Standard weighting by table; construct w/ rules
+      unique() %>% setorder(weight_priority) %>% .[1, .(table_name)] %>% .[[1]]
+    level <- if(tbl_name=="Trip"){"trip_"}else{"hh_"}
+    yearz <- dyear%%100 %>% paste0(collapse="_") %>% paste0("20",.)
+    wgt_var <- paste0(level, yearz)
   }
+  if(dyear %in% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
   keep_vars <- c("survey_year", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% 
     .[(!is.null(get(wgt_var)) & !is.na(get(wgt_var))), colnames(.) %in% keep_vars, with=FALSE]     # Keep only necessary elements/records 

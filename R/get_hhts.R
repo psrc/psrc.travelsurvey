@@ -23,7 +23,7 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
 #' 
 #' @import data.table
 get_var_defs <- function(dyear, vars){
-var_def_sql <- paste("SELECT variable_id, survey_year, variable AS var_name, table_name, dtype, weight_name, weight_priority, levels",
+var_def_sql <- paste("SELECT survey_year, variable AS var_name, table_name, dtype, weight_name, weight_priority, levels",
                       "FROM HHSurvey.variable_metadata;")
 elmer_connection <- elmer_connect()
 var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars & survey_year %in% dyear]
@@ -113,9 +113,10 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
     for (f in ftr_vars){
       if(f %in% var_defs$var_name){
         setkeyv(df2, f)
-        df2[var_defs[var_name==deparse(substitute(f))], (f):=factor(f, levels=c(unique(strsplit(i.levels, ", "))))] # level ordering from metadata
+        for_level <- var_defs[var_name==as_string(f), .(levels)][[1]] %>% strsplit(", ") %>% unique() %>% .[[1]]
+        df2[, (f):=factor(get(f), levels=for_level)] # level ordering from metadata
       }else{
-        df2[, (f):=as.factor(f)]                                                                   # Default level ordering
+        df2[, (f):=as.factor(get(f))]                                                              # Default level ordering
       } 
     }
   }

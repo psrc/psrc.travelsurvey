@@ -42,7 +42,8 @@ hhts_recode_na <- function(dt){
   na_codes <- c("^Missing: Technical Error$",
                 "^Missing: Non-response$",
                 "^Missing: Skip Logic$",
-                "^Children or missing$") %>% 
+                "^Children or missing$",
+                "^$") %>% 
     unique() %>% paste0(collapse="|")
   for(col in colnames(dt)) 
     set(dt, i=grep(na_codes, dt[[col]]), j=col, value=NA)
@@ -74,6 +75,7 @@ get_hhts <- function(dyear, level, vars){
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
         .[, colnames(.) %in% keep_vars | grepl("_weight_", colnames(.)), with=FALSE] %>%           # Filter columns
       hhts_recode_na() %>% setDF()                                                                 # Recode NA
+    is.na(df) <- is.null(df)                                                                       # Recode NULL
     DBI::dbDisconnect(elmer_connection)
     return(df)   
 }    
@@ -153,18 +155,21 @@ hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_uni
             cascade(so,
               count:=survey_total(na.rm=TRUE),
               share:=survey_prop(),
-              sample_size:=srvyr::unweighted(dplyr::n())))
+              sample_size:=srvyr::unweighted(dplyr::n()),
+              .fill="Total"))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(
             cascade(so, count:=survey_total(na.rm=TRUE),
               !!paste0(prefix,"total"):=survey_total(!!as.name(target_var), na.rm=TRUE),
               !!paste0(prefix,"median"):=survey_median(!!as.name(target_var), na.rm=TRUE),
-              !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE)))
+              !!paste0(prefix,"mean"):=survey_mean(!!as.name(target_var), na.rm=TRUE),
+              .fill="Total"))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- suppressMessages(
             cascade(so,
-              !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE))))
+              !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(target_var), na.rm=TRUE)),
+              .fill="Total"))
   }
   rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
@@ -173,9 +178,6 @@ hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_uni
     setcolorder(rs, c(geographic_unit))
     setorder(rs, geographic_unit, na.last=TRUE)
     rs[is.na(geographic_unit), (geographic_unit):="Region"]
-  }
-  if(!is.null(group_vars)){
-    rs[, (group_vars):=lapply(.SD, function(x) {x[is.na(x)] <- "Total" ; x}), .SDcols=group_vars]
   }
   so %<>% dplyr::ungroup()
   return(rs)

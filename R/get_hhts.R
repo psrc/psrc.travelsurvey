@@ -4,7 +4,7 @@
 NULL
 
 `%not_in%` <- Negate(`%in%`)
-`%between%`<-function(x, range) x>range[1] & x<range[2]
+`%between%`<-function(x, range) x>=range[1] & x<=range[2]
 
 elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
                                    driver = "ODBC Driver 17 for SQL Server",
@@ -113,10 +113,11 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
     for (f in ftr_vars){
       if(f %in% var_defs$var_name){
         setkeyv(df2, f)
-        for_level <- var_defs[var_name==as_string(f), .(levels)][[1]] %>% strsplit(", ") %>% unique() %>% .[[1]]
-        df2[, (f):=factor(get(f), levels=for_level)] # level ordering from metadata
+        for_level <- var_defs[var_name==stringr::as_string(f), .(levels)][[1]] %>% 
+          strsplit(", ") %>% unique() %>% .[[1]]
+        df2[, (f):=factor(get(f), levels=for_level)]                                               # Factor level ordering from metadata
       }else{
-        df2[, (f):=as.factor(get(f))]                                                              # Default level ordering
+        df2[, (f):=as.factor(get(f))]                                                              # Default factor level ordering
       } 
     }
   }

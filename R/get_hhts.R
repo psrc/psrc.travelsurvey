@@ -4,6 +4,7 @@
 NULL
 
 `%not_in%` <- Negate(`%in%`)
+`%between%`<-function(x, range) x>range[1] & x<range[2]
 
 elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
                                    driver = "ODBC Driver 17 for SQL Server",
@@ -22,10 +23,10 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
 #' 
 #' @import data.table
 get_var_defs <- function(dyear, vars){
-var_def_sql <- paste("SELECT variable_id, survey_year, variable, table_name, dtype, weight_name, weight_priority",
+var_def_sql <- paste("SELECT variable_id, survey_year, variable AS var_name, table_name, dtype, weight_name, weight_priority, levels",
                       "FROM HHSurvey.variable_metadata;")
 elmer_connection <- elmer_connect()
-var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[variable %in% vars & survey_year %in% dyear]
+var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars & survey_year %in% dyear]
 DBI::dbDisconnect(elmer_connection)
 return(var_defs)
 }
@@ -89,27 +90,35 @@ get_hhts <- function(dyear, level, vars){
 #' @importFrom tidyselect all_of
 #' @importFrom rlang is_empty
 hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
-  var_defs <- get_var_defs(dyear, vars)
-  num_vars <- copy(var_defs) %>% .[dtype=="fact", .(variable)] %>% unique() %>% .[[1]]
-  ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(variable)] %>% unique() %>% .[[1]]
+  var_defs <- get_var_defs(dyear, vars) %>% setkeyv("var_name")
+  num_vars <- copy(var_defs) %>% .[dtype=="fact", .(var_name)] %>% unique() %>% .[[1]]
+  ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(var_name)] %>% unique() %>% .[[1]]
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight  
-  }else if (dyear==2021){
-    wgt_var  <- copy(var_defs) %>% .[variable %in% vars, .(table_name, weight_priority)] %>%       # Weird 2021 weighting determined by variable hierarchy
+  }else if (2021 %in% dyear){
+    wgt_var  <- copy(var_defs) %>% .[var_name %in% vars, .(weight_name, weight_priority)] %>%      # Weird 2021 weighting determined by variable hierarchy
       unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }else{
-    tbl_name <- copy(var_defs) %>% .[variable %in% vars, .(weight_name, weight_priority)] %>%      # Standard weighting by table; construct w/ rules
-      unique() %>% setorder(weight_priority) %>% .[1, .(table_name)] %>% .[[1]]
-    level <- if(tbl_name=="Trip"){"trip_"}else{"hh_"}
-    yearz <- dyear%%100 %>% paste0(collapse="_") %>% paste0("20",.)
+    tbl_names <- copy(var_defs) %>% .[var_name %in% vars, .(table_name)] %>% unique()              # Standard weighting by table; construct w/ rules
+    level <- if("Trip" %in% tbl_names){"trip_weight_"}else{"hh_weight_"}
+    yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(level, yearz)
   }
-  if(dyear %in% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
+  if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
   keep_vars <- c("survey_year", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% 
     .[(!is.null(get(wgt_var)) & !is.na(get(wgt_var))), colnames(.) %in% keep_vars, with=FALSE]     # Keep only necessary elements/records 
   if(!is_empty(num_vars)){df2[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
-  if(!is_empty(ftr_vars)){df2[, (ftr_vars):=lapply(.SD, as.factor), .SDcols=ftr_vars]}             # srvyr package requires grouping variables as factors
+  if(!is_empty(ftr_vars)){                                                                         # srvyr package requires grouping variables as factors;
+    for (f in ftr_vars){
+      if(f %in% var_defs$var_name){
+        setkeyv(df2, f)
+        df2[var_defs[var_name==deparse(substitute(f))], (f):=factor(f, levels=c(unique(strsplit(i.levels, ", "))))] # level ordering from metadata
+      }else{
+        df2[, (f):=as.factor(f)]                                                                   # Default level ordering
+      } 
+    }
+  }
   df2 %<>% setDF()
   so <- srvyr::as_survey_design(df2, variables=all_of(keep_vars), weights=all_of(wgt_var))
   return(so)

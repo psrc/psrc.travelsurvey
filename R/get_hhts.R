@@ -4,7 +4,7 @@
 NULL
 
 `%not_in%` <- Negate(`%in%`)
-`%between%`<-function(x, range) x>range[1] & x<range[2]
+`%between%`<-function(x, range) x>=range[1] & x<=range[2]
 
 elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
                                    driver = "ODBC Driver 17 for SQL Server",
@@ -69,10 +69,11 @@ get_hhts <- function(dyear, level, vars){
                                       "HHSurvey.v_vehicle")) %>% setDT()
     elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]
     elmer_sql <- paste("SELECT * FROM",elmer_tbl_ref,"WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
-    keep_vars <- get_var_defs(dyear, vars) %>% .[, .(weight_name)] %>% c("survey_year", unlist(.), unlist(vars))
+    keep_vars <- c("survey_year", unlist(vars))
     elmer_connection <- elmer_connect()
-    df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%
-        .[, colnames(.) %in% keep_vars, with=FALSE] %>% hhts_recode_na() %>% setDF()               # Filter variables; recode NA
+    df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
+        .[, colnames(.) %in% keep_vars | grepl("_weight_", colnames(.)), with=FALSE] %>%           # Filter columns
+      hhts_recode_na() %>% setDF()                                                                 # Recode NA
     DBI::dbDisconnect(elmer_connection)
     return(df)   
 }    
@@ -113,10 +114,11 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
     for (f in ftr_vars){
       if(f %in% var_defs$var_name){
         setkeyv(df2, f)
-        for_level <- var_defs[var_name==as_string(f), .(levels)][[1]] %>% strsplit(", ") %>% unique() %>% .[[1]]
-        df2[, (f):=factor(get(f), levels=for_level)] # level ordering from metadata
+        for_level <- var_defs[var_name==rlang::as_string(f), .(levels)][[1]] %>% 
+          strsplit(", ") %>% unique() %>% .[[1]]
+        df2[, (f):=factor(get(f), levels=for_level)]                                               # Factor level ordering from metadata
       }else{
-        df2[, (f):=as.factor(get(f))]                                                              # Default level ordering
+        df2[, (f):=as.factor(get(f))]                                                              # Default factor level ordering
       } 
     }
   }

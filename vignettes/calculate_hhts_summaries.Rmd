@@ -117,5 +117,5 @@ z_score(c1, c2)                                  # A true difference is indicate
 ```
 ***
 **_NOTE FOR POWER USERS:_** 
-Additional methods including bulk processing and custom weighting are covered in the [psrc.travelsurvey tips & tricks](/psrc.travelsurvey_tips_&_tricks.html) vignette.
+Additional methods including bulk processing and custom weighting are covered in the [psrc.travelsurvey tips & tricks](https://psrc.github.io/psrc.travelsurvey/articles/psrc.travelsurvey_tips_and_tricks.html) vignette.
 

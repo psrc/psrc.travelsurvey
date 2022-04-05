@@ -44,6 +44,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/calculate_hhts_summaries.html">Calculate Household Travel Survey summaries</a>
+    <a class="dropdown-item" href="../articles/psrc.travelsurvey_tips_and_tricks.html">psrc.travelsurvey tips &amp; tricks</a>
   </div>
 </li>
       </ul>
@@ -72,11 +73,6 @@
     
     
 <div class="section level2">
-<h2 id="role-and-extent-of-the-psrc-household-travel-survey">Role and extent of the PSRC Household Travel Survey<a class="anchor" aria-label="anchor" href="#role-and-extent-of-the-psrc-household-travel-survey"></a>
-</h2>
-<p>[Add text here.]</p>
-</div>
-<div class="section level2">
 <h2 id="retrieve-household-travel-survey-data-get_hhts">Retrieve Household Travel Survey data: <em>get_hhts()</em><a class="anchor" aria-label="anchor" href="#retrieve-household-travel-survey-data-get_hhts"></a>
 </h2>
 <p>The <strong>psrc.travelsurvey</strong> package is designed to facilitate analysis using the survey data at stored geographic scales. Data analysis with the <strong>psrccensus</strong> package involves two steps:</p>
@@ -92,6 +88,7 @@
 <p>The result of <strong>get_hhts()</strong> is a dataframe that includes the set of potential sampling weights that match your requested variables, as well as those variables themselves. Any manipulation of the object must take the weights into account. Also note that categorical variables are encoded as factor datatype and must be recast (using as.character() ) before reclassifying them into custom categories.</p>
 <p><strong>get_hhts()</strong> can be called once for each combination of <strong>dyear - level</strong> you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (year), you will still need to use <strong>get_hhts()</strong> once for households (level=“h”) and a second time for persons (‘level’=“p”). When you invoke <strong>get_hhts()</strong> we suggest you assign a name that helps you differentiate between whatever <strong>dyear - level</strong> combinations are relevant to your analysis.</p>
 <p>Although most Household Travel Survey variables are specific to a particular unit, household attributes can be associated with people, days, trips and vehicles; person attributes can be associated with days and trips, which can also be associated with one another.</p>
+<p>To assist in locating the exact name of variables you want, the <strong>hhts_varsearch()</strong> function takes a single search term and returns a table with the variable name, description, and survey years for which the variable is present.</p>
 </div>
 <div class="section level2">
 <h2 id="generate-summary-statistics">Generate summary statistics<a class="anchor" aria-label="anchor" href="#generate-summary-statistics"></a>
@@ -159,7 +156,7 @@
 <span id="cb5-4"><a href="#cb5-4"></a>c2          &lt;-<span class="st"> </span>rs[<span class="dv">3</span>,(<span class="kw">ncol</span>(rs)<span class="op">-</span><span class="dv">1</span>)<span class="op">:</span><span class="kw">ncol</span>(rs)]       <span class="co"># Third-line estimate and its MOE (as numeric vector)</span></span>
 <span id="cb5-5"><a href="#cb5-5"></a><span class="kw">z_score</span>(c1, c2)                                  <span class="co"># A true difference is indicated by score &gt; 1</span></span></code></pre></div>
 <hr>
-<p><strong><em>NOTE FOR POWER USERS:</em></strong> For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the <strong>vars</strong> argument of <strong>get_hhts()</strong>, then use the <code>swgt=</code> option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the <code>swgt=</code> option specified.</p>
+<p><strong><em>NOTE FOR POWER USERS:</em></strong> Additional methods including bulk processing and custom weighting are covered in the <a href="/psrc.travelsurvey_tips_&amp;_tricks.html">psrc.travelsurvey tips &amp; tricks</a> vignette.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

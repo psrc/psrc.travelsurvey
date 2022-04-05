@@ -29,7 +29,8 @@ hhts_varsearch <- function(regex){
                   "GROUP BY [variable], variable_name, survey_year;")
   elmer_connection <- elmer_connect()
   rs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(varsql)) %>% setDT() %>% 
-    .[grepl(regex,var_desc, ignore.case=TRUE), .(years=stuff(survey_year)), by=.(var_name, var_desc)] %>% unique()
+    .[grepl(regex,var_desc, ignore.case=TRUE)|grepl(regex,var_name, ignore.case=TRUE)] %>%
+    .[, .(years=stuff(survey_year)), by=.(var_name, var_desc)] %>% unique()
   DBI::dbDisconnect(elmer_connection)
   return(rs)
 }

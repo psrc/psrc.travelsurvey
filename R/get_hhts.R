@@ -257,6 +257,38 @@ hhts_summary <- function(df, target_var, group_vars=NULL, geographic_unit=NULL, 
   return(rs)
 }
 
+#' Household Survey summary statistics
+#'
+#' Generate a statistic separately for a list of grouping variables
+#' List input items can be multiple, i.e. character vector
+#'
+#' @param df the dataframe returned by \code{\link{get_hhts}}
+#' @param stat_type Desired survey statistic
+#' @param target_var The exact HHTS target variable intended
+#' @param group_var_list Factor variable/s for grouping
+#' @param geographic_unit Default="region"
+#' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
+#' @return A table with the variable names and labels, summary statistic and margin of error
+#' 
+#' @importFrom data.table rbindlist setDF
+#' @importFrom dplyr mutate rename relocate
+#' @export
+hhts_bulk_stat <- function(df, stat_type, target_var=NULL, group_var_list=NULL, geographic_unit=NULL, spec_wgt=NULL){
+  list_stat <- function(x){
+    rsub <- hhts_stat(df=df, 
+                      stat_type=stat_type, 
+                      target_var=target_var, 
+                      group_vars=x, 
+                      geographic_unit=geographic_unit, 
+                      spec_wgt=spec_wgt)
+  }
+  df <- list()
+  df <- lapply(group_var_list, list_stat) %>%
+    lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
+    rename(var_value=colnames(.)[1]) %>% relocate(var_name)
+  return(df)
+}
+
 #' Z Score
 #'
 #' Stat to determine if two estimates are different

@@ -4,7 +4,8 @@
 NULL
 
 `%not_in%` <- Negate(`%in%`)
-`%between%`<-function(x, range) x>=range[1] & x<=range[2]
+`%between%`<- function(x, range) x>=range[1] & x<=range[2]
+stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
 elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
                                    driver = "ODBC Driver 17 for SQL Server",
@@ -13,6 +14,26 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
                                    trusted_connection = "yes",
                                    port = 1433)
 }
+
+#' Search HHTS variable definitions
+#'
+#' Look for a variable name using a search term
+#' @param regex search term
+#' @return data.table of filtered variable attributes
+#' 
+#' @import data.table
+#' @export
+hhts_varsearch <- function(regex){
+  varsql <- paste("SELECT [variable] AS var_name, variable_name AS var_desc, survey_year",
+                  "FROM HHSurvey.variable_metadata",
+                  "GROUP BY [variable], variable_name, survey_year;")
+  elmer_connection <- elmer_connect()
+  rs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(varsql)) %>% setDT() %>% 
+    .[grepl(regex,var_desc, ignore.case=TRUE), .(years=stuff(survey_year)), by=.(var_name, var_desc)] %>% unique()
+  DBI::dbDisconnect(elmer_connection)
+  return(rs)
+}
+
 
 #' Retrieve HHTS variable definitions
 #'
@@ -23,7 +44,7 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
 #' 
 #' @import data.table
 get_var_defs <- function(dyear, vars){
-var_def_sql <- paste("SELECT survey_year, variable AS var_name, table_name, dtype, weight_name, weight_priority, levels",
+var_def_sql <- paste("SELECT survey_year, [variable] AS var_name, table_name, dtype, weight_name, weight_priority, levels",
                       "FROM HHSurvey.variable_metadata;")
 elmer_connection <- elmer_connect()
 var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars & survey_year %in% dyear]
@@ -143,7 +164,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL){
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
   vars <- c(geographic_unit, target_var, unlist(group_vars)) %>% unique()
-  data_year <- dplyr::pull(df, survey_year) %>% unique()
+  data_year <- df$survey_year %>% unique()
   so <- hhts2srvyr(df, data_year, vars, spec_wgt) %>% dplyr::ungroup()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(target_var,"_")}
   if(!is.null(group_vars)){

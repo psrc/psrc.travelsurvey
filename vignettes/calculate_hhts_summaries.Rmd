@@ -16,11 +16,6 @@ library(magrittr)
 library(knitr)
 ```
 
-## Role and extent of the PSRC Household Travel Survey
-
-[Add text here.]
-
-
 ## Retrieve Household Travel Survey data: *get_hhts()*
 
 The **psrc.travelsurvey** package is designed to facilitate analysis using the survey data at stored geographic scales. Data analysis with the **psrccensus** package involves two steps:
@@ -35,7 +30,9 @@ The result of **get_hhts()** is a dataframe that includes the set of potential s
   
 **get_hhts()** can be called once for each combination of **dyear - level** you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (year), you will still need to use **get_hhts()** once for households (level="h") and a second time for persons ('level'="p"). When you invoke **get_hhts()** we suggest you assign a name that helps you differentiate between whatever **dyear - level** combinations are relevant to your analysis.
 
-Although most Household Travel Survey variables are specific to a particular unit, household attributes can be associated with people, days, trips and vehicles; person attributes can be associated with days and trips, which can also be associated with one another. 
+Although most Household Travel Survey variables are specific to a particular unit, household attributes can be associated with people, days, trips and vehicles; person attributes can be associated with days and trips, which can also be associated with one another.
+
+To assist in locating the exact name of variables you want, the **hhts_varsearch()** function takes a single search term and returns a table with the variable name, description, and survey years for which the variable is present.
 
 ## Generate summary statistics
 
@@ -118,7 +115,7 @@ c2          <- rs[3,(ncol(rs)-1):ncol(rs)]       # Third-line estimate and its M
 z_score(c1, c2)                                  # A true difference is indicated by score > 1
 
 ```
-
 ***
-**_NOTE FOR POWER USERS:_**
-For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the **vars** argument of **get_hhts()**, then use the `swgt=` option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the `swgt=` option specified.
+**_NOTE FOR POWER USERS:_** 
+Additional methods including bulk processing and custom weighting are covered in the [psrc.travelsurvey tips & tricks](/psrc.travelsurvey_tips_&_tricks.html) vignette.
+

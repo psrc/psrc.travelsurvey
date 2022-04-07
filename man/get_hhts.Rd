@@ -19,3 +19,7 @@ dataframe with variables and necessary weights
 \description{
 Gets requested Household Travel Survey variables
 }
+\details{
+See this vignette for examples:
+\code{vignette("calculate_hhts_summaries", package = "psrc.travelsurvey")}
+}

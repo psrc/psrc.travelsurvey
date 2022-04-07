@@ -75,11 +75,15 @@ hhts_recode_na <- function(dt){
 #' HHTS data retrieval
 #'
 #' Gets requested Household Travel Survey variables
+#' 
+#' See this vignette for examples:
+#' \code{vignette("calculate_hhts_summaries", package = "psrc.travelsurvey")}
+#' 
 #' @param dyear data year or data year vector, e.g. c(2017, 2019)
 #' @param level either "h" (household), "p" (person), "d" (day), "t" (trip), or "v" (vehicle) 
 #' @param vars character vector with requested variables
 #' @return dataframe with variables and necessary weights
-#'
+#'  
 #' @import data.table
 #' @export
 get_hhts <- function(dyear, level, vars){
@@ -207,19 +211,23 @@ hhts_stat <- function(df, stat_type, target_var, group_vars=NULL, geographic_uni
 
 #' Household Survey summary statistics
 #'
-#' Separate function for total, count, median, mean
-#'
+#' Separate function for total, count, median, mean' 
+#' 
+#' See this vignette for examples:
+#' \code{vignette("calculate_hhts_summaries", package = "psrc.travelsurvey")}
+#' @return A table with the variable names and labels, summary statistic and margin of error
+#' 
 #' @param df the dataframe returned by \code{\link{get_hhts}}
 #' @param target_var The exact HHTS target variable intended
 #' @param group_vars Factor variable/s for grouping
 #' @param geographic_unit Default="region"
 #' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @name hhts_stat
-#' @return A table with the variable names and labels, summary statistic and margin of error
 NULL
 
 #' @rdname hhts_stat
 #' @title HHTS counts
+#' 
 #' @export
 hhts_count <- function(df, target_var=NULL, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL){
   rs <- hhts_stat(df=df, stat_type="count", target_var=NULL, group_vars=group_vars, geographic_unit=geographic_unit, spec_wgt=spec_wgt)

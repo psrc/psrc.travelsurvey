@@ -79,5 +79,9 @@ A table with the variable names and labels, summary statistic and margin of erro
 \description{
 Given specific form by related \code{\link{hhts_stat}} functions.
 
-Separate function for total, count, median, mean
+Separate function for total, count, median, mean'
+}
+\details{
+See this vignette for examples:
+\code{vignette("calculate_hhts_summaries", package = "psrc.travelsurvey")}
 }

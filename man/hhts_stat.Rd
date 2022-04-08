@@ -12,50 +12,56 @@
 hhts_stat(
   df,
   stat_type,
-  target_var,
+  stat_var,
   group_vars = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 
 hhts_count(
   df,
-  target_var = NULL,
+  stat_var = NULL,
   group_vars = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 
 hhts_sum(
   df,
-  target_var,
+  stat_var,
   group_vars = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 
 hhts_median(
   df,
-  target_var,
+  stat_var,
   group_vars = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 
 hhts_mean(
   df,
-  target_var,
+  stat_var,
   group_vars = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 
 hhts_summary(
   df,
-  target_var,
+  stat_var,
   group_vars = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 }
 \arguments{
@@ -63,13 +69,15 @@ hhts_summary(
 
 \item{stat_type}{Desired survey statistic}
 
-\item{target_var}{The exact HHTS target variable intended}
+\item{stat_var}{The numeric variable to summarize}
 
-\item{group_vars}{Factor variable/s for grouping}
+\item{group_vars}{Categorical variable/s for grouping}
 
 \item{geographic_unit}{Default="region"}
 
-\item{spec_wgt}{optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call.}
+\item{spec_wgt}{optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.}
+
+\item{incl_na}{option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error
@@ -80,8 +88,4 @@ A table with the variable names and labels, summary statistic and margin of erro
 Given specific form by related \code{\link{hhts_stat}} functions.
 
 Separate function for total, count, median, mean'
-}
-\details{
-See this vignette for examples:
-\code{vignette("calculate_hhts_summaries", package = "psrc.travelsurvey")}
 }

@@ -44,7 +44,12 @@ h_2017_19c   <- get_hhts(c(2017,2019), "h", gvars)
 rs_res_ftrs  <- hhts_bulk_stat(h_2017_19c, "count", group_var_list="gvars")
 ```
 
+### Option to exclude `NA`
+
+Responses can legitimately be missing (`NA`), which is standard for certain questions (e.g. skip logic, or children, for whom not all data is collected). `NA` values are removed from the `stat_var` when calculating sum, median or mean, but by default they are left as a legitimate response category in grouping variables. To exclude `NA` from grouped result sets, use the option `incl_na=FALSE` in any psrc.travelsurvey stat function. However, if you do this be aware the resulting totals and shares will no longer match regional totals, representing instead a subset that corresponds with filled responses.  
 
 ### Option to specify a non-default survey expansion weight
 
 For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the **vars** argument of **get_hhts()**, then use the `swgt=` option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the `swgt=` option specified.
+
+

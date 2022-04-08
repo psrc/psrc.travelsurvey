@@ -4,7 +4,7 @@
 \alias{hhts2srvyr}
 \title{HHTS to srvyr}
 \usage{
-hhts2srvyr(df, dyear, vars, spec_wgt = NULL)
+hhts2srvyr(df, dyear, vars, spec_wgt = NULL, incl_na = TRUE)
 }
 \arguments{
 \item{df}{the dataframe returned by \code{\link{get_hhts}}}
@@ -13,7 +13,9 @@ hhts2srvyr(df, dyear, vars, spec_wgt = NULL)
 
 \item{vars}{character vector with requested variables}
 
-\item{spec_wgt}{optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call.}
+\item{spec_wgt}{optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.}
+
+\item{incl_na}{option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)}
 }
 \value{
 srvyr object with sampling weights

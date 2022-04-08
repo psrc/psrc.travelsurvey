@@ -49,13 +49,13 @@ There are four relevant statistical functions, along with a summary function tha
 The arguments for each summary function are identical:
 
   * **df**              - The dataframe returned by **get_hhts()**
-  * **target_var**      - For sum, median or mean, the numeric variable to be summarized
+  * **stat_var**        - For sum, median or mean, the numeric variable to be summarized
   * **group_vars**      - Any grouping variable/s (if multiple, as a character vector)
-  * **geographic_unit** - A standard geography; this is basically another grouping variable that is subtotaled and ordered in the result set
+  * **geographic_unit** - subregional (e.g. county, tract); a grouping variable ordered first and given subtotals
 
 Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them. 
 
-Note that a **target_var** must be numeric and any **group_vars** must not be continuous (i.e., they must be categorical or interval). The target_var argument is ignored by the count function (for which the numeric variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).
+Note that a **stat_var** must be numeric and any **group_vars** must not be continuous (i.e., they must be categorical or interval). The stat_var argument is ignored by the count function (for which the numeric variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).
 
 **psrc.travelsurvey** handles the selection and application of sampling weights internally, to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled '_moe' column. 
 
@@ -69,7 +69,7 @@ t_2017_19a      <- get_hhts(dyear=c(2017,2019),
                             vars="trip_path_distance")
 
 rs_median_dist  <- hhts_median(df=t_2017_19a, 
-                               target_var="trip_path_distance")
+                               stat_var="trip_path_distance")
 ```
 
 
@@ -80,7 +80,7 @@ rs_median_dist_x_mode  <- hhts_median(t_2017_19b, "trip_path_distance", "mode_1"
 ```
 
 
-The count function tabulates the number of units of analysis, depending on the level you specified in **get_hhts**. The result represents the region (via weighting), not the survey sample. If you intend to count things other than households, people, travel days, trips or vehicles, you should use the 'total' function instead, which sums the target variable. The hhts_count() function also provides percentages. Notice that because the target_var is implicit for counts, any group_vars argument must be specified.
+The count function tabulates the number of units of analysis, depending on the level you specified in **get_hhts**. The result represents the region (via weighting), not the survey sample. If you intend to count things other than households, people, travel days, trips or vehicles, you should use the 'total' function instead, which sums the target variable. The hhts_count() function also provides percentages. Notice that because the stat_var is implicit for counts, any group_vars argument must be specified.
 ```{r count by race, message=FALSE, eval=FALSE}
 h_2017_19a      <- get_hhts(c(2017,2019), "h", "hh_race_category")
 rs_race_region  <- hhts_count(h_2017_19a, group_vars="hh_race_category")

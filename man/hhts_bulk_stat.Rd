@@ -7,10 +7,11 @@
 hhts_bulk_stat(
   df,
   stat_type,
-  target_var = NULL,
+  stat_var = NULL,
   group_var_list = NULL,
   geographic_unit = NULL,
-  spec_wgt = NULL
+  spec_wgt = NULL,
+  incl_na = TRUE
 )
 }
 \arguments{
@@ -18,13 +19,15 @@ hhts_bulk_stat(
 
 \item{stat_type}{Desired survey statistic}
 
-\item{target_var}{The exact HHTS target variable intended}
+\item{stat_var}{The numeric variable to summarize}
 
 \item{group_var_list}{Factor variable/s for grouping}
 
 \item{geographic_unit}{Default="region"}
 
 \item{spec_wgt}{optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call.}
+
+\item{incl_na}{option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)}
 }
 \value{
 A table with the variable names and labels, summary statistic and margin of error

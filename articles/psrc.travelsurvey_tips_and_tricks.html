@@ -97,6 +97,11 @@
 <span class="va">rs_res_ftrs</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hhts_bulk_stat.html">hhts_bulk_stat</a></span><span class="op">(</span><span class="va">h_2017_19c</span>, <span class="st">"count"</span>, group_var_list<span class="op">=</span><span class="st">"gvars"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="option-to-exclude-na">Option to exclude <code>NA</code><a class="anchor" aria-label="anchor" href="#option-to-exclude-na"></a>
+</h3>
+<p>Responses can legitimately be missing (<code>NA</code>), which is standard for certain questions (e.g. skip logic, or children, for whom not all data is collected). <code>NA</code> values are removed from the <code>stat_var</code> when calculating sum, median or mean, but by default they are left as a legitimate response category in grouping variables. To exclude <code>NA</code> from grouped result sets, use the option <code>incl_na=FALSE</code> in any psrc.travelsurvey stat function. However, if you do this be aware the resulting totals and shares will no longer match regional totals, representing instead a subset that corresponds with filled responses.</p>
+</div>
+<div class="section level3">
 <h3 id="option-to-specify-a-non-default-survey-expansion-weight">Option to specify a non-default survey expansion weight<a class="anchor" aria-label="anchor" href="#option-to-specify-a-non-default-survey-expansion-weight"></a>
 </h3>
 <p>For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the <strong>vars</strong> argument of <strong>get_hhts()</strong>, then use the <code>swgt=</code> option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the <code>swgt=</code> option specified.</p>

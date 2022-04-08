@@ -55,50 +55,56 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">hhts_stat</span><span class="op">(</span>
   <span class="va">df</span>,
   <span class="va">stat_type</span>,
-  <span class="va">target_var</span>,
+  <span class="va">stat_var</span>,
   group_vars <span class="op">=</span> <span class="cn">NULL</span>,
   geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,
-  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>
+  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,
+  incl_na <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
 
 <span class="fu">hhts_count</span><span class="op">(</span>
   <span class="va">df</span>,
-  target_var <span class="op">=</span> <span class="cn">NULL</span>,
+  stat_var <span class="op">=</span> <span class="cn">NULL</span>,
   group_vars <span class="op">=</span> <span class="cn">NULL</span>,
   geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,
-  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>
+  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,
+  incl_na <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
 
 <span class="fu">hhts_sum</span><span class="op">(</span>
   <span class="va">df</span>,
-  <span class="va">target_var</span>,
+  <span class="va">stat_var</span>,
   group_vars <span class="op">=</span> <span class="cn">NULL</span>,
   geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,
-  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>
+  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,
+  incl_na <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
 
 <span class="fu">hhts_median</span><span class="op">(</span>
   <span class="va">df</span>,
-  <span class="va">target_var</span>,
+  <span class="va">stat_var</span>,
   group_vars <span class="op">=</span> <span class="cn">NULL</span>,
   geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,
-  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>
+  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,
+  incl_na <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
 
 <span class="fu">hhts_mean</span><span class="op">(</span>
   <span class="va">df</span>,
-  <span class="va">target_var</span>,
+  <span class="va">stat_var</span>,
   group_vars <span class="op">=</span> <span class="cn">NULL</span>,
   geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,
-  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>
+  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,
+  incl_na <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
 
 <span class="fu">hhts_summary</span><span class="op">(</span>
   <span class="va">df</span>,
-  <span class="va">target_var</span>,
+  <span class="va">stat_var</span>,
   group_vars <span class="op">=</span> <span class="cn">NULL</span>,
   geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,
-  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>
+  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,
+  incl_na <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -108,24 +114,21 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <dd><p>the dataframe returned by <code><a href="get_hhts.html">get_hhts</a></code></p></dd>
 <dt>stat_type</dt>
 <dd><p>Desired survey statistic</p></dd>
-<dt>target_var</dt>
-<dd><p>The exact HHTS target variable intended</p></dd>
+<dt>stat_var</dt>
+<dd><p>The numeric variable to summarize</p></dd>
 <dt>group_vars</dt>
-<dd><p>Factor variable/s for grouping</p></dd>
+<dd><p>Categorical variable/s for grouping</p></dd>
 <dt>geographic_unit</dt>
 <dd><p>Default="region"</p></dd>
 <dt>spec_wgt</dt>
-<dd><p>optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the <code><a href="get_hhts.html">get_hhts</a></code> call.</p></dd>
+<dd><p>optional user-specified expansion weight; only possible if the variable name is included in the <code><a href="get_hhts.html">get_hhts</a></code> call.</p></dd>
+<dt>incl_na</dt>
+<dd><p>option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A summary tibble, including variable names, summary statistic and margin of error
 A table with the variable names and labels, summary statistic and margin of error</p>
-    </div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>See this vignette for examples:
-<code><a href="../articles/calculate_hhts_summaries.html">vignette("calculate_hhts_summaries", package = "psrc.travelsurvey")</a></code></p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

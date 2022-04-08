@@ -106,14 +106,14 @@
 <strong>df</strong> - The dataframe returned by <strong>get_hhts()</strong>
 </li>
 <li>
-<strong>target_var</strong> - For sum, median or mean, the numeric variable to be summarized</li>
+<strong>stat_var</strong> - For sum, median or mean, the numeric variable to be summarized</li>
 <li>
 <strong>group_vars</strong> - Any grouping variable/s (if multiple, as a character vector)</li>
 <li>
-<strong>geographic_unit</strong> - A standard geography; this is basically another grouping variable that is subtotaled and ordered in the result set</li>
+<strong>geographic_unit</strong> - subregional (e.g. county, tract); a grouping variable ordered first and given subtotals</li>
 </ul>
 <p>Argument names can be omitted (saving keystrokes) if arguments are provided in proper sequence; you may prefer to be explicit to avoid confusing them.</p>
-<p>Note that a <strong>target_var</strong> must be numeric and any <strong>group_vars</strong> must not be continuous (i.e., they must be categorical or interval). The target_var argument is ignored by the count function (for which the numeric variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).</p>
+<p>Note that a <strong>stat_var</strong> must be numeric and any <strong>group_vars</strong> must not be continuous (i.e., they must be categorical or interval). The stat_var argument is ignored by the count function (for which the numeric variable is implicit), but is allowed since some scripting will use identical arguments (e.g. map functions).</p>
 <p><strong>psrc.travelsurvey</strong> handles the selection and application of sampling weights internally, to deliver estimates of the full population. It also provides the tabulated margin of error (MOE) for each estimate in a separately labeled ’_moe’ column.</p>
 <div class="section level3">
 <h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
@@ -125,12 +125,12 @@
                             vars<span class="op">=</span><span class="st">"trip_path_distance"</span><span class="op">)</span>
 
 <span class="va">rs_median_dist</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hhts_stat.html">hhts_median</a></span><span class="op">(</span>df<span class="op">=</span><span class="va">t_2017_19a</span>, 
-                               target_var<span class="op">=</span><span class="st">"trip_path_distance"</span><span class="op">)</span></code></pre></div>
+                               stat_var<span class="op">=</span><span class="st">"trip_path_distance"</span><span class="op">)</span></code></pre></div>
 <p>To calculate by a subgroup category (here, travel mode), use the optional grouping variable argument.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t_2017_19b</span>             <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_hhts.html">get_hhts</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2017</span>,<span class="fl">2019</span><span class="op">)</span>, <span class="st">"t"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mode_1"</span>, <span class="st">"trip_path_distance"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">rs_median_dist_x_mode</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hhts_stat.html">hhts_median</a></span><span class="op">(</span><span class="va">t_2017_19b</span>, <span class="st">"trip_path_distance"</span>, <span class="st">"mode_1"</span><span class="op">)</span></code></pre></div>
-<p>The count function tabulates the number of units of analysis, depending on the level you specified in <strong>get_hhts</strong>. The result represents the region (via weighting), not the survey sample. If you intend to count things other than households, people, travel days, trips or vehicles, you should use the ‘total’ function instead, which sums the target variable. The hhts_count() function also provides percentages. Notice that because the target_var is implicit for counts, any group_vars argument must be specified.</p>
+<p>The count function tabulates the number of units of analysis, depending on the level you specified in <strong>get_hhts</strong>. The result represents the region (via weighting), not the survey sample. If you intend to count things other than households, people, travel days, trips or vehicles, you should use the ‘total’ function instead, which sums the target variable. The hhts_count() function also provides percentages. Notice that because the stat_var is implicit for counts, any group_vars argument must be specified.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">h_2017_19a</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_hhts.html">get_hhts</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2017</span>,<span class="fl">2019</span><span class="op">)</span>, <span class="st">"h"</span>, <span class="st">"hh_race_category"</span><span class="op">)</span>
 <span class="va">rs_race_region</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hhts_stat.html">hhts_count</a></span><span class="op">(</span><span class="va">h_2017_19a</span>, group_vars<span class="op">=</span><span class="st">"hh_race_category"</span><span class="op">)</span></code></pre></div>

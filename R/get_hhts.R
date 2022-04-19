@@ -141,10 +141,10 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
       if(f %in% var_defs$var_name){
         setkeyv(df2, f)
         for_level <- var_defs[var_name==rlang::as_string(f), .(levels)][[1]] %>% 
-          strsplit(", ") %>% unique() %>% .[[1]]
-        df2[, (f):=factor(get(f), levels=for_level, exclude=na_exclude)]                           # Factor level ordering from metadata
+          strsplit("|") %>% unique() %>% .[[1]]
+        df2[, (f):=factor(get(f), levels=for_level, exclude=na_exclude), with=FALSE]               # Factor level ordering from metadata
       }else{
-        df2[, (f):=factor(get(f), exclude=na_exclude)]                                             # Default factor level ordering
+        df2[, (f):=factor(get(f), exclude=na_exclude), with=FALSE]                                 # Default factor level ordering
       } 
     }
   }

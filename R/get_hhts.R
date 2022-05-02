@@ -126,7 +126,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
     wgt_var  <- copy(var_defs) %>% .[var_name %in% vars, .(weight_name, weight_priority)] %>%      # Weird 2021 weighting determined by variable hierarchy
       unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }else{
-    tbl_names <- copy(var_defs) %>% .[var_name %in% vars, .(table_name)] %>% unique()              # Standard weighting by table; construct w/ rules
+    tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()            # Standard weighting by table; construct w/ rules
     level <- if("Trip" %in% tbl_names){"trip_weight_"}else{"hh_weight_"}
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(level, yearz)

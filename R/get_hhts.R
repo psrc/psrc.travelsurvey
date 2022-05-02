@@ -117,7 +117,7 @@ get_hhts <- function(dyear, level, vars){
 #' @importFrom rlang is_empty
 hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
   na_exclude <- if(incl_na==FALSE){NA}else{NULL}
-  var_defs <- get_var_defs(dyear, vars) %>% setkeyv("var_name")
+  var_defs <- psrc.travelsurvey:::get_var_defs(dyear, vars) %>% setkeyv("var_name")
   num_vars <- copy(var_defs) %>% .[dtype=="fact", .(var_name)] %>% unique() %>% .[[1]]
   ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(var_name)] %>% unique() %>% .[[1]]
   if(!is.null(spec_wgt)){
@@ -130,8 +130,8 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
     level <- if("Trip" %in% tbl_names){"trip_weight_"}else{"hh_weight_"}
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(level, yearz)
+    if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
   }
-  if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
   keep_vars <- c("survey_year", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% 
     .[(!is.null(get(wgt_var)) & !is.na(get(wgt_var))), colnames(.) %in% keep_vars, with=FALSE]     # Keep only necessary elements/records 

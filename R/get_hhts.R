@@ -131,6 +131,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(level, yearz)
     if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
+    if("Trip" %in% tbl_names){wgt_var %<>% paste0("_adult")}
   }
   keep_vars <- c("survey_year", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% 

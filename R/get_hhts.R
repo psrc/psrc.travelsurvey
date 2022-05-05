@@ -84,12 +84,12 @@ hhts_recode_na <- function(dt){
 #' @export
 get_hhts <- function(dyear, level, vars){
     elmer_hhts_lookup <- data.frame(
-                            abbr    =c("h","p","t","d","v"),
-                            tbl_ref =c("HHSurvey.v_households",
+                            abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+                            tbl_ref =rep(c("HHSurvey.v_households",
                                       "HHSurvey.v_persons",
                                       "HHSurvey.v_trips",
                                       "HHSurvey.v_day",
-                                      "HHSurvey.v_vehicle")) %>% setDT()
+                                      "HHSurvey.v_vehicle"),2)) %>% setDT()
     elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]
     elmer_sql <- paste("SELECT * FROM",elmer_tbl_ref,"WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
     keep_vars <- c("survey_year", unlist(vars))
@@ -117,7 +117,7 @@ get_hhts <- function(dyear, level, vars){
 #' @importFrom rlang is_empty
 hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
   na_exclude <- if(incl_na==FALSE){NA}else{NULL}
-  var_defs <- psrc.travelsurvey:::get_var_defs(dyear, vars) %>% setkeyv("var_name")
+  var_defs <- get_var_defs(dyear, vars) %>% setkeyv("var_name")
   num_vars <- copy(var_defs) %>% .[dtype=="fact", .(var_name)] %>% unique() %>% .[[1]]
   ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(var_name)] %>% unique() %>% .[[1]]
   if(!is.null(spec_wgt)){
@@ -127,9 +127,9 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
       unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }else{
     tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()            # Standard weighting by table; construct w/ rules
-    level <- if("Trip" %in% tbl_names){"trip_weight_"}else{"hh_weight_"}
+    prefix <- if("Trip" %in% tbl_names){"trip_weight_"}else{"hh_weight_"}
     yearz <- paste0(dyear, collapse="_")
-    wgt_var <- paste0(level, yearz)
+    wgt_var <- paste0(prefix, yearz)
     if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
     if("Trip" %in% tbl_names){wgt_var %<>% paste0("_adult")}
   }

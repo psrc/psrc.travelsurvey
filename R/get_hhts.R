@@ -83,6 +83,7 @@ hhts_recode_na <- function(dt){
 #' @import data.table
 #' @export
 get_hhts <- function(dyear, level, vars){
+    wgt_str <- paste0("_weight_",paste0(sort(dyear), collapse="_")) 
     elmer_hhts_lookup <- data.frame(
                             abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
                             tbl_ref =rep(c("HHSurvey.v_households",
@@ -94,7 +95,7 @@ get_hhts <- function(dyear, level, vars){
     elmer_sql <- paste("SELECT TOP 1 * FROM",elmer_tbl_ref,";")                                     
     elmer_connection <- elmer_connect()
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT()                       # Get first row to have column names
-    want_vars <-grep("_weight_", colnames(df), value=TRUE) %>% unlist() %>% c("survey_year", unlist(vars), .) # Determine available weights
+    want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c("survey_year", unlist(vars), .) # Determine available weights
     elmer_sql <- paste("SELECT", paste(want_vars, collapse=", "), "FROM",elmer_tbl_ref,            # Build query for only relevant variables
                        "WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
@@ -203,10 +204,11 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
     setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
   if(!is.null(geographic_unit)){
-    setcolorder(rs, c(geographic_unit))
-    setorder(rs, geographic_unit)
     rs[is.na(geographic_unit), (geographic_unit):="Region"]
   }
+  rs[, survey:=paste0(sort(unique(so[[7]]$survey_year)), collapse="_")]
+  setcolorder(rs, c("survey", dplyr::coalesce(geographic_unit)))
+  setorderv(rs, c("survey", dplyr::coalesce(geographic_unit)))
   so %<>% dplyr::ungroup()
   return(rs)
 }

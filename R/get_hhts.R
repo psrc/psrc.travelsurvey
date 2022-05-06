@@ -83,7 +83,8 @@ hhts_recode_na <- function(dt){
 #' @import data.table
 #' @export
 get_hhts <- function(dyear, level, vars){
-    wgt_str <- paste0("_weight_",paste0(sort(dyear), collapse="_")) 
+    survey_indicator <- paste0(sort(dyear), collapse="_")
+    wgt_str <- paste0("_weight_",survey_indicator) 
     elmer_hhts_lookup <- data.frame(
                             abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
                             tbl_ref =rep(c("HHSurvey.v_households",
@@ -95,9 +96,10 @@ get_hhts <- function(dyear, level, vars){
     elmer_sql <- paste("SELECT TOP 1 * FROM",elmer_tbl_ref,";")                                     
     elmer_connection <- elmer_connect()
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT()                       # Get first row to have column names
-    want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c("survey_year", unlist(vars), .) # Determine available weights
-    elmer_sql <- paste("SELECT", paste(want_vars, collapse=", "), "FROM",elmer_tbl_ref,            # Build query for only relevant variables
-                       "WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
+    want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights
+    elmer_sql <- paste0("SELECT '", survey_indicator, "' AS survey, ",
+                       paste(want_vars, collapse=", "), " FROM ",elmer_tbl_ref,                      # Build query for only relevant variables
+                       " WHERE survey_year IN(", paste(unique(dyear), collapse=", "),");")
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
       hhts_recode_na() %>% setDF()                                                                 # Recode NA
     is.na(df) <- is.null(df)                                                                       # Recode NULL
@@ -118,14 +120,15 @@ get_hhts <- function(dyear, level, vars){
 #' @import data.table
 #' @importFrom tidyselect all_of
 #' @importFrom rlang is_empty
-hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
+hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL, incl_na=TRUE){
   na_exclude <- if(incl_na==FALSE){NA}else{NULL}
+  dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
   var_defs <- get_var_defs(dyear, vars) %>% setkeyv("var_name")
   num_vars <- copy(var_defs) %>% .[dtype=="fact", .(var_name)] %>% unique() %>% .[[1]]
   ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(var_name)] %>% unique() %>% .[[1]]
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight  
-  }else if (2021 %in% dyear){
+  }else if (grepl("2021", survey)){
     wgt_var  <- copy(var_defs) %>% .[var_name %in% vars, .(weight_name, weight_priority)] %>%      # Weird 2021 weighting determined by variable hierarchy
       unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
   }else{
@@ -136,7 +139,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
     if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
     if("Trip" %in% tbl_names){wgt_var %<>% paste0("_adult")}
   }
-  keep_vars <- c("survey_year", unlist(vars), wgt_var)
+  keep_vars <- c("survey", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% 
     .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]                                      # Keep only necessary elements/records 
   if(!is_empty(num_vars)){df2[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
@@ -172,8 +175,8 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
-  data_year <- df$survey_year %>% unique()
-  so <- hhts2srvyr(df, data_year, vars, spec_wgt, incl_na) %>% dplyr::ungroup()
+  survey <- df$survey %>% unique()
+  so <- hhts2srvyr(df, survey, vars, spec_wgt, incl_na) %>% dplyr::ungroup()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   if(!is.null(group_vars)){
     so %<>% srvyr::group_by(dplyr::across(tidyselect::all_of(group_vars)))                         # Apply grouping
@@ -206,7 +209,7 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
   if(!is.null(geographic_unit)){
     rs[is.na(geographic_unit), (geographic_unit):="Region"]
   }
-  rs[, survey:=paste0(sort(unique(so[[7]]$survey_year)), collapse="_")]
+  rs[, survey:=unique(so[[7]]$survey)]
   setcolorder(rs, c("survey", dplyr::coalesce(geographic_unit)))
   setorderv(rs, c("survey", dplyr::coalesce(geographic_unit)))
   so %<>% dplyr::ungroup()

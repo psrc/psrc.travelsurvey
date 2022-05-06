@@ -90,12 +90,14 @@ get_hhts <- function(dyear, level, vars){
                                       "HHSurvey.v_trips",
                                       "HHSurvey.v_day",
                                       "HHSurvey.v_vehicle"),2)) %>% setDT()
-    elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]
-    elmer_sql <- paste("SELECT * FROM",elmer_tbl_ref,"WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
-    keep_vars <- c("survey_year", unlist(vars))
+    elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                               # Convert level to view name       
+    elmer_sql <- paste("SELECT TOP 1 * FROM",elmer_tbl_ref,";")                                     
     elmer_connection <- elmer_connect()
+    df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT()                       # Get first row to have column names
+    want_vars <-grep("_weight_", colnames(df), value=TRUE) %>% unlist() %>% c("survey_year", unlist(vars), .) # Determine available weights
+    elmer_sql <- paste("SELECT", paste(want_vars, collapse=", "), "FROM",elmer_tbl_ref,            # Build query for only relevant variables
+                       "WHERE survey_year IN(",unique(dyear) %>% paste(collapse=","),");")
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
-        .[, colnames(.) %in% keep_vars | grepl("_weight_", colnames(.)), with=FALSE] %>%           # Filter columns
       hhts_recode_na() %>% setDF()                                                                 # Recode NA
     is.na(df) <- is.null(df)                                                                       # Recode NULL
     DBI::dbDisconnect(elmer_connection)
@@ -135,7 +137,7 @@ hhts2srvyr <- function(df, dyear, vars, spec_wgt=NULL, incl_na=TRUE){
   }
   keep_vars <- c("survey_year", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% 
-    .[(!is.null(get(wgt_var)) & !is.na(get(wgt_var))), colnames(.) %in% keep_vars, with=FALSE]     # Keep only necessary elements/records 
+    .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]                                      # Keep only necessary elements/records 
   if(!is_empty(num_vars)){df2[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
   if(!is_empty(ftr_vars)){                                                                         # srvyr package requires grouping variables as factors;
     for (f in ftr_vars){

@@ -4,12 +4,12 @@
 \alias{hhts2srvyr}
 \title{HHTS to srvyr}
 \usage{
-hhts2srvyr(df, dyear, vars, spec_wgt = NULL, incl_na = TRUE)
+hhts2srvyr(df, survey, vars, spec_wgt = NULL, incl_na = TRUE)
 }
 \arguments{
 \item{df}{the dataframe returned by \code{\link{get_hhts}}}
 
-\item{dyear}{data year or data year vector, e.g. c(2017, 2019)}
+\item{survey}{the survey year or combination of survey years comprising the survey, e.g. c(2017_2019)}
 
 \item{vars}{character vector with requested variables}
 

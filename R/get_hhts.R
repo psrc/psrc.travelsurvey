@@ -111,7 +111,7 @@ get_hhts <- function(dyear, level, vars){
 #'
 #' Creates srvyr object from HHTS
 #' @param df the dataframe returned by \code{\link{get_hhts}}
-#' @param dyear data year or data year vector, e.g. c(2017, 2019)
+#' @param survey the survey year or combination of survey years comprising the survey, e.g. c(2017_2019)
 #' @param vars character vector with requested variables
 #' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)

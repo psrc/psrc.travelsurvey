@@ -120,28 +120,39 @@ get_hhts <- function(dyear, level, vars){
 #' @import data.table
 #' @importFrom tidyselect all_of
 #' @importFrom rlang is_empty
+#' @importFrom dplyr case_when
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL, incl_na=TRUE){
   na_exclude <- if(incl_na==FALSE){NA}else{NULL}
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
-  var_defs <- get_var_defs(dyear, vars) %>% setkeyv("var_name")
-  num_vars <- copy(var_defs) %>% .[dtype=="fact", .(var_name)] %>% unique() %>% .[[1]]
-  ftr_vars <- copy(var_defs) %>% .[dtype=="dimension", .(var_name)] %>% unique() %>% .[[1]]
+  var_defs <- psrc.travelsurvey:::get_var_defs(dyear, vars) %>% setDT() %>% setkeyv("var_name")
+  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()              # Standard weighting by table; construct w/ rules
+  var_defs %<>% .[!is.null(weight_name)]
   if(!is.null(spec_wgt)){
-    wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight  
-  }else if (grepl("2021", survey)){
-    wgt_var  <- copy(var_defs) %>% .[var_name %in% vars, .(weight_name, weight_priority)] %>%      # Weird 2021 weighting determined by variable hierarchy
-      unique() %>% setorder(weight_priority) %>% .[1, .(weight_name)] %>% .[[1]]
+    wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{
-    tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()            # Standard weighting by table; construct w/ rules
-    prefix <- if("Trip" %in% tbl_names){"trip_weight_"}else{"hh_weight_"}
+    ph_vars <- c("age","age_category","license","school_loc_county",
+                 "schooltype","student","school_travel_last_week")
+    prefix <- unique(case_when(
+      "Trip" %in% tbl_names ~ "trip",
+      "Person" %in% tbl_names & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars ~ "person",
+      TRUE ~ "hh"))
+    suffix <- case_when((TRUE %in% grepl("2021", survey)) ~ "_ABS", 
+                        mean(dyear) %between% c(2017,2019) ~"_v2021", 
+                        TRUE ~"")
+    suffix <- unique(case_when("Trip" %in% tbl_names ~ paste0(suffix, "_adult"),
+                        "Person" %in% tbl_names & grepl("2021", survey) &
+                            (TRUE %in% grepl("^employment_change_|^workplace|_freq_pre_covid|_mode_pre_covid", 
+                                colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
+                        "Person" %in% tbl_names & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars 
+                                              ~ paste0(suffix, "_Panel_adult"),
+                        TRUE ~ suffix))
     yearz <- paste0(dyear, collapse="_")
-    wgt_var <- paste0(prefix, yearz)
-    if(mean(dyear) %between% c(2017,2019)){wgt_var %<>% paste0("_v2021")}
-    if("Trip" %in% tbl_names){wgt_var %<>% paste0("_adult")}
+    wgt_var <- paste0(prefix, "_weight_", yearz, suffix)                                           # Otherwise weight determined by rules
   }
   keep_vars <- c("survey", unlist(vars), wgt_var)
-  df2 <- copy(df) %>% setDT() %>% 
-    .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]                                      # Keep only necessary elements/records 
+  df2 <- copy(df) %>% setDT() %>% .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]        # Keep only necessary elements/records
+  num_vars <- names(Filter(is.numeric, df2))
+  ftr_vars <- names(Filter(is.character, df2))
   if(!is_empty(num_vars)){df2[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
   if(!is_empty(ftr_vars)){                                                                         # srvyr package requires grouping variables as factors;
     for (f in ftr_vars){

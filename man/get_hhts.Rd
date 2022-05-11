@@ -4,10 +4,10 @@
 \alias{get_hhts}
 \title{HHTS data retrieval}
 \usage{
-get_hhts(dyear, level, vars)
+get_hhts(survey, level, vars)
 }
 \arguments{
-\item{dyear}{data year or data year vector, e.g. c(2017, 2019)}
+\item{survey}{character string denoting single or combined survey year--if the latter, years separated by underscore, e.g."2017_2019"}
 
 \item{level}{either "h" (household), "p" (person), "d" (day), "t" (trip), or "v" (vehicle)}
 

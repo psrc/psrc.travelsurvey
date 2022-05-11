@@ -75,16 +75,18 @@ hhts_recode_na <- function(dt){
 #'
 #' Gets requested Household Travel Survey variables
 #' 
-#' @param dyear data year or data year vector, e.g. c(2017, 2019)
+#' @param survey character string denoting single or combined survey year--if the latter, years separated by underscore, e.g."2017_2019"
 #' @param level either "h" (household), "p" (person), "d" (day), "t" (trip), or "v" (vehicle) 
 #' @param vars character vector with requested variables
 #' @return dataframe with variables and necessary weights
 #'  
 #' @import data.table
 #' @export
-get_hhts <- function(dyear, level, vars){
-    survey_indicator <- paste0(sort(dyear), collapse="_")
-    wgt_str <- paste0("_weight_",survey_indicator) 
+get_hhts <- function(survey, level, vars){
+    dyears <- if(survey %in% (c("2017","2019","2017_2019","2021"))){
+      strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
+      }else{c(2017,2019)}
+    wgt_str <- paste0("_weight_",survey) 
     elmer_hhts_lookup <- data.frame(
                             abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
                             tbl_ref =rep(c("HHSurvey.v_households",
@@ -97,9 +99,9 @@ get_hhts <- function(dyear, level, vars){
     elmer_connection <- elmer_connect()
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT()                       # Get first row to have column names
     want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights
-    elmer_sql <- paste0("SELECT '", survey_indicator, "' AS survey, ",
+    elmer_sql <- paste0("SELECT '", survey, "' AS survey, ",
                        paste(want_vars, collapse=", "), " FROM ",elmer_tbl_ref,                      # Build query for only relevant variables
-                       " WHERE survey_year IN(", paste(unique(dyear), collapse=", "),");")
+                       " WHERE survey_year IN(", paste(unique(dyears), collapse=", "),");")
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
       hhts_recode_na() %>% setDF()                                                                 # Recode NA
     is.na(df) <- is.null(df)                                                                       # Recode NULL

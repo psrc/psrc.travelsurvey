@@ -40,7 +40,7 @@ gvars <- c("res_factors_30min",
            "res_factors_transit",
            "res_factors_walk",
            "res_factors_cultural")
-h_2017_19c   <- get_hhts(c(2017,2019), "h", gvars)
+h_2017_19c   <- get_hhts("2017_2019", "h", gvars)
 rs_res_ftrs  <- hhts_bulk_stat(h_2017_19c, "count", group_var_list="gvars")
 ```
 

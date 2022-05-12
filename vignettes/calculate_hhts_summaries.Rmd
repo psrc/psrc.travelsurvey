@@ -22,13 +22,13 @@ The **psrc.travelsurvey** package is designed to facilitate analysis using the s
 
 The first step consists of retrieving the data of interest via the **get_hhts()** function. The arguments are:
 
-  * **dyear** - aka data year; if weights exist for a combination of years, you can specify them as a vector, e.g. c(2017,2019)
-  * **level** - the unit of analysis: "p" for persons, "h" for households, "t" for trips, or "v" for vehicles
-  * **vars**  - either a single variable or a character vector of variables (including geographic units), with lowercase names precisely matching the data dictionary
+  * **survey** - In addition to surveys identified by year (e.g., survey="2021"), PSRC also has some combined (i.e. multi-year) datasets (e.g. survey="2017_2019")
+  * **level**  - the unit of analysis: "p" for persons, "h" for households, "t" for trips, or "v" for vehicles
+  * **vars**   - either a single variable or a character vector of variables (including geographic units), with lowercase names precisely matching the data dictionary
 
-The result of **get_hhts()** is a dataframe that includes the set of potential sampling weights that match your requested variables, as well as those variables themselves. Any manipulation of the object must take the weights into account. Also note that categorical variables are encoded as factor datatype and must be recast (using as.character() ) before reclassifying them into custom categories. 
+The result of **get_hhts()** is a dataframe that includes the survey identifier, the set of potential sampling weights that match your requested variables, as well as those variables themselves. Any manipulation of the object must take the weights into account. Also note that categorical variables are encoded as factor datatype and must be recast (using as.character() ) before reclassifying them into custom categories. 
   
-**get_hhts()** can be called once for each combination of **dyear - level** you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey (year), you will still need to use **get_hhts()** once for households (level="h") and a second time for persons ('level'="p"). When you invoke **get_hhts()** we suggest you assign a name that helps you differentiate between whatever **dyear - level** combinations are relevant to your analysis.
+**get_hhts()** can be called once for each combination of **survey - level** you intend to use. For example, if you want to calculate both household statistics and population statistics from the same survey, you will still need to use **get_hhts()** once for households (level="h") and a second time for persons ('level'="p"). When you invoke **get_hhts()** we suggest you assign a name that helps you differentiate between whatever **survey - level** combinations are relevant to your analysis.
 
 Although most Household Travel Survey variables are specific to a particular unit, household attributes can be associated with people, days, trips and vehicles; person attributes can be associated with days and trips, which can also be associated with one another.
 
@@ -64,7 +64,7 @@ Note that a **stat_var** must be numeric and any **group_vars** must not be cont
 
 As an example, to calculate the median trip distance, you would use the following function calls:
 ```{r median trip distance, message=FALSE, eval=FALSE}
-t_2017_19a      <- get_hhts(dyear=c(2017,2019),
+t_2017_19a      <- get_hhts(survey="2017_2019",
                             level="t",
                             vars="trip_path_distance")
 
@@ -75,21 +75,21 @@ rs_median_dist  <- hhts_median(df=t_2017_19a,
 
 To calculate by a subgroup category (here, travel mode), use the optional grouping variable argument.
 ```{r median trip distance by mode, message=FALSE, eval=FALSE}
-t_2017_19b             <- get_hhts(c(2017,2019), "t", c("mode_1", "trip_path_distance"))
+t_2017_19b             <- get_hhts("2017_2019", "t", c("mode_1", "trip_path_distance"))
 rs_median_dist_x_mode  <- hhts_median(t_2017_19b, "trip_path_distance", "mode_1")
 ```
 
 
 The count function tabulates the number of units of analysis, depending on the level you specified in **get_hhts**. The result represents the region (via weighting), not the survey sample. If you intend to count things other than households, people, travel days, trips or vehicles, you should use the 'total' function instead, which sums the target variable. The hhts_count() function also provides percentages. Notice that because the stat_var is implicit for counts, any group_vars argument must be specified.
 ```{r count by race, message=FALSE, eval=FALSE}
-h_2017_19a      <- get_hhts(c(2017,2019), "h", "hh_race_category")
+h_2017_19a      <- get_hhts("2017_2019", "h", "hh_race_category")
 rs_race_region  <- hhts_count(h_2017_19a, group_vars="hh_race_category")
 ```
 
 
-To report by a subregional geography, you must include that variable in the **vars** argument of **get_hhts()** . It makes sense to request as many attributes per **dyear-level** combination you need, as you can run statistical functions independently on that same dataframe--including multiple geographic scales. Each statistical call will also provide the regional total as the last line, for context/comparison.
+To report by a subregional geography, you must include that variable in the **vars** argument of **get_hhts()** . It makes sense to request as many attributes per **survey-level** combination you need, as you can run statistical functions independently on that same dataframe--including multiple geographic scales. Each statistical call will also provide the regional total as the last line, for context/comparison.
 ```{r race by subregional geographies, message=FALSE, eval=FALSE}
-h_2017_19b       <- get_hhts(c(2017,2019), "h", c("hh_race_category", "final_home_tract", "home_city_name")
+h_2017_19b       <- get_hhts("2017_2019", "h", c("hh_race_category", "final_home_tract", "home_city_name")
 rs_race_tract    <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="final_home_tract")
 rs_race_city     <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="home_city_name")
 ```
@@ -108,7 +108,7 @@ There is only a meaningful difference between two estimates if the Z score is gr
 
 The `z_score()` convenience function performs this calculation:
 ```{r z score calculation, message=FALSE, eval=FALSE}
-t_2017_19c  <- get_hhts(c(2017,2019), "t", c("mode_1","trip_path_distance","travel_time")
+t_2017_19c  <- get_hhts("2017_2019", "t", c("mode_1","trip_path_distance","travel_time")
 rs          <- hhts_median(t_2017_19c, "travel_time", "mode_1")
 c1          <- rs[1,(ncol(rs)-1):ncol(rs)]       # First-line estimate and its MOE (as numeric vector)
 c2          <- rs[3,(ncol(rs)-1):ncol(rs)]       # Third-line estimate and its MOE (as numeric vector)

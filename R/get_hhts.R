@@ -86,7 +86,7 @@ get_hhts <- function(survey, level, vars){
     dyears <- if(survey %in% (c("2017","2019","2017_2019","2021"))){
       strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
       }else{c(2017,2019)}
-    wgt_str <- paste0("_weight_",survey) 
+    wgt_str <- paste0("_weight_",survey,"(_\\D|$)") 
     elmer_hhts_lookup <- data.frame(
                             abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
                             tbl_ref =rep(c("HHSurvey.v_households",

@@ -141,12 +141,13 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL, incl_na=TRUE){
     suffix <- case_when((TRUE %in% grepl("2021", survey)) ~ "_ABS", 
                         mean(dyear) %between% c(2017,2019) ~"_v2021", 
                         TRUE ~"")
-    suffix <- unique(case_when("Trip" %in% tbl_names ~ paste0(suffix, "_adult"),
+    suffix <- unique(case_when(
                         "Person" %in% tbl_names & grepl("2021", survey) &
                             (TRUE %in% grepl("^employment_change_|^workplace|_freq_pre_covid|_mode_pre_covid", 
                                 colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
-                        "Person" %in% tbl_names & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars 
+                        grepl("Person|Trip", tbl_names) & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars 
                                               ~ paste0(suffix, "_Panel_adult"),
+                        "Trip" %in% tbl_names ~ paste0(suffix, "_adult"),
                         TRUE ~ suffix))
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(prefix, "_weight_", yearz, suffix)                                           # Otherwise weight determined by rules

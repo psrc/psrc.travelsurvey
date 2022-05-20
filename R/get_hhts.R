@@ -116,15 +116,13 @@ get_hhts <- function(survey, level, vars){
 #' @param survey the survey year or combination of survey years comprising the survey, e.g. c(2017_2019)
 #' @param vars character vector with requested variables
 #' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
-#' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @return srvyr object with sampling weights
 #'
 #' @import data.table
 #' @importFrom tidyselect all_of
 #' @importFrom rlang is_empty
 #' @importFrom dplyr case_when
-hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL, incl_na=TRUE){
-  na_exclude <- if(incl_na==FALSE){NA}else{NULL}
+hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
   var_defs <- psrc.travelsurvey:::get_var_defs(dyear, vars) %>% setDT() %>% setkeyv("var_name")
   tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()              # Standard weighting by table; construct w/ rules
@@ -163,9 +161,9 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL, incl_na=TRUE){
         setkeyv(df2, f)
         for_level <- var_defs[var_name==rlang::as_string(f), .(levels)][[1]] %>% 
           strsplit("[|]") %>% unique() %>% .[[1]]
-        df2[, (f):=factor(get(f), levels=for_level, exclude=na_exclude)]                           # Factor level ordering from metadata
+        df2[, (f):=factor(get(f), levels=for_level)]                                               # Factor level ordering from metadata
       }else{
-        df2[, (f):=factor(get(f), exclude=na_exclude)]                                             # Default factor level ordering
+        df2[, (f):=factor(get(f))]                                                                 # Default factor level ordering
       } 
     }
   }
@@ -186,14 +184,17 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL, incl_na=TRUE){
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
+#' @importFrom tidyselect all_of
+#' @importFrom dplyr filter if_all ungroup across coalesce
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
   survey <- df$survey %>% unique()
-  so <- hhts2srvyr(df, survey, vars, spec_wgt, incl_na) %>% dplyr::ungroup()
+  so <- hhts2srvyr(df, survey, vars, spec_wgt, incl_na) %>% ungroup()
+  if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   if(!is.null(group_vars)){
-    so %<>% srvyr::group_by(dplyr::across(tidyselect::all_of(group_vars)))                         # Apply grouping
+    so %<>% srvyr::group_by(across(all_of(group_vars)))                                            # Apply grouping
   }
   if(!is.null(geographic_unit)){so %<>% srvyr::group_by(!!as.name(geographic_unit), .add=TRUE)}
   if(stat_type=="count"){
@@ -224,9 +225,9 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
     rs[is.na(geographic_unit), (geographic_unit):="Region"]
   }
   rs[, survey:=unique(so[[7]]$survey)]
-  setcolorder(rs, c("survey", dplyr::coalesce(geographic_unit)))
-  setorderv(rs, c("survey", dplyr::coalesce(geographic_unit)))
-  so %<>% dplyr::ungroup()
+  setcolorder(rs, c("survey", coalesce(geographic_unit)))
+  setorderv(rs, c("survey", coalesce(geographic_unit)))
+  so %<>% ungroup()
   return(rs)
 }
 

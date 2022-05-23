@@ -190,7 +190,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
   survey <- df$survey %>% unique()
-  so <- hhts2srvyr(df, survey, vars, spec_wgt, incl_na) %>% ungroup()
+  so <- hhts2srvyr(df, survey, vars, spec_wgt) %>% ungroup()
   if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   if(!is.null(group_vars)){

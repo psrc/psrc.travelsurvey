@@ -100,7 +100,7 @@ get_hhts <- function(survey, level, vars){
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT()                       # Get first row to have column names
     want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights
     elmer_sql <- paste0("SELECT '", survey, "' AS survey, ",
-                       paste(want_vars, collapse=", "), " FROM ",elmer_tbl_ref,                      # Build query for only relevant variables
+                       paste(want_vars, collapse=", "), " FROM ",elmer_tbl_ref,                    # Build query for only relevant variables
                        " WHERE survey_year IN(", paste(unique(dyears), collapse=", "),");")
     df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
       hhts_recode_na() %>% setDF()                                                                 # Recode NA
@@ -210,12 +210,14 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
               !!paste0(prefix,"total"):=survey_total(!!as.name(stat_var), na.rm=TRUE),
               !!paste0(prefix,"median"):=survey_median(!!as.name(stat_var), na.rm=TRUE),
               !!paste0(prefix,"mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
+              sample_size:=srvyr::unweighted(dplyr::n()),
               .fill="Total"))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- suppressMessages(
             cascade(so,
               !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
+              sample_size:=srvyr::unweighted(dplyr::n()),
               .fill="Total"))
   }
   rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%

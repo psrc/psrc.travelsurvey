@@ -1,10 +1,10 @@
 pandoc: 2.7.3
-pkgdown: 2.0.3
+pkgdown: 2.0.4
 pkgdown_sha: ~
 articles:
   calculate_hhts_summaries: calculate_hhts_summaries.html
   psrc.travelsurvey_tips_and_tricks: psrc.travelsurvey_tips_and_tricks.html
-last_built: 2022-05-25T17:51Z
+last_built: 2022-06-13T19:59Z
 urls:
   reference: https://psrc.github.io/psrc.travelsurvey/reference
   article: https://psrc.github.io/psrc.travelsurvey/articles

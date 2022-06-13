@@ -145,7 +145,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
                                 colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
                         grepl("Person|Trip", tbl_names) & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars 
                                               ~ paste0(suffix, "_Panel_adult"),
-                        "Trip" %in% tbl_names ~ paste0(suffix, "_adult"),
+                        "Trip" %in% tbl_names & survey=="2017_2019" ~ paste0(suffix, "_adult"),
                         TRUE ~ suffix))
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(prefix, "_weight_", yearz, suffix)                                           # Otherwise weight determined by rules

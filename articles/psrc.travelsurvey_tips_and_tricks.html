@@ -76,7 +76,12 @@
 <div class="section level3">
 <h3 id="variable-transformation-and-customization">Variable transformation and customization<a class="anchor" aria-label="anchor" href="#variable-transformation-and-customization"></a>
 </h3>
-<p>The result of the <strong>get_hhts()</strong> function is simply a dataframe, and columns can be added or changed prior to calculating statistics on the object. It is fine to add or change column names and use the new or updated name in the statistical function call.</p>
+<p>Analysts may need to alter (i.e. recode) the variables in the survey data object, for example simplifying categories or changing a continuous variable to a binned categorical variable. psrc.travelsurvey selects appropriate weights on the basis of the variable names in the statistical call, and that weight selection logic cannot account for newly named custom variables. If an inappropriate weight is selected, the resulting statistics would be incorrect. Therefore, if custom groups or variables are needed, we suggest one of the following:</p>
+<ol style="list-style-type: decimal">
+<li>For one-off simplification of a single column, copy the data object, recode the variable keeping the existing variable name.</li>
+<li>For more complex cases or to have the convenience of always accessing that variable in the future, contact a member of the Data Science group and we’ll add a new column to the appropriate level Elmer view (e.g. household, person, day, or trip).</li>
+</ol>
+<p>The first method may be appropriate for exploratory analysis; the second method is better for variables that will be utilized repeatedly in applications. Staff will respond promptly to suggestions, so don’t hesistate to ask.</p>
 </div>
 <div class="section level3">
 <h3 id="bulk-statistic-function">Bulk statistic function<a class="anchor" aria-label="anchor" href="#bulk-statistic-function"></a>

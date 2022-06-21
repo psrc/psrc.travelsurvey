@@ -9,7 +9,7 @@ get_hhts(survey, level, vars)
 \arguments{
 \item{survey}{character string denoting single or combined survey year--if the latter, years separated by underscore, e.g."2017_2019"}
 
-\item{level}{either "h" (household), "p" (person), "d" (day), "t" (trip), or "v" (vehicle)}
+\item{level}{either "h" ("households"), "p" ("persons"), "d" ("days"), "t" ("trips"), or "v" ("vehicles")}
 
 \item{vars}{character vector with requested variables}
 }

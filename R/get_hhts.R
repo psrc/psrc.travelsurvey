@@ -76,7 +76,7 @@ hhts_recode_na <- function(dt){
 #' Gets requested Household Travel Survey variables
 #' 
 #' @param survey character string denoting single or combined survey year--if the latter, years separated by underscore, e.g."2017_2019"
-#' @param level either "h" (household), "p" (person), "d" (day), "t" (trip), or "v" (vehicle) 
+#' @param level either "h" ("households"), "p" ("persons"), "d" ("days"), "t" ("trips"), or "v" ("vehicles") 
 #' @param vars character vector with requested variables
 #' @return dataframe with variables and necessary weights
 #'  

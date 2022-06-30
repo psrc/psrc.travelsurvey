@@ -24,13 +24,20 @@ elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
 #' @import data.table
 #' @export
 hhts_varsearch <- function(regex){
-  varsql <- paste("SELECT [variable] AS var_name, variable_name AS var_desc, survey_year",
-                  "FROM HHSurvey.variable_metadata",
-                  "GROUP BY [variable], variable_name, survey_year;")
+  varsql <- paste("SELECT [variable] AS var_name, description,",
+                          "CONCAT(IIF([household]=1,' household',''),",
+                                 "IIF([person]=1,' person',''),",
+                                 "IIF([vehicle]=1,' vehicle',''),",
+                                 "IIF([day]=1,' day',''),",
+                                 "IIF([trip]=1,' trip','')) AS views,",
+                          "CONCAT(IIF([year_2017]=1,' 2017',''),",
+                                 "IIF([year_2019]=1,' 2019',''),",
+                                 "IIF([year_2021]=1,' 2021','')) AS surveys",
+                  "FROM HHSurvey.variable_metadata2",
+                  "ORDER BY [variable];")
   elmer_connection <- elmer_connect()
   rs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(varsql)) %>% setDT() %>% 
-    .[grepl(regex,var_desc, ignore.case=TRUE)|grepl(regex,var_name, ignore.case=TRUE)] %>%
-    .[, .(years=stuff(survey_year)), by=.(var_name, var_desc)] %>% unique()
+    .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, var_name, ignore.case=TRUE)] %>% unique()
   DBI::dbDisconnect(elmer_connection)
   return(rs)
 }
@@ -43,11 +50,11 @@ hhts_varsearch <- function(regex){
 #' @return data.table of filtered variable attributes
 #' 
 #' @import data.table
-get_var_defs <- function(dyear, vars){
-var_def_sql <- paste("SELECT survey_year, [variable] AS var_name, table_name, dtype, weight_name, weight_priority, levels",
-                      "FROM HHSurvey.variable_metadata;")
+get_var_defs <- function(vars){
+var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
+                      "FROM HHSurvey.variable_metadata2;")
 elmer_connection <- elmer_connect()
-var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars & survey_year %in% dyear]
+var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
 DBI::dbDisconnect(elmer_connection)
 return(var_defs)
 }
@@ -124,28 +131,27 @@ get_hhts <- function(survey, level, vars){
 #' @importFrom dplyr case_when
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
-  var_defs <- psrc.travelsurvey:::get_var_defs(dyear, vars) %>% setDT() %>% setkeyv("var_name")
-  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()              # Standard weighting by table; construct w/ rules
-  var_defs %<>% .[!is.null(weight_name)]
+  var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("var_name")
+  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()         # Standard weighting by table; construct w/ rules
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{
     ph_vars <- c("age","age_category","license","school_loc_county",
                  "schooltype","student","school_travel_last_week")
     prefix <- unique(case_when(
-      "Trip" %in% tbl_names ~ "trip",
-      "Person" %in% tbl_names & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars ~ "person",
+      "trip" %in% tbl_names ~ "trip",
+      "person" %in% tbl_names & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars ~ "person",
       TRUE ~ "hh"))
     suffix <- case_when((TRUE %in% grepl("2021", survey)) ~ "_ABS", 
                         mean(dyear) %between% c(2017,2019) ~"_v2021", 
                         TRUE ~"")
     suffix <- unique(case_when(
-                        "Person" %in% tbl_names & grepl("2021", survey) &
+                        "person" %in% tbl_names & grepl("2021", survey) &
                             (TRUE %in% grepl("^employment_change_|^workplace|_freq_pre_covid|_mode_pre_covid", 
                                 colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
                         grepl("Person|Trip", tbl_names) & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars 
                                               ~ paste0(suffix, "_Panel_adult"),
-                        "Trip" %in% tbl_names & survey=="2017_2019" ~ paste0(suffix, "_adult"),
+                        "trip" %in% tbl_names & survey=="2017_2019" ~ paste0(suffix, "_adult"),
                         TRUE ~ suffix))
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(prefix, "_weight_", yearz, suffix)                                           # Otherwise weight determined by rules
@@ -157,15 +163,8 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   if(!is_empty(num_vars)){df2[, (num_vars):=lapply(.SD, as.numeric), .SDcols=num_vars]}
   if(!is_empty(ftr_vars)){                                                                         # srvyr package requires grouping variables as factors;
     for (f in ftr_vars){
-      if(f %in% var_defs$var_name){
-        setkeyv(df2, f)
-        for_level <- var_defs[var_name==rlang::as_string(f), .(levels)][[1]] %>% 
-          strsplit("[|]") %>% unique() %>% .[[1]]
-        df2[, (f):=factor(get(f), levels=for_level)]                                               # Factor level ordering from metadata
-      }else{
         df2[, (f):=factor(get(f))]                                                                 # Default factor level ordering
-      } 
-    }
+    } 
   }
   df2 %<>% setDF()
   so <- srvyr::as_survey_design(df2, variables=all_of(keep_vars), weights=all_of(wgt_var))

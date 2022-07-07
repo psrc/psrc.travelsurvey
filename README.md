@@ -1,7 +1,11 @@
 # psrc.travelsurvey
 
-Various functions to pull, process and visualize PSRC's Household Travel Survey data for geographies in the Central Puget Sund Region.
+Various functions to pull, process and visualize PSRC's Household Travel Survey data for geographies in the Central Puget Sound Region.
 
-Install with the following command: `devtools::install_github("psrc/psrc.travelsurvey")`
+To install this package, you will need Rtools and the devtools package, if they are not installed already:
 
-If you are having problems installing the package, make sure you have all the latest dependency packages. You may be prompted to install some dependency packages after that; you can install all by selecting option 1, "Install all".
+`install.packages(c("devtools","installr"))`
+
+`installr::install.Rtools()`
+
+`devtools::install_github("psrc/psrc.travelsurvey")`

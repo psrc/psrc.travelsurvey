@@ -149,8 +149,8 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
                         "person" %in% tbl_names & grepl("2021", survey) &
                             (TRUE %in% grepl("^employment_change_|^workplace|_freq_pre_covid|_mode_pre_covid", 
                                 colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
-                        grepl("person|trip", tbl_names) & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars 
-                                              ~ paste0(suffix, "_Panel_adult"),
+                        (TRUE %in% grepl("person|trip", tbl_names)) & (TRUE %in% grepl("2021", survey)) & 
+                            (FALSE %not_in% (vars %not_in% ph_vars)) ~ paste0(suffix, "_Panel_adult"),
                         "trip" %in% tbl_names & survey=="2017_2019" ~ paste0(suffix, "_adult"),
                         TRUE ~ suffix))
     yearz <- paste0(dyear, collapse="_")

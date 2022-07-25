@@ -99,8 +99,8 @@ get_hhts <- function(survey, level, vars){
                             tbl_ref =rep(c("HHSurvey.v_households",
                                       "HHSurvey.v_persons",
                                       "HHSurvey.v_trips",
-                                      "HHSurvey.v_day",
-                                      "HHSurvey.v_vehicle"),2)) %>% setDT()
+                                      "HHSurvey.v_days",
+                                      "HHSurvey.v_vehicles"),2)) %>% setDT()
     elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                               # Convert level to view name       
     elmer_sql <- paste("SELECT TOP 1 * FROM",elmer_tbl_ref,";")                                     
     elmer_connection <- elmer_connect()

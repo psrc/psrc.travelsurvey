@@ -219,7 +219,7 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
               sample_size:=srvyr::unweighted(dplyr::n()),
               .fill="Total"))
   }
-  rs %<>% purrr::modify_if(is.factor, as.character) %>% setDT() %>%
+  rs %<>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
     setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
   if(!is.null(geographic_unit)){

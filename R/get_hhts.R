@@ -363,6 +363,11 @@ hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, ge
 #'
 #' @export
 z_score <- function(x, y){
-  z <- abs(x[1] - y[1]) / sqrt(x[2]^2 - y[2]^2)
+  reduce <- function(a){
+    a %<>% setDT() %>% .[, .SD, .SDcols=patterns("_(count|sum|median|mean|moe)$")] %>% as.numeric(.[1])
+  }
+  x1 <- reduce(x)
+  y1 <- reduce(y)
+  z <- abs(x1[1] - y1[1]) / sqrt(x1[2]^2 + y1[2]^2)
   return(z)
 }

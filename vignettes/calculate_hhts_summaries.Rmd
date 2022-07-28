@@ -110,8 +110,8 @@ The `z_score()` convenience function performs this calculation:
 ```{r z score calculation, message=FALSE, eval=FALSE}
 t_2017_19c  <- get_hhts("2017_2019", "t", c("mode_simple","trip_path_distance","travel_time"))
 rs          <- hhts_median(t_2017_19c, "travel_time", "mode_simple")
-z_score(rs[1],rs[3])    # Compares the first-line and third-line estimates for significant difference; 
-                        # -- true difference indicated by score > 1 
+z_score(rs[1], rs[3])   # Compares the first-line and third-line estimates for significant difference; 
+                        # -- true difference indicated by score > 1
 
 ```
 ***

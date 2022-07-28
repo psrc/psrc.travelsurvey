@@ -357,14 +357,14 @@ hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, ge
 #'
 #' Stat to determine if two estimates are different
 #'
-#' @param x numeric vector, first estimate and corresponding MOE to compare
-#' @param y numeric vector, second estimate and corresponding MOE to compare
+#' @param x a row of aggregate table to compare--includes a count/sum/mean/median and its MOE
+#' @param y a row of aggregate table to compare--also includes a count/sum/mean/median and its MOE
 #' @return Z score; if larger than 1, difference is significant
 #'
 #' @export
 z_score <- function(x, y){
   reduce <- function(a){
-    a %<>% setDT() %>% .[, .SD, .SDcols=patterns("_(count|sum|median|mean|moe)$")] %>% as.numeric(.[1])
+    a %<>% setDT() %>% .[, .SD, .SDcols=patterns("(count|sum|median|mean)(_moe)?")] %>% as.numeric(.[1])
   }
   x1 <- reduce(x)
   y1 <- reduce(y)

@@ -8,12 +8,12 @@ NULL
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
 elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
-                                   driver = "SQL Server",
-                                   server = "AWS-PROD-SQL\\Sockeye",
-                                   database = "Elmer",
+                                   Driver = "SQL Server",
+                                   Server = "AWS-PROD-SQL\\SOCKEYE",
+                                   Database = "Elmer",
                                    # trusted_connection = "yes",
                                    UID = Sys.getenv("userid"),
-                                   PWD = Sys.getenv("pwd"),
+                                   PWD = Sys.getenv("pwd")
                                    # port = 1433
                                    )
 }

@@ -8,11 +8,14 @@ NULL
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
 elmer_connect <- function(){DBI::dbConnect(odbc::odbc(),
-                                   driver = "ODBC Driver 17 for SQL Server",
+                                   driver = "SQL Server",
                                    server = "AWS-PROD-SQL\\Sockeye",
                                    database = "Elmer",
-                                   trusted_connection = "yes",
-                                   port = 1433)
+                                   # trusted_connection = "yes",
+                                   UID = Sys.getenv("userid"),
+                                   PWD = Sys.getenv("pwd"),
+                                   # port = 1433
+                                   )
 }
 
 #' Search HHTS variable definitions

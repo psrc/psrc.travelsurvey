@@ -4,7 +4,7 @@
 \alias{hhts_varsearch}
 \title{Search HHTS variable definitions}
 \usage{
-hhts_varsearch(regex)
+hhts_varsearch(regex, ...)
 }
 \arguments{
 \item{regex}{search term}

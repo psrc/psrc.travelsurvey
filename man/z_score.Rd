@@ -7,9 +7,9 @@
 z_score(x, y)
 }
 \arguments{
-\item{x}{numeric vector, first estimate and corresponding MOE to compare}
+\item{x}{a row of aggregate table to compare--includes a count/sum/mean/median and its MOE}
 
-\item{y}{numeric vector, second estimate and corresponding MOE to compare}
+\item{y}{a row of aggregate table to compare--also includes a count/sum/mean/median and its MOE}
 }
 \value{
 Z score; if larger than 1, difference is significant

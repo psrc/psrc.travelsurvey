@@ -4,7 +4,7 @@
 \alias{get_hhts}
 \title{HHTS data retrieval}
 \usage{
-get_hhts(survey, level, vars)
+get_hhts(survey, level, vars, ...)
 }
 \arguments{
 \item{survey}{character string denoting single or combined survey year--if the latter, years separated by underscore, e.g."2017_2019"}

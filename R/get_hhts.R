@@ -142,20 +142,19 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
                  "schooltype","student","school_travel_last_week")
     prefix <- unique(case_when(
       "trip" %in% tbl_names ~ "trip",
-      "day" %in% tbl_names ~ "day",
-      "person" %in% tbl_names & (TRUE %in% grepl("2021", survey)) & vars %not_in% ph_vars ~ "person",
+      "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
+      any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
       TRUE ~ "hh"))
-    suffix <- case_when((TRUE %in% grepl("2021", survey)) ~ "_ABS", 
+    suffix <- case_when(grepl("2021", survey) ~ "_ABS", 
                         mean(dyear) %between% c(2017,2019) ~"_v2021", 
                         TRUE ~"")
-    suffix <- unique(case_when(
-                        "person" %in% tbl_names & grepl("2021", survey) &
-                            (TRUE %in% grepl("^employment_change_|^workplace|_freq_pre_covid|_mode_pre_covid", 
+    suffix <- case_when(any(c("person","day") %in% tbl_names) &
+                            any(grepl("^employment_change_|^workplace|_freq_pre_covid|_mode_pre_covid", 
                                 colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
-                        (TRUE %in% grepl("person|trip", tbl_names)) & (TRUE %in% grepl("2021", survey)) & 
-                            (FALSE %not_in% (vars %not_in% ph_vars)) ~ paste0(suffix, "_Panel_adult"),
+                        any(grepl("person|trip|day", tbl_names)) & grepl("2021", survey) & 
+                            all(vars %not_in% ph_vars) ~ paste0(suffix, "_Panel_adult"),
                         "trip" %in% tbl_names & survey=="2017_2019" ~ paste0(suffix, "_adult"),
-                        TRUE ~ suffix))
+                        TRUE ~ suffix)
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(prefix, "_weight_", yearz, suffix)                                           # Otherwise weight determined by rules
   }

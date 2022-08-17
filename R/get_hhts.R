@@ -191,10 +191,10 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
   survey <- df$survey %>% unique()
-  so <- hhts2srvyr(df, survey, vars, spec_wgt) %>% ungroup()
-  if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}
-  prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
-  if(!is.null(group_vars)){
+  so <- hhts2srvyr(df, survey, vars, spec_wgt)
+  if(all(group_vars!="keep_existing")){so %<>% ungroup()}                                          # "keep_existing" is power-user option for srvyr::combine() groupings;
+  if(all(!is.null(group_vars) & group_vars!="keep_existing")){                                     # -- otherwise the package ungroups before and afterward
+    if(incl_na==FALSE){so %<>% filter(if_all(all_of(group_vars), ~ !is.na(.)))}                    # Allows users to exclude w/o removing observations from the data object itself
     so %<>% srvyr::group_by(across(all_of(group_vars)))                                            # Apply grouping
   }
   if(!is.null(geographic_unit)){so %<>% srvyr::group_by(!!as.name(geographic_unit), .add=TRUE)}

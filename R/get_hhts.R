@@ -8,7 +8,7 @@ NULL
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
 get_var_defs <- function(vars, ...){
-  var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
+  var_def_sql <- paste("SELECT [variable] AS variable_name, table_name",
                        "FROM variable_metadata;")
   sqllite_connection <- sqllite_connect(...)
   var_defs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
@@ -92,7 +92,7 @@ get_hhts <- function(survey, level, vars, ...){
 #' @importFrom dplyr case_when
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
-  var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("var_name")
+  var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("variable_name")
   tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()         # Standard weighting by table; construct w/ rules
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight

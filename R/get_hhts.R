@@ -11,7 +11,7 @@ get_var_defs <- function(vars, ...){
   var_def_sql <- paste("SELECT [variable] AS variable_name, table_name",
                        "FROM variable_metadata;")
   sqllite_connection <- sqllite_connect(...)
-  var_defs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
+  var_defs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[variable_name %in% vars]
   DBI::dbDisconnect(sqllite_connection)
   return(var_defs)
 }
@@ -93,7 +93,7 @@ get_hhts <- function(survey, level, vars, ...){
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
   var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("variable_name")
-  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()         # Standard weighting by table; construct w/ rules
+  tbl_names <- copy(var_defs) %>% .[variable_name %in% vars] %>% .$table_name %>% unique()         # Standard weighting by table; construct w/ rules
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{
@@ -309,8 +309,8 @@ hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, ge
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%
-    lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
-    rename(var_value=colnames(.)[1]) %>% relocate(var_name)
+    lapply(FUN=function(y){mutate(y, "variable_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
+    rename(var_value=colnames(.)[1]) %>% relocate(variable_name)
   return(df)
 }
 

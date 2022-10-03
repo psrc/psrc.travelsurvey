@@ -25,7 +25,8 @@ Imports:
     purrr,
     dplyr,
     rlang,
-    stringr
+    stringr,
+    RSQLite
 Suggests: 
     rmarkdown,
     knitr,

@@ -7,6 +7,15 @@ NULL
 `%between%`<- function(x, range) x>=range[1] & x<=range[2]
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
+get_var_defs <- function(vars, ...){
+  var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
+                       "FROM variable_metadata;")
+  sqllite_connection <- sqllite_connect(...)
+  var_defs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
+  DBI::dbDisconnect(sqllite_connection)
+  return(var_defs)
+}
+
 sqllite_connect <- function(connection = NULL){
   if(!is.null(connection)) return(connection)
   db_connect<-DBI::dbConnect(RSQLite::SQLite(), 'hh_survey.db')
@@ -58,13 +67,13 @@ get_hhts <- function(survey, level, vars, ...){
       }else{c(2017,2019)}
     wgt_str <- paste0("_weight_",survey,"(_\\D|$)") 
     sqllite_hhts_lookup <- data.frame(
-                            abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+                            abbr    =c("h","p","t","d","households","persons","trips","days"),
                             tbl_ref =rep(c("v_households",
                                       "v_persons",
                                       "v_trips",
                                       "v_days"),2)) %>% setDT()
     sqllite_tbl_ref <- sqllite_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                               # Convert level to view name       
-    sqllite_sql <- paste("SELECT TOP 1 * FROM",sqllite_tbl_ref,";")                                     
+    sqllite_sql <- paste("SELECT * FROM",sqllite_tbl_ref,"LIMIT 1;")                                     
     sqllite_connection <- sqllite_connect(...)
     df <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(sqllite_sql)) %>% setDT()                       # Get first row to have column names
     want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights

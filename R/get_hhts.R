@@ -21,16 +21,6 @@ sqllite_connect <- function(connection = NULL){
   db_connect<-DBI::dbConnect(RSQLite::SQLite(), 'hh_survey.db')
 }
 
-#' Search HHTS variable definitions
-#'
-#' Look for a variable name using a search term
-#' @param regex search term
-#' @return data.table of filtered variable attributes
-#' 
-#' @import data.table
-#' @export
-
-
 #' HHTS recode missing as NA
 #' 
 #' Recode missing values to NA

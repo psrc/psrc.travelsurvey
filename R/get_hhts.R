@@ -7,11 +7,37 @@ NULL
 `%between%`<- function(x, range) x>=range[1] & x<=range[2]
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
-get_var_defs <- function(vars, ...){
-  var_def_sql <- paste("SELECT [variable] AS variable_name, table_name",
-                       "FROM variable_metadata;")
+#' Search HHTS variable definitions
+#'
+#' Look for a variable name using a search term
+#' @param regex search term
+#' @return data.table of filtered variable attributes
+#' 
+#' @import data.table
+#' @export
+hhts_varsearch <- function(regex, ...){
+  varsql <- paste("SELECT [variable] AS var_name, description,",
+                  "CONCAT(IIF([household]=1,' household',''),",
+                  "IIF([person]=1,' person',''),",
+                  "IIF([vehicle]=1,' vehicle',''),",
+                  "IIF([day]=1,' day',''),",
+                  "IIF([trip]=1,' trip','')) AS views,",
+                  "CONCAT(IIF([year_2017]=1,' 2017',''),",
+                  "IIF([year_2019]=1,' 2019',''),",
+                  "IIF([year_2021]=1,' 2021','')) AS surveys",
+                  "FROM HHSurvey.variable_metadata2",
+                  "ORDER BY [variable];")
   sqllite_connection <- sqllite_connect(...)
-  var_defs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[variable_name %in% vars]
+  rs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(varsql)) %>% setDT() %>% 
+    .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, var_name, ignore.case=TRUE)] %>% unique()
+  DBI::dbDisconnect(elmer_connection)
+  return(rs)
+}
+get_var_defs <- function(vars, ...){
+  var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
+                       "FROM variable_metadata2;")
+  sqllite_connection <- sqllite_connect(...)
+  var_defs <- DBI::dbGetQuery(sqllite_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
   DBI::dbDisconnect(sqllite_connection)
   return(var_defs)
 }
@@ -92,8 +118,8 @@ get_hhts <- function(survey, level, vars, ...){
 #' @importFrom dplyr case_when
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
-  var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("variable_name")
-  tbl_names <- copy(var_defs) %>% .[variable_name %in% vars] %>% .$table_name %>% unique()         # Standard weighting by table; construct w/ rules
+  var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("var_name")
+  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()         # Standard weighting by table; construct w/ rules
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{
@@ -309,8 +335,8 @@ hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, ge
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%
-    lapply(FUN=function(y){mutate(y, "variable_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
-    rename(var_value=colnames(.)[1]) %>% relocate(variable_name)
+    lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[1])}) %>% rbindlist(use.names=FALSE) %>%
+    rename(var_value=colnames(.)[1]) %>% relocate(var_name)
   return(df)
 }
 

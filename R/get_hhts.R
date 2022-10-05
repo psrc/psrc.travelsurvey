@@ -119,7 +119,10 @@ get_hhts <- function(survey, level, vars, ...){
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
   var_defs <- psrc.travelsurvey:::get_var_defs(vars) %>% setDT() %>% setkeyv("var_name")
-  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$table_name %>% unique()         # Standard weighting by table; construct w/ rules
+  print(var_defs)
+  tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()  
+  print(tbl_names)
+  # Standard weighting by table; construct w/ rules
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{

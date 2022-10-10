@@ -57,6 +57,6 @@ Responses can legitimately be missing (`NA`), which is standard for certain ques
 
 ### Option to specify a non-default survey expansion weight
 
-For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the **vars** argument of **get_hhts()**, then use the `swgt=` option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the `swgt=` option specified.
+For those familiar with the expansion weights who want to determine the weight rather than follow the standard weight hierarchy, you will need to specify the weight name in the **vars** argument of **get_hhts()**, then use the `spec_wgt=` option in each summary statistical call where that weight is wanted. You can use the same dataframe and switch between weights if you like, as the standard weight will be retrieved by default and will still be used in any statistical call without the `spec_wgt=` option specified.
 
 

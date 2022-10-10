@@ -190,6 +190,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
+  prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   survey <- df$survey %>% unique()
   so <- hhts2srvyr(df, survey, vars, spec_wgt)
   if(all(group_vars!="keep_existing")){so %<>% ungroup()}                                          # "keep_existing" is power-user option for srvyr::combine() groupings;

@@ -7,14 +7,15 @@ NULL
 `%between%`<- function(x, range) x>=range[1] & x<=range[2]
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
 
-elmer_connect <- function(connection = NULL){
+hhts_connect <- function(connection = NULL){
   if(!is.null(connection)) return(connection)
-  DBI::dbConnect(odbc::odbc(),
-                 driver = "ODBC Driver 17 for SQL Server",
-                 server = "AWS-PROD-SQL\\Sockeye",
-                 database = "Elmer",
-                 trusted_connection = "yes",
-                 port = 1433)
+  conn_args <- suppressWarnings(config::get("hhts_datasource"))
+  con <- DBI::dbConnect(odbc::odbc(),
+                        driver = conn_args$driver,
+                        server = conn_args$server,
+                        trusted_connection = conn_args$trusted_connection,
+                        port   = conn_args$port,
+                        database = conn_args$database)
 }
 
 #' Search HHTS variable definitions
@@ -37,10 +38,10 @@ hhts_varsearch <- function(regex, ...){
                                  "IIF([year_2021]=1,' 2021','')) AS surveys",
                   "FROM HHSurvey.variable_metadata2",
                   "ORDER BY [variable];")
-  elmer_connection <- elmer_connect(...)
-  rs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(varsql)) %>% setDT() %>% 
+  db_connection <- hhts_connect(...)
+  rs <- DBI::dbGetQuery(db_connection, DBI::SQL(varsql)) %>% setDT() %>% 
     .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, var_name, ignore.case=TRUE)] %>% unique()
-  DBI::dbDisconnect(elmer_connection)
+  DBI::dbDisconnect(db_connection)
   return(rs)
 }
 
@@ -55,9 +56,9 @@ hhts_varsearch <- function(regex, ...){
 get_var_defs <- function(vars, ...){
 var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
                       "FROM HHSurvey.variable_metadata2;")
-elmer_connection <- elmer_connect(...)
-var_defs <- DBI::dbGetQuery(elmer_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
-DBI::dbDisconnect(elmer_connection)
+db_connection <- hhts_connect(...)
+var_defs <- DBI::dbGetQuery(db_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
+DBI::dbDisconnect(db_connection)
 return(var_defs)
 }
 
@@ -96,25 +97,25 @@ get_hhts <- function(survey, level, vars, ...){
       strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
       }else{c(2017,2019)}
     wgt_str <- paste0("_weight_",survey,"(_\\D|$)") 
-    elmer_hhts_lookup <- data.frame(
-                            abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
-                            tbl_ref =rep(c("HHSurvey.v_households",
-                                      "HHSurvey.v_persons",
-                                      "HHSurvey.v_trips",
-                                      "HHSurvey.v_days",
-                                      "HHSurvey.v_vehicles"),2)) %>% setDT()
-    elmer_tbl_ref <- elmer_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                               # Convert level to view name       
-    elmer_sql <- paste("SELECT TOP 1 * FROM",elmer_tbl_ref,";")                                     
-    elmer_connection <- elmer_connect(...)
-    df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT()                       # Get first row to have column names
+    sql_hhts_lookup <- data.frame(
+                          abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+                          tbl_ref =rep(c("HHSurvey.v_households",
+                                    "HHSurvey.v_persons",
+                                    "HHSurvey.v_trips",
+                                    "HHSurvey.v_days",
+                                    "HHSurvey.v_vehicles"),2)) %>% setDT()
+    sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                                   # Convert level to view name       
+    sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")                                     
+    db_connection <- hhts_connect(...)
+    df <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code)) %>% setDT()                           # Get first row to have column names
     want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights
-    elmer_sql <- paste0("SELECT '", survey, "' AS survey, ",
-                       paste(want_vars, collapse=", "), " FROM ",elmer_tbl_ref,                    # Build query for only relevant variables
+    sql_code <- paste0("SELECT '", survey, "' AS survey, ",
+                       paste(want_vars, collapse=", "), " FROM ",sql_tbl_ref,                      # Build query for only relevant variables
                        " WHERE survey_year IN(", paste(unique(dyears), collapse=", "),");")
-    df <- DBI::dbGetQuery(elmer_connection, DBI::SQL(elmer_sql)) %>% setDT() %>%                   # Retrieve table by year/s
+    df <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code)) %>% setDT() %>%                       # Retrieve table by year/s
       hhts_recode_na() %>% setDF()                                                                 # Recode NA
     is.na(df) <- is.null(df)                                                                       # Recode NULL
-    DBI::dbDisconnect(elmer_connection)
+    DBI::dbDisconnect(db_connection)
     return(df)   
 }    
 

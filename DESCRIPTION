@@ -17,6 +17,7 @@ Imports:
     magrittr, 
     DBI,
     odbc,
+    config,
     data.table,
     survey,
     stats,
@@ -25,7 +26,8 @@ Imports:
     purrr,
     dplyr,
     rlang,
-    stringr
+    stringr,
+    RSQLite
 Suggests: 
     rmarkdown,
     knitr,

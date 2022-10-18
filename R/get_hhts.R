@@ -110,7 +110,9 @@ get_hhts <- function(survey, level, vars, ...){
     dyears <- if(survey %in% (c("2017","2019","2017_2019","2021"))){
       strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
       }else{c(2017,2019)}
-    wgt_str <- paste0("_weight_",survey,"(_\\D|$)") 
+    wgt_str <- paste0("_weight_",survey,"(_\\D|$)")
+    
+    if(config::is_active('default')){
     sql_hhts_lookup <- data.frame(
                           abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
                           tbl_ref =rep(c("HHSurvey.v_households",
@@ -118,6 +120,17 @@ get_hhts <- function(survey, level, vars, ...){
                                     "HHSurvey.v_trips",
                                     "HHSurvey.v_days",
                                     "HHSurvey.v_vehicles"),2)) %>% setDT()
+    }
+    else{
+      sql_hhts_lookup <-data.frame(
+        abbr    =c("h","p","t","d","households","persons","trips","days"),
+        tbl_ref =rep(c("v_households",
+                       "v_persons",
+                       "v_trips",
+                       "v_days"),2)) %>% setDT()
+      
+    }
+    
     sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name       
     if(config::is_active('default')){
     sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")

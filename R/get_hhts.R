@@ -15,13 +15,16 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 hhts_connect <- function(connection = NULL){
   if(!is.null(connection)) return(connection)
   conn_args <- suppressWarnings(config::get("hhts_datasource"))
+  
+  print(conn_args)
+  
   if(config::is_active('default')){
-  con <- DBI::dbConnect(odbc::odbc(),
-                        driver = conn_args$driver,
-                        server = conn_args$server,
-                        trusted_connection = conn_args$trusted_connection,
-                        port   = conn_args$port,
-                        database = conn_args$database)
+    con <- DBI::dbConnect(odbc::odbc(),
+                          driver = conn_args$driver,
+                          server = conn_args$server,
+                          trusted_connection = conn_args$trusted_connection,
+                          port   = conn_args$port,
+                          database = conn_args$database)
   }else
   {
     con <- DBI::dbConnect(RSQLite::SQLite(), 'hhsurvey.db')

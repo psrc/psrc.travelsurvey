@@ -123,7 +123,7 @@ get_hhts <- function(survey, level, vars, ...){
     sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
     }
     else{
-    sql_code<-paste("SELECT * FROM",sqllite_tbl_ref,"LIMIT 1;")    
+    sql_code<-paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")    
     }
     db_connection <- hhts_connect(...)
     df <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code)) %>% setDT()                           # Get first row to have column names

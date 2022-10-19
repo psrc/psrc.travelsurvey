@@ -112,16 +112,16 @@ get_hhts <- function(survey, level, vars, ...){
       }else{c(2017,2019)}
     wgt_str <- paste0("_weight_",survey,"(_\\D|$)")
     
-    if(config::is_active('default')){
-    sql_hhts_lookup <- data.frame(
-                          abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
-                          tbl_ref =rep(c("HHSurvey.v_households",
-                                    "HHSurvey.v_persons",
-                                    "HHSurvey.v_trips",
-                                    "HHSurvey.v_days",
-                                    "HHSurvey.v_vehicles"),2)) %>% setDT()
-    }
-    else{
+    # if(config::is_active('default')){
+    # sql_hhts_lookup <- data.frame(
+    #                       abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+    #                       tbl_ref =rep(c("HHSurvey.v_households",
+    #                                 "HHSurvey.v_persons",
+    #                                 "HHSurvey.v_trips",
+    #                                 "HHSurvey.v_days",
+    #                                 "HHSurvey.v_vehicles"),2)) %>% setDT()
+    # }
+    # else{
       sql_hhts_lookup <-data.frame(
         abbr    =c("h","p","t","d","households","persons","trips","days"),
         tbl_ref =rep(c("v_households",
@@ -129,15 +129,15 @@ get_hhts <- function(survey, level, vars, ...){
                        "v_trips",
                        "v_days"),2)) %>% setDT()
       
-    }
+   # }
     
     sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name       
-    if(config::is_active('default')){
-    sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
-    }
-    else{
+    # if(config::is_active('default')){
+    # sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
+    # }
+    # else{
     sql_code<-paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")    
-    }
+    #}
     db_connection <- hhts_connect(...)
     df <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code)) %>% setDT()                           # Get first row to have column names
     want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights

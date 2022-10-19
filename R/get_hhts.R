@@ -50,7 +50,7 @@ varsql <- paste("SELECT [variable] AS var_name, description,",
                         "CONCAT(IIF([year_2017]=1,' 2017',''),",
                                "IIF([year_2019]=1,' 2019',''),",
                                "IIF([year_2021]=1,' 2021','')) AS surveys",
-                "FROM HHSurvey.variable_metadata2",
+                "FROM [HHSurvey.variable_metadata2]",
                 "ORDER BY [variable];")
 
 
@@ -71,7 +71,7 @@ varsql <- paste("SELECT [variable] AS var_name, description,",
 #' @import data.table
 get_var_defs <- function(vars, ...){
   var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
-                     "FROM HHSurvey.variable_metadata2;")
+                     "FROM [HHSurvey.variable_metadata2];")
 
   db_connection <- hhts_connect(...)
   var_defs <- DBI::dbGetQuery(db_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]

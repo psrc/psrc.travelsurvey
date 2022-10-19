@@ -15,8 +15,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 hhts_connect <- function(connection = NULL){
   if(!is.null(connection)) return(connection)
   conn_args <- suppressWarnings(config::get("hhts_datasource"))
-  
-  print(conn_args)
+
   
   # if(config::is_active('default')){
   #   con <- DBI::dbConnect(odbc::odbc(),
@@ -27,7 +26,7 @@ hhts_connect <- function(connection = NULL){
   #                         database = conn_args$database)
   # }else
   #{
-    con <- DBI::dbConnect(RSQLite::SQLite(), 'hhsurvey.db')
+    con <- DBI::dbConnect(RSQLite::SQLite(), 'hh_survey.db')
     
   #}
 }

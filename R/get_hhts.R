@@ -40,20 +40,20 @@ hhts_connect <- function(connection = NULL){
 #' @import data.table
 #' @export
 hhts_varsearch <- function(regex, ...){
-  if(config::is_active('default')){
-  varsql <- paste("SELECT [variable] AS var_name, description,",
-                          "CONCAT(IIF([household]=1,' household',''),",
-                                 "IIF([person]=1,' person',''),",
-                                 "IIF([vehicle]=1,' vehicle',''),",
-                                 "IIF([day]=1,' day',''),",
-                                 "IIF([trip]=1,' trip','')) AS views,",
-                          "CONCAT(IIF([year_2017]=1,' 2017',''),",
-                                 "IIF([year_2019]=1,' 2019',''),",
-                                 "IIF([year_2021]=1,' 2021','')) AS surveys",
-                  "FROM HHSurvey.variable_metadata2",
-                  "ORDER BY [variable];")
-  }
-  else{
+  # if(config::is_active('default')){
+  # varsql <- paste("SELECT [variable] AS var_name, description,",
+  #                         "CONCAT(IIF([household]=1,' household',''),",
+  #                                "IIF([person]=1,' person',''),",
+  #                                "IIF([vehicle]=1,' vehicle',''),",
+  #                                "IIF([day]=1,' day',''),",
+  #                                "IIF([trip]=1,' trip','')) AS views,",
+  #                         "CONCAT(IIF([year_2017]=1,' 2017',''),",
+  #                                "IIF([year_2019]=1,' 2019',''),",
+  #                                "IIF([year_2021]=1,' 2021','')) AS surveys",
+  #                 "FROM HHSurvey.variable_metadata2",
+  #                 "ORDER BY [variable];")
+  # }
+  # else{
     varsql <- paste("SELECT [variable] AS var_name, description,",
                     "CONCAT(IIF([household]=1,' household',''),",
                     "IIF([person]=1,' person',''),",

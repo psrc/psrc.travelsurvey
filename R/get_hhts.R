@@ -148,6 +148,7 @@ get_hhts <- function(survey, level, vars, ...){
                         "HHSurvey.v_trips",
                         "HHSurvey.v_days",
                         "HHSurvey.v_vehicles"),2)) %>% setDT()
+       sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name       
        sql_code<-paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")
      
      }

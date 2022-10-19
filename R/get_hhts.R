@@ -66,7 +66,7 @@ hhts_varsearch <- function(regex, ...){
                     "FROM variable_metadata2",
                     "ORDER BY [variable];")
     
-  }
+  #}
   db_connection <- hhts_connect(...)
   rs <- DBI::dbGetQuery(db_connection, DBI::SQL(varsql)) %>% setDT() %>% 
     .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, var_name, ignore.case=TRUE)] %>% unique()

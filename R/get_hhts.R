@@ -118,11 +118,11 @@ get_hhts <- function(survey, level, vars, ...){
 
      sql_hhts_lookup <- data.frame(
                            abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
-                           tbl_ref =rep(c("HHSurvey.v_households",
-                                     "HHSurvey.v_persons",
-                                     "HHSurvey.v_trips",
-                                     "HHSurvey.v_days",
-                                     "HHSurvey.v_vehicles"),2)) %>% setDT()
+                           tbl_ref =rep(c("[HHSurvey.v_households]",
+                                     "[HHSurvey.v_persons]",
+                                     "[HHSurvey.v_trips]",
+                                     "[HHSurvey.v_days]",
+                                     "[HHSurvey.v_vehicles]"),2)) %>% setDT()
    
     
     sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name       

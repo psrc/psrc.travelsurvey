@@ -18,18 +18,18 @@ hhts_connect <- function(connection = NULL){
   
   print(conn_args)
   
-  if(config::is_active('default')){
-    con <- DBI::dbConnect(odbc::odbc(),
-                          driver = conn_args$driver,
-                          server = conn_args$server,
-                          trusted_connection = conn_args$trusted_connection,
-                          port   = conn_args$port,
-                          database = conn_args$database)
-  }else
-  {
+  # if(config::is_active('default')){
+  #   con <- DBI::dbConnect(odbc::odbc(),
+  #                         driver = conn_args$driver,
+  #                         server = conn_args$server,
+  #                         trusted_connection = conn_args$trusted_connection,
+  #                         port   = conn_args$port,
+  #                         database = conn_args$database)
+  # }else
+  #{
     con <- DBI::dbConnect(RSQLite::SQLite(), 'hhsurvey.db')
     
-  }
+  #}
 }
 
 #' Search HHTS variable definitions
@@ -41,6 +41,7 @@ hhts_connect <- function(connection = NULL){
 #' @import data.table
 #' @export
 hhts_varsearch <- function(regex, ...){
+  if(config::is_active('default')){
   varsql <- paste("SELECT [variable] AS var_name, description,",
                           "CONCAT(IIF([household]=1,' household',''),",
                                  "IIF([person]=1,' person',''),",
@@ -52,6 +53,21 @@ hhts_varsearch <- function(regex, ...){
                                  "IIF([year_2021]=1,' 2021','')) AS surveys",
                   "FROM HHSurvey.variable_metadata2",
                   "ORDER BY [variable];")
+  }
+  else{
+    varsql <- paste("SELECT [variable] AS var_name, description,",
+                    "CONCAT(IIF([household]=1,' household',''),",
+                    "IIF([person]=1,' person',''),",
+                    "IIF([vehicle]=1,' vehicle',''),",
+                    "IIF([day]=1,' day',''),",
+                    "IIF([trip]=1,' trip','')) AS views,",
+                    "CONCAT(IIF([year_2017]=1,' 2017',''),",
+                    "IIF([year_2019]=1,' 2019',''),",
+                    "IIF([year_2021]=1,' 2021','')) AS surveys",
+                    "FROM variable_metadata2",
+                    "ORDER BY [variable];")
+    
+  }
   db_connection <- hhts_connect(...)
   rs <- DBI::dbGetQuery(db_connection, DBI::SQL(varsql)) %>% setDT() %>% 
     .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, var_name, ignore.case=TRUE)] %>% unique()

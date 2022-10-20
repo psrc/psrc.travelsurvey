@@ -29,3 +29,5 @@ vignettes/*.pdf
 .Renviron
 .Rbuildignore
 docs
+/doc/
+/Meta/

@@ -14,8 +14,8 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' 
 hhts_connect <- function(connection = NULL){
   if(!is.null(connection)) return(connection)
-  conn_args <- suppressWarnings(config::get("hhts_datasource"))
-
+  conn_args <- suppressWarnings(config::get("hhts_datasource", file="inst/config.yml"))
+  
   
    if(config::is_active('default')){
      con <- DBI::dbConnect(odbc::odbc(),

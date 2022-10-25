@@ -14,20 +14,16 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' 
 hhts_connect <- function(connection = NULL){
   if(!is.null(connection)) return(connection)
-  conn_args <- suppressWarnings(config::get("hhts_datasource", file="inst/config.yml"))
-  
-  
    if(config::is_active('default')){
      con <- DBI::dbConnect(odbc::odbc(),
-                           driver = conn_args$driver,
-                           server = conn_args$server,
-                           trusted_connection = conn_args$trusted_connection,
-                           port   = conn_args$port,
-                           database = conn_args$database)
+                           driver = "ODBC Driver 17 for SQL Server",
+                           server = "AWS-PROD-SQL\\Sockeye",
+                           database = "Elmer",
+                           trusted_connection = "yes",
+                           port = 1433)
    }else
   {
     con <- DBI::dbConnect(RSQLite::SQLite(), 'hh_survey.db')
-    
   }
 }
 
@@ -40,37 +36,21 @@ hhts_connect <- function(connection = NULL){
 #' @import data.table
 #' @export
 hhts_varsearch <- function(regex, ...){
-
-  if(config::is_active('default'))
-  {
-    varsql <- paste("SELECT [variable] AS var_name, description,",
-                    "CONCAT(IIF([household]=1,' household',''),",
-                    "IIF([person]=1,' person',''),",
-                    "IIF([vehicle]=1,' vehicle',''),",
-                    "IIF([day]=1,' day',''),",
-                    "IIF([trip]=1,' trip','')) AS views,",
-                    "CONCAT(IIF([year_2017]=1,' 2017',''),",
-                    "IIF([year_2019]=1,' 2019',''),",
-                    "IIF([year_2021]=1,' 2021','')) AS surveys",
-                    "FROM HHSurvey.variable_metadata2",
-                    "ORDER BY [variable];")
-    
-  }
-  else{
-varsql <- paste("SELECT [variable] AS var_name, description,",
-                        "CONCAT(IIF([household]=1,' household',''),",
-                               "IIF([person]=1,' person',''),",
-                               "IIF([vehicle]=1,' vehicle',''),",
-                               "IIF([day]=1,' day',''),",
-                               "IIF([trip]=1,' trip','')) AS views,",
-                        "CONCAT(IIF([year_2017]=1,' 2017',''),",
-                               "IIF([year_2019]=1,' 2019',''),",
-                               "IIF([year_2021]=1,' 2021','')) AS surveys",
-                "FROM [HHSurvey.variable_metadata2]",
-                "ORDER BY [variable];")
-}
-
-
+  varsql <- (if(config::is_active('default')){
+    "HHSurvey.variable_metadata2"
+  }else{
+    "[HHSurvey.variable_metadata2]"
+  }) %>% 
+    paste("SELECT [variable] AS var_name, description,",
+                  "CONCAT(IIF([household]=1,' household',''),",
+                  "IIF([person]=1,' person',''),",
+                  "IIF([vehicle]=1,' vehicle',''),",
+                  "IIF([day]=1,' day',''),",
+                  "IIF([trip]=1,' trip','')) AS views,",
+                  "CONCAT(IIF([year_2017]=1,' 2017',''),",
+                  "IIF([year_2019]=1,' 2019',''),",
+                  "IIF([year_2021]=1,' 2021','')) AS surveys FROM", .,
+                  "ORDER BY [variable];")
   db_connection <- hhts_connect(...)
   rs <- DBI::dbGetQuery(db_connection, DBI::SQL(varsql)) %>% setDT() %>% 
     .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, var_name, ignore.case=TRUE)] %>% unique()
@@ -87,17 +67,10 @@ varsql <- paste("SELECT [variable] AS var_name, description,",
 #' 
 #' @import data.table
 get_var_defs <- function(vars, ...){
-  
-  if(config::is_active('default')){
-  var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
-                     "FROM HHSurvey.variable_metadata2;")
-  }
-  else{
-    var_def_sql <- paste("SELECT [variable] AS var_name, base_table_type",
-                         "FROM [HHSurvey.variable_metadata2];")
-    
-  }
-
+  var_def_sql <- (if(config::is_active('default')){
+    "HHSurvey.variable_metadata2;"
+  }else{"[HHSurvey.variable_metadata2];"
+      }) %>%  paste("SELECT [variable] AS var_name, base_table_type FROM", .)
   db_connection <- hhts_connect(...)
   var_defs <- DBI::dbGetQuery(db_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
   DBI::dbDisconnect(db_connection)
@@ -139,32 +112,19 @@ get_hhts <- function(survey, level, vars, ...){
       strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
       }else{c(2017,2019)}
     wgt_str <- paste0("_weight_",survey,"(_\\D|$)")
-    
-     if(config::is_active('default')){
-       sql_hhts_lookup <- data.frame(
-         abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
-         tbl_ref =rep(c("HHSurvey.v_households",
-                        "HHSurvey.v_persons",
-                        "HHSurvey.v_trips",
-                        "HHSurvey.v_days",
-                        "HHSurvey.v_vehicles"),2)) %>% setDT()
-       sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name       
-       sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
-     }
-    else{
-      
-     sql_hhts_lookup <- data.frame(
-       abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
-       tbl_ref =rep(c("[HHSurvey.v_households]",
-                      "[HHSurvey.v_persons]",
-                      "[HHSurvey.v_trips]",
-                      "[HHSurvey.v_days]",
-                      "[HHSurvey.v_vehicles]"),2)) %>% setDT()
-     sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name
-     sql_code<-paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")
+    sql_hhts_lookup <- data.frame(
+      abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+      tbl_ref =rep(c("HHSurvey.v_households",
+                     "HHSurvey.v_persons",
+                     "HHSurvey.v_trips",
+                     "HHSurvey.v_days",
+                     "HHSurvey.v_vehicles"),2)) %>% setDT()
+    sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                                   # Convert level to view name      
+    sql_code <- if(config::is_active('default')){
+      paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
+     }else{
+     paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")
     }
-    
-    
 
     db_connection <- hhts_connect(...)
     df <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code)) %>% setDT()                           # Get first row to have column names

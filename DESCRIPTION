@@ -14,25 +14,27 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
 Imports:
-    magrittr, 
-    DBI,
-    odbc,
     config,
     data.table,
-    survey,
-    stats,
-    srvyr,
-    tidyselect,
-    purrr,
+    DBI,
     dplyr,
+    fredr,
+    lubridate,
+    magrittr, 
+    odbc,
+    purrr,
     rlang,
+    RSQLite,
+    srvyr,
+    stats,
     stringr,
-    RSQLite
+    survey,
+    tidyselect
 Suggests: 
-    rmarkdown,
     knitr,
-    testthat (>= 3.0.0),
-    R.utils
+    R.utils,
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://psrc.github.io/psrc.travelsurvey/

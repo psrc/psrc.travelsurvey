@@ -161,23 +161,20 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   }else{
     ph_vars <- c("age","age_category","license","school_loc_county",
                  "schooltype","student","school_travel_last_week")
-    prefix <- unique(case_when(
+    tblname <- unique(case_when(
       "trip" %in% tbl_names ~ "trip",
       "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
       any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
       TRUE ~ "hh"))
-    suffix <- case_when(grepl("2021", survey) ~ "_ABS", 
-                        mean(dyear) %between% c(2017,2019) ~"_v2021", 
-                        TRUE ~"")
-    suffix <- case_when(grepl("2021", survey) & any(c("person","day") %in% tbl_names) &
+    subset <- case_when(grepl("2021", survey) & any(c("person","day") %in% tbl_names) &
                             any(grepl("^employment_change_|^workplace_pre_covid|_freq_pre_covid|_mode_pre_covid", 
-                                colnames(df))) ~ paste0(suffix, "_Panel_respondent"), 
+                                colnames(df))) ~ "_respondent", 
                         grepl("2021", survey) & any(grepl("person|trip|day", tbl_names)) & grepl("2021", survey) & 
-                            all(vars %not_in% ph_vars) ~ paste0(suffix, "_Panel_adult"),
-                        "trip" %in% tbl_names & survey=="2017_2019" ~ paste0(suffix, "_adult"),
-                        TRUE ~ suffix)
+                            all(vars %not_in% ph_vars) ~ "_adult",
+                        "trip" %in% tbl_names & survey=="2017_2019" ~ "_adult",
+                        TRUE ~ "")
     yearz <- paste0(dyear, collapse="_")
-    wgt_var <- paste0(prefix, "_weight_", yearz, suffix)                                           # Otherwise weight determined by rules
+    wgt_var <- paste0(tblname, subset, "_weight_", yearz)                                          # Otherwise weight determined by rules
   }
   keep_vars <- c("survey", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]        # Keep only necessary elements/records

@@ -118,18 +118,28 @@ get_hhts <- function(survey, level, vars, ...){
       strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
       }else{c(2017,2019)}
     wgt_str <- paste0("_weight_",survey,"(_\\D|$)")
-    sql_hhts_lookup <- data.frame(
-      abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
-      tbl_ref =rep(c("HHSurvey.v_households",
-                     "HHSurvey.v_persons",
-                     "HHSurvey.v_trips",
-                     "HHSurvey.v_days",
-                     "HHSurvey.v_vehicles"),2)) %>% setDT()
-    sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]                                   # Convert level to view name      
-    sql_code <- if(config::is_active('default')){
-      paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
-     }else{
-     paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")
+    if(config::is_active('default')){
+      sql_hhts_lookup <- data.frame(
+        abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+        tbl_ref =rep(c("HHSurvey.v_households",
+                       "HHSurvey.v_persons",
+                       "HHSurvey.v_trips",
+                       "HHSurvey.v_days",
+                       "HHSurvey.v_vehicles"),2)) %>% setDT()
+      sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name       
+      sql_code <- paste("SELECT TOP 1 * FROM",sql_tbl_ref,";")
+    }
+    else{
+      
+      sql_hhts_lookup <- data.frame(
+        abbr    =c("h","p","t","d","v","households","persons","trips","days","vehicles"),
+        tbl_ref =rep(c("[HHSurvey.v_households]",
+                       "[HHSurvey.v_persons]",
+                       "[HHSurvey.v_trips]",
+                       "[HHSurvey.v_days]",
+                       "[HHSurvey.v_vehicles]"),2)) %>% setDT()
+      sql_tbl_ref <- sql_hhts_lookup[abbr==level, .(tbl_ref)][[1]]# Convert level to view name
+      sql_code<-paste("SELECT * FROM",sql_tbl_ref,"LIMIT 1;")
     }
 
     db_connection <- hhts_connect(...)

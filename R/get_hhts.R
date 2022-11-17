@@ -3,6 +3,7 @@
 
 NULL
 
+globalVariables(c(":=", "!!", ".", "enquos","..."))
 `%not_in%` <- Negate(`%in%`)
 `%between%`<- function(x, range) x>=range[1] & x<=range[2]
 stuff <- function(x){unique(x) %>% paste(collapse=",")}
@@ -31,15 +32,17 @@ hhts_connect <- function(connection = NULL){
 #'
 #' Look for a variable name using a search term
 #' @param regex search term
+#' @param ... pass-through for hhts parameters--either Elmer or SQLite
 #' @return data.table of filtered variable attributes
 #' 
 #' @import data.table
 #' @export
 hhts_varsearch <- function(regex, ...){
+  description <- var_name <- NULL
   varsql <- (if(config::is_active('default')){
-    "HHSurvey.variable_metadata2"
+    "HHSurvey.variables_codebook"
   }else{
-    "[HHSurvey.variable_metadata2]"
+    "[HHSurvey.variables_codebook]"
   }) %>% 
     paste("SELECT [variable] AS var_name, description,",
                   "CONCAT(IIF([household]=1,' household',''),",
@@ -61,15 +64,16 @@ hhts_varsearch <- function(regex, ...){
 #' Retrieve HHTS variable definitions
 #'
 #' Gets requested variable attributes--e.g. data type, associated weight name & priority
-#' @param dyear data year or data year vector, e.g. c(2017, 2019)
 #' @param vars character vector with requested variables
+#' @param ... pass-through for hhts parameters--either Elmer or SQLite
 #' @return data.table of filtered variable attributes
 #' 
 #' @import data.table
 get_var_defs <- function(vars, ...){
+  var_name <- NULL
   var_def_sql <- (if(config::is_active('default')){
-    "HHSurvey.variable_metadata2;"
-  }else{"[HHSurvey.variable_metadata2];"
+    "HHSurvey.variables_codebook;"
+  }else{"[HHSurvey.variables_codebook];"
       }) %>%  paste("SELECT [variable] AS var_name, base_table_type FROM", .)
   db_connection <- hhts_connect(...)
   var_defs <- DBI::dbGetQuery(db_connection, DBI::SQL(var_def_sql)) %>% setDT() %>% .[var_name %in% vars]
@@ -103,11 +107,13 @@ hhts_recode_na <- function(dt){
 #' @param survey character string denoting single or combined survey year--if the latter, years separated by underscore, e.g."2017_2019"
 #' @param level either "h" ("households"), "p" ("persons"), "d" ("days"), "t" ("trips"), or "v" ("vehicles") 
 #' @param vars character vector with requested variables
+#' @param ... pass-through for hhts parameters--either Elmer or SQLite
 #' @return dataframe with variables and necessary weights
 #'  
 #' @import data.table
 #' @export
 get_hhts <- function(survey, level, vars, ...){
+  abbr <- tbl_ref <- NULL
     dyears <- if(survey %in% (c("2017","2019","2017_2019","2021"))){
       strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
       }else{c(2017,2019)}
@@ -153,6 +159,7 @@ get_hhts <- function(survey, level, vars, ...){
 #' @importFrom rlang is_empty
 #' @importFrom dplyr case_when
 hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
+  var_name <- NULL
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
   var_defs <- get_var_defs(vars) %>% setDT() %>% setkeyv("var_name")
   tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()         # Standard weighting by table; construct w/ rules
@@ -171,7 +178,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
                                 colnames(df))) ~ "_respondent", 
                         grepl("2021", survey) & any(grepl("person|trip|day", tbl_names)) & grepl("2021", survey) & 
                             all(vars %not_in% ph_vars) ~ "_adult",
-                        "trip" %in% tbl_names & survey=="2017_2019" ~ "_adult",
+                        "trip" %in% tbl_names ~ "_adult",
                         TRUE ~ "")
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(tblname, subset, "_weight_", yearz)                                          # Otherwise weight determined by rules
@@ -207,6 +214,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 #' @importFrom dplyr filter if_all ungroup across coalesce
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
 hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+  count <- share <- sample_size <- NULL
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   survey <- df$survey %>% unique()
@@ -358,14 +366,15 @@ hhts_summary <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, sp
 #' @importFrom dplyr mutate rename relocate
 #' @export
 hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+  var_name <- NULL
   list_stat <- function(x){
-    rsub <- hhts_stat(df=df, 
-                      stat_type=stat_type, 
-                      stat_var=stat_var, 
-                      group_vars=x, 
-                      geographic_unit=geographic_unit, 
-                      spec_wgt=spec_wgt,
-                      incl_na=incl_na)
+  rsub <- hhts_stat(df=df, 
+                    stat_type=stat_type, 
+                    stat_var=stat_var, 
+                    group_vars=x, 
+                    geographic_unit=geographic_unit, 
+                    spec_wgt=spec_wgt,
+                    incl_na=incl_na)
   }
   df <- list()
   df <- lapply(group_var_list, list_stat) %>%
@@ -384,6 +393,7 @@ hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, ge
 #'
 #' @export
 z_score <- function(x, y){
+  patterns <- NULL
   reduce <- function(a){
     a %<>% setDT() %>% .[, .SD, .SDcols=patterns("(count|sum|median|mean)(_moe)?")] %>% as.numeric(.[1])
   }

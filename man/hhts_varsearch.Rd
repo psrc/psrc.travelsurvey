@@ -8,6 +8,8 @@ hhts_varsearch(regex, ...)
 }
 \arguments{
 \item{regex}{search term}
+
+\item{...}{pass-through for hhts parameters--either Elmer or SQLite}
 }
 \value{
 data.table of filtered variable attributes

@@ -18,17 +18,12 @@ Imports:
     data.table,
     DBI,
     dplyr,
-    fredr,
-    lubridate,
     magrittr, 
     odbc,
-    purrr,
     rlang,
     RSQLite,
     srvyr,
-    stats,
     stringr,
-    survey,
     tidyselect
 Suggests: 
     knitr,

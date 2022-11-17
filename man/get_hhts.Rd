@@ -12,6 +12,8 @@ get_hhts(survey, level, vars, ...)
 \item{level}{either "h" ("households"), "p" ("persons"), "d" ("days"), "t" ("trips"), or "v" ("vehicles")}
 
 \item{vars}{character vector with requested variables}
+
+\item{...}{pass-through for hhts parameters--either Elmer or SQLite}
 }
 \value{
 dataframe with variables and necessary weights

@@ -9,7 +9,7 @@ get_var_defs(vars, ...)
 \arguments{
 \item{vars}{character vector with requested variables}
 
-\item{dyear}{data year or data year vector, e.g. c(2017, 2019)}
+\item{...}{pass-through for hhts parameters--either Elmer or SQLite}
 }
 \value{
 data.table of filtered variable attributes

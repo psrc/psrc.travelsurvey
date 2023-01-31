@@ -73,7 +73,7 @@ hhts_summary(
 
 \item{group_vars}{Categorical variable/s for grouping}
 
-\item{geographic_unit}{Default="region"}
+\item{geographic_unit}{Optional sub-regional geographic grouping variable, such as "final_cnty"}
 
 \item{spec_wgt}{optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.}
 

@@ -215,7 +215,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 #' @param stat_type Desired survey statistic
 #' @param stat_var The numeric variable to summarize 
 #' @param group_vars Categorical variable/s for grouping
-#' @param geographic_unit Geographic grouping, i.e. units smaller than PSRC region
+#' @param geographic_unit Optional sub-regional geographic grouping variable, such as "final_cnty"
 #' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @return A summary tibble, including variable names, summary statistic and margin of error
@@ -278,7 +278,7 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
 #' @param df the dataframe returned by \code{\link{get_hhts}}
 #' @param stat_var The numeric variable to summarize 
 #' @param group_vars Categorical variable/s for grouping
-#' @param geographic_unit Default="region"
+#' @param geographic_unit Optional sub-regional geographic grouping variable, such as "final_cnty"
 #' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @return A table with the variable names and labels, summary statistic and margin of error
@@ -367,7 +367,7 @@ hhts_summary <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, sp
 #' @param stat_type Desired survey statistic
 #' @param stat_var The numeric variable to summarize 
 #' @param group_var_list Factor variable/s for grouping
-#' @param geographic_unit Default="region"
+#' @param geographic_unit Optional sub-regional geographic grouping variable, such as "final_cnty"
 #' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @return A table with the variable names and labels, summary statistic and margin of error

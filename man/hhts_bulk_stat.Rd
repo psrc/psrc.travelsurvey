@@ -23,7 +23,7 @@ hhts_bulk_stat(
 
 \item{group_var_list}{Factor variable/s for grouping}
 
-\item{geographic_unit}{Default="region"}
+\item{geographic_unit}{Optional sub-regional geographic grouping variable, such as "final_cnty"}
 
 \item{spec_wgt}{optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call.}
 

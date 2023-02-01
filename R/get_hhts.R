@@ -261,13 +261,18 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
   rs %<>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
     setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
+  rs[, survey:=unique(so[[7]]$survey)]
   if(!is.null(geographic_unit)){
     rs[is.na(geographic_unit), (geographic_unit):="Region"]
+    setcolorder(rs, c("survey", geographic_unit))
+    setorderv(rs, c("survey", geographic_unit))
+  }else{
+  setcolorder(rs, c("survey"))
+  setorderv(rs, c("survey"))
   }
-  rs[, survey:=unique(so[[7]]$survey)]
-  setcolorder(rs, c("survey", coalesce(geographic_unit)))
-  setorderv(rs, c("survey", coalesce(geographic_unit)))
+  if(all(!is.null(group_vars) & group_vars!="keep_existing")){ 
   so %<>% ungroup()
+  }
   return(rs)
 }
 

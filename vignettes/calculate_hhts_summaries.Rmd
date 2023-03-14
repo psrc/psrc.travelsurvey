@@ -89,8 +89,8 @@ rs_race_region  <- hhts_count(h_2017_19a, group_vars="hh_race_category")
 
 To report by a subregional geography, you must include that variable in the **vars** argument of **get_hhts()** . It makes sense to request as many attributes per **survey-level** combination you need, as you can run statistical functions independently on that same dataframe--including multiple geographic scales. Each statistical call will also provide the regional total as the last line, for context/comparison.
 ```{r race by subregional geographies, message=FALSE, eval=FALSE}
-h_2017_19b       <- get_hhts("2017_2019", "h", c("hh_race_category", "final_home_tract", "home_city_name")
-rs_race_tract    <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="final_home_tract")
+h_2017_19b       <- get_hhts("2017_2019", "h", c("hh_race_category", "final_cnty", "home_city_name"))
+rs_race_county    <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="final_cnty")
 rs_race_city     <- hhts_count(h_2017_19b, group_vars="hh_race_category", geographic_unit="home_city_name")
 ```
 

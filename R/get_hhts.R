@@ -144,7 +144,8 @@ get_hhts <- function(survey, level, vars, ...){
 
     db_connection <- hhts_connect(...)
     df <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code)) %>% setDT()                           # Get first row to have column names
-    want_vars <-grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), .)        # Determine available weights
+    id_vars <- grep("^household_id$|^person_id$|^daynum$", colnames(df), value=TRUE)
+    want_vars <- grep(wgt_str, colnames(df), value=TRUE) %>% unlist() %>% c(unlist(vars), ., "sample_segment", id_vars) # Determine available weights
     sql_code <- paste0("SELECT '", survey, "' AS survey, ",
                        paste(want_vars, collapse=", "), " FROM ",sql_tbl_ref,                      # Build query for only relevant variables
                        " WHERE survey_year IN(", paste(unique(dyears), collapse=", "),");")
@@ -173,16 +174,20 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   dyear <- stringr::str_split(survey, "_") %>% lapply(as.integer) %>% unlist()
   var_defs <- get_var_defs(vars) %>% setDT() %>% setkeyv("var_name")
   tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()         # Standard weighting by table; construct w/ rules
+  ph_vars <- c("age","age_category","license","school_loc_county",
+               "schooltype","student","school_travel_last_week")
+  tblname <- unique(case_when(
+    "trip" %in% tbl_names ~ "trip",
+    "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
+    any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
+    TRUE ~ "hh"))
+  clusters <- "household_id"
+  if(tblname=="day"){clusters %<>% c("person_id")}
+  if(tblname=="trip"){clusters %<>% c("person_id","daynum")}
+  
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{
-    ph_vars <- c("age","age_category","license","school_loc_county",
-                 "schooltype","student","school_travel_last_week")
-    tblname <- unique(case_when(
-      "trip" %in% tbl_names ~ "trip",
-      "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
-      any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
-      TRUE ~ "hh"))
     subset <- case_when(grepl("2021", survey) & any(c("person","day") %in% tbl_names) &
                             any(grepl("^employment_change_|^workplace_pre_covid|_freq_pre_covid|_mode_pre_covid", 
                                 colnames(df))) ~ "_respondent", 
@@ -193,7 +198,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(tblname, subset, "_weight_", yearz)                                          # Otherwise weight determined by rules
   }
-  keep_vars <- c("survey", unlist(vars), wgt_var)
+  keep_vars <- c("survey", unlist(vars), wgt_var, "sample_segment", clusters)
   df2 <- copy(df) %>% setDT() %>% .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]        # Keep only necessary elements/records
   num_vars <- names(Filter(is.numeric, df2))
   ftr_vars <- names(Filter(is.character, df2))
@@ -204,7 +209,11 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
     } 
   }
   df2 %<>% setDF()
-  so <- srvyr::as_survey_design(df2, variables=all_of(keep_vars), weights=all_of(wgt_var))
+  so <- srvyr::as_survey_design(df2, 
+                                ids=all_of(clusters),
+                                strata="sample_segment",
+                                variables=all_of(keep_vars), 
+                                weights=all_of(wgt_var))
   return(so)
 }    
 
@@ -236,27 +245,27 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
   }
   if(!is.null(geographic_unit)){so %<>% srvyr::group_by(!!as.name(geographic_unit), .add=TRUE)}
   if(stat_type=="count"){
-    rs <- suppressMessages(
+    rs <- suppressMessages(suppressWarnings(
             cascade(so,
               count:=survey_total(na.rm=TRUE),
               share:=survey_prop(),
               sample_size:=srvyr::unweighted(dplyr::n()),
-              .fill="Total"))
+              .fill="Total")))
   }else if(stat_type=="summary"){
-    rs <- suppressMessages(
+    rs <- suppressMessages(suppressWarnings(
             cascade(so, count:=survey_total(na.rm=TRUE),
               !!paste0(prefix,"total"):=survey_total(!!as.name(stat_var), na.rm=TRUE),
               !!paste0(prefix,"median"):=survey_median(!!as.name(stat_var), na.rm=TRUE),
               !!paste0(prefix,"mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
               sample_size:=srvyr::unweighted(dplyr::n()),
-              .fill="Total"))
+              .fill="Total")))
   }else{
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
-    rs <- suppressMessages(
+    rs <- suppressMessages(suppressWarnings(
             cascade(so,
               !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
               sample_size:=srvyr::unweighted(dplyr::n()),
-              .fill="Total"))
+              .fill="Total")))
   }
   rs %<>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%

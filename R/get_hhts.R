@@ -176,18 +176,15 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   tbl_names <- copy(var_defs) %>% .[var_name %in% vars] %>% .$base_table_type %>% unique()         # Standard weighting by table; construct w/ rules
   ph_vars <- c("age","age_category","license","school_loc_county",
                "schooltype","student","school_travel_last_week")
-  tblname <- unique(case_when(
-    "trip" %in% tbl_names ~ "trip",
-    "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
-    any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
-    TRUE ~ "hh"))
-  clusters <- "household_id"
-  if(tblname=="day"){clusters %<>% c("person_id")}
-  if(tblname=="trip"){clusters %<>% c("person_id","daynum")}
   
   if(!is.null(spec_wgt)){
     wgt_var <- spec_wgt                                                                            # Option for power-users to determine the expansion weight
   }else{
+    tblname <- unique(case_when(
+      "trip" %in% tbl_names ~ "trip",
+      "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
+      any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
+      TRUE ~ "hh"))
     subset <- case_when(grepl("2021", survey) & any(c("person","day") %in% tbl_names) &
                             any(grepl("^employment_change_|^workplace_pre_covid|_freq_pre_covid|_mode_pre_covid", 
                                 colnames(df))) ~ "_respondent", 
@@ -198,7 +195,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(tblname, subset, "_weight_", yearz)                                          # Otherwise weight determined by rules
   }
-  keep_vars <- c("survey", unlist(vars), wgt_var, "sample_segment", clusters)
+  keep_vars <- c("survey", "sample_segment", "household_id", unlist(vars), wgt_var)
   df2 <- copy(df) %>% setDT() %>% .[get(wgt_var)>0, colnames(.) %in% keep_vars, with=FALSE]        # Keep only necessary elements/records
   num_vars <- names(Filter(is.numeric, df2))
   ftr_vars <- names(Filter(is.character, df2))
@@ -210,7 +207,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   }
   df2 %<>% setDF()
   so <- srvyr::as_survey_design(df2, 
-                                ids=all_of(clusters),
+                                ids="household_id",
                                 strata="sample_segment",
                                 variables=all_of(keep_vars), 
                                 weights=all_of(wgt_var))

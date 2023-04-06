@@ -1,29 +1,24 @@
 
-value_groups<-read.csv(hh_survey_value_groups) (or put in elmer)
-
-# run this after get_hhts, before stat functions
-group_vals<- function(tbl, value_groups, variable_name){
-  #do commonly needed groupings
-  variable_val_groups<-value_groups%>%filter(variable== get(variable_name))
-  tbl<-left_join(tbl, value_groups, by.x=(get(variable_name), by.y=value) )
-  tbl<-tbl%>% rename(group= paste(get(variable_name), '_group')
-  tbl<-tbl_grouped
-  return(tbl_grouped)
+#' Group commonly combined values
+#'
+#' Gets requested variable attributes--e.g. data type, associated weight name & priority
+#' @param df disaggregate survey observation data frame result of get_hhts
+#' @param var the variable for which you would like to group values based on the value_metadata table
+#' @return df_val_group: a data frame with the survey observations with a column added for the grouped variable
+#'         named yourvariablename_group
+#' 
+#' @import dplyr
+#' @import DBI
+#' @export
+group_vals<- function(df, var, survey_yr){
+  # code to get values associated with var
+  sql_code <- paste0("SELECT variable, value_text, value_group_1 
+                     FROM HHSurvey.v_value_metadata 
+                     WHERE HHSurvey.v_value_metadata.variable='", var, "' AND survey_year = '", survey_yr, "';")
+  var_values <- DBI::dbGetQuery(db_connection, DBI::SQL(sql_code))
+  df_w_vals<-dplyr::left_join(df, var_values, by=setNames('value_text', var))
+  df_val_group<-df_w_vals%>% dplyr::mutate(!!(paste0(sym(var), '_group')):=value_group_1)
+  return(df_val_group)
 }
 
 
-
-code_sov_mode<-
-  
-  
-summarize_deliveries<-
-  
-  
-  whatever it is i was doing here
-  
-  mover_sum<- list()
-mover_sum <- lapply(vars_to_summarize, FUN=function(x) hhts_count(df=hhs_2021,group_vars=c(x))) %>%
-  lapply(FUN=function(y){mutate(y, "var_name"=colnames(y)[2])}) %>% data.table::rbindlist(use.names=FALSE) %>% 
-  rename(var_value=colnames(.)[2]) %>% relocate(var_name)
-
-mover_shares_2021<-mover_sum%>% select(var_name, var_value, share,survey, share_moe)%>%filter(var_value=='Very important')

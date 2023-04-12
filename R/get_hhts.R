@@ -206,6 +206,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
     } 
   }
   df2 %<>% setDF()
+  options(survey.lonely.psu="adjust")
   so <- srvyr::as_survey_design(df2, 
                                 ids="household_id",
                                 strata="sample_segment",

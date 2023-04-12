@@ -59,7 +59,8 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <span>  group_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">hhts_count</span><span class="op">(</span></span>
@@ -68,7 +69,8 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <span>  group_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">hhts_sum</span><span class="op">(</span></span>
@@ -77,7 +79,8 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <span>  group_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">hhts_median</span><span class="op">(</span></span>
@@ -86,7 +89,8 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <span>  group_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">hhts_mean</span><span class="op">(</span></span>
@@ -95,7 +99,8 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <span>  group_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">hhts_summary</span><span class="op">(</span></span>
@@ -104,7 +109,8 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 <span>  group_vars <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  geographic_unit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  spec_wgt <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  incl_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rr <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -112,10 +118,6 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>df</dt>
 <dd><p>the dataframe returned by <code><a href="get_hhts.html">get_hhts</a></code></p></dd>
-
-
-<dt>stat_type</dt>
-<dd><p>Desired survey statistic</p></dd>
 
 
 <dt>stat_var</dt>
@@ -136,6 +138,10 @@ Separate function for total, count, median, mean'"><!-- mathjax --><script src="
 
 <dt>incl_na</dt>
 <dd><p>option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)</p></dd>
+
+
+<dt>rr</dt>
+<dd><p>optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -&gt; good/fair/weak/unreliable)</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -218,20 +218,15 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 #' Generic call for HHTS summary statistics
 #'
 #' Given specific form by related \code{\link{hhts_stat}} functions.
-#' @param df the dataframe returned by \code{\link{get_hhts}}
-#' @param stat_type Desired survey statistic
-#' @param stat_var The numeric variable to summarize 
-#' @param group_vars Categorical variable/s for grouping
-#' @param geographic_unit Optional sub-regional geographic grouping variable, such as "final_cnty"
-#' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
-#' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
+#' @inheritParams hhts_stat
 #' @return A summary tibble, including variable names, summary statistic and margin of error
 #'
 #' @importFrom tidyselect all_of
 #' @importFrom dplyr filter if_all ungroup across coalesce
 #' @importFrom srvyr interact cascade survey_tally survey_total survey_median survey_mean survey_prop
-hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
-  count <- share <- sample_size <- NULL
+hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL,  
+                      geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE, rr=FALSE){                                                                   # Optional reliability scale
+  count <- share <- sample_size <- reliability <- NULL                                             # Bind variables locally (for documentation, not function)NULL
   vars <- c(geographic_unit, stat_var, unlist(group_vars)) %>% unique()
   prefix <- if(stat_type %in% c("count","share")){""}else{paste0(stat_var,"_")}
   survey <- df$survey %>% unique()
@@ -245,14 +240,14 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
   if(stat_type=="count"){
     rs <- suppressMessages(suppressWarnings(
             cascade(so,
-              count:=survey_total(na.rm=TRUE),
-              share:=survey_prop(),
+              count:=survey_total(na.rm=TRUE, vartype=c("se","cv")),
+              share:=survey_prop(proportion=FALSE, vartype=c("se","cv")),
               sample_size:=srvyr::unweighted(dplyr::n()),
               .fill="Total")))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(suppressWarnings(
-            cascade(so, count:=survey_total(na.rm=TRUE),
-              !!paste0(prefix,"total"):=survey_total(!!as.name(stat_var), na.rm=TRUE),
+            cascade(so, count:=survey_total(na.rm=TRUE, vartype=c("se","cv")),
+                        share:=survey_prop(proportion=FALSE, vartype=c("se","cv")),
               !!paste0(prefix,"median"):=survey_median(!!as.name(stat_var), na.rm=TRUE),
               !!paste0(prefix,"mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
               sample_size:=srvyr::unweighted(dplyr::n()),
@@ -261,13 +256,20 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
     srvyrf_name <- as.name(paste0("survey_",stat_type))                                            # Specific srvyr function name
     rs <- suppressMessages(suppressWarnings(
             cascade(so,
-              !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE)),
+              !!paste0(prefix, stat_type):=(as.function(!!srvyrf_name)(!!as.name(stat_var), na.rm=TRUE, vartype=c("se","cv"))),
               sample_size:=srvyr::unweighted(dplyr::n()),
               .fill="Total")))
   }
   rs %<>% setDT() %>%
     .[, grep("_se", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se", colnames(.))] %>%
-    setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe"))
+    setnames(grep("_se", colnames(.)), stringr::str_replace(grep("_se", colnames(.), value=TRUE), "_se", "_moe")) %>%
+    setnames(grep("_cv", colnames(.)), "reliability")
+  if(rr==TRUE){
+    rs %<>% .[, reliability:=dplyr::case_when(reliability <= .15 ~ "good",                         # Optional categorical variance measure
+                                              reliability <= .3  ~ "fair",
+                                              reliability <= .5  ~ "weak",
+                                              reliability >= .5  ~ "unreliable")]
+  }
   rs[, survey:=unique(so[[7]]$survey)]
   if(!is.null(geographic_unit)){
     rs[is.na(geographic_unit), (geographic_unit):="Region"]
@@ -293,6 +295,7 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL, geographic_unit=
 #' @param geographic_unit Optional sub-regional geographic grouping variable, such as "final_cnty"
 #' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
+#' @param rr optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)
 #' @return A table with the variable names and labels, summary statistic and margin of error
 #' 
 #' @name hhts_stat
@@ -302,28 +305,30 @@ NULL
 #' @title HHTS counts
 #' 
 #' @export
-hhts_count <- function(df, stat_var=NULL, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+hhts_count <- function(df, stat_var=NULL, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE, rr=FALSE){
   rs <- hhts_stat(df=df, 
                   stat_type="count", 
                   stat_var=NULL, 
                   group_vars=group_vars, 
                   geographic_unit=geographic_unit, 
                   spec_wgt=spec_wgt, 
-                  incl_na=incl_na
+                  incl_na=incl_na,
+                  rr=rr
                   )
   return(rs)
 }
 #' @rdname hhts_stat
 #' @title HHTS totals
 #' @export
-hhts_sum <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+hhts_sum <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE, rr=FALSE){
   rs <- hhts_stat(df=df, 
                   stat_type="total", 
                   stat_var=stat_var, 
                   group_vars=group_vars, 
                   geographic_unit=geographic_unit, 
                   spec_wgt=spec_wgt, 
-                  incl_na=incl_na)
+                  incl_na=incl_na,
+                  rr=rr)
   return(rs)
 }
 
@@ -331,42 +336,45 @@ hhts_sum <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_w
 #' @title HHTS medians
 #'
 #' @export
-hhts_median <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+hhts_median <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE, rr=FALSE){
   rs <- hhts_stat(df=df, 
                   stat_type="median", 
                   stat_var=stat_var, 
                   group_vars=group_vars, 
                   geographic_unit=geographic_unit, 
                   spec_wgt=spec_wgt, 
-                  incl_na=incl_na)
+                  incl_na=incl_na,
+                  rr=rr)
   return(rs)
 }
 
 #' @rdname hhts_stat
 #' @title HHTS means
 #' @export
-hhts_mean <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+hhts_mean <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE, rr=FALSE){
   rs <- hhts_stat(df=df, 
                   stat_type="mean", 
                   stat_var=stat_var, 
                   group_vars=group_vars, 
                   geographic_unit=geographic_unit, 
                   spec_wgt=spec_wgt, 
-                  incl_na=incl_na)
+                  incl_na=incl_na,
+                  rr=rr)
   return(rs)
 }
 
 #' @rdname hhts_stat
 #' @title HHTS combined summary statistics
 #' @export
-hhts_summary <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE){
+hhts_summary <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, spec_wgt=NULL, incl_na=TRUE, rr=FALSE){
   rs <- hhts_stat(df=df, 
                   stat_type="summary", 
                   stat_var=stat_var, 
                   group_vars=group_vars, 
                   geographic_unit=geographic_unit, 
                   spec_wgt=spec_wgt, 
-                  incl_na=incl_na)
+                  incl_na=incl_na,
+                  rr=rr)
   return(rs)
 }
 

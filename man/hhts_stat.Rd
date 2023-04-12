@@ -16,7 +16,8 @@ hhts_stat(
   group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL,
-  incl_na = TRUE
+  incl_na = TRUE,
+  rr = FALSE
 )
 
 hhts_count(
@@ -25,7 +26,8 @@ hhts_count(
   group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL,
-  incl_na = TRUE
+  incl_na = TRUE,
+  rr = FALSE
 )
 
 hhts_sum(
@@ -34,7 +36,8 @@ hhts_sum(
   group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL,
-  incl_na = TRUE
+  incl_na = TRUE,
+  rr = FALSE
 )
 
 hhts_median(
@@ -43,7 +46,8 @@ hhts_median(
   group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL,
-  incl_na = TRUE
+  incl_na = TRUE,
+  rr = FALSE
 )
 
 hhts_mean(
@@ -52,7 +56,8 @@ hhts_mean(
   group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL,
-  incl_na = TRUE
+  incl_na = TRUE,
+  rr = FALSE
 )
 
 hhts_summary(
@@ -61,13 +66,12 @@ hhts_summary(
   group_vars = NULL,
   geographic_unit = NULL,
   spec_wgt = NULL,
-  incl_na = TRUE
+  incl_na = TRUE,
+  rr = FALSE
 )
 }
 \arguments{
 \item{df}{the dataframe returned by \code{\link{get_hhts}}}
-
-\item{stat_type}{Desired survey statistic}
 
 \item{stat_var}{The numeric variable to summarize}
 
@@ -78,6 +82,8 @@ hhts_summary(
 \item{spec_wgt}{optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.}
 
 \item{incl_na}{option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)}
+
+\item{rr}{optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)}
 }
 \value{
 A summary tibble, including variable names, summary statistic and margin of error

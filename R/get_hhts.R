@@ -241,13 +241,13 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL,
     rs <- suppressMessages(suppressWarnings(
             cascade(so,
               count:=survey_total(na.rm=TRUE, vartype=c("se","cv")),
-              share:=survey_prop(proportion=FALSE, vartype=c("se","cv")),
+              share:=survey_prop(proportion=FALSE, vartype=c("se")),
               sample_size:=srvyr::unweighted(dplyr::n()),
               .fill="Total")))
   }else if(stat_type=="summary"){
     rs <- suppressMessages(suppressWarnings(
             cascade(so, count:=survey_total(na.rm=TRUE, vartype=c("se","cv")),
-                        share:=survey_prop(proportion=FALSE, vartype=c("se","cv")),
+                        share:=survey_prop(proportion=FALSE, vartype=c("se")),
               !!paste0(prefix,"median"):=survey_median(!!as.name(stat_var), na.rm=TRUE),
               !!paste0(prefix,"mean"):=survey_mean(!!as.name(stat_var), na.rm=TRUE),
               sample_size:=srvyr::unweighted(dplyr::n()),

@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   calculate_hhts_summaries: calculate_hhts_summaries.html
   psrc.travelsurvey_tips_and_tricks: psrc.travelsurvey_tips_and_tricks.html
-last_built: 2023-04-12T23:02Z
+last_built: 2023-04-28T17:48Z
 urls:
   reference: https://psrc.github.io/psrc.travelsurvey/reference
   article: https://psrc.github.io/psrc.travelsurvey/articles

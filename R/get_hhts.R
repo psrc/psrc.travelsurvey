@@ -182,16 +182,15 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
   }else{
     tblname <- unique(case_when(
       "trip" %in% tbl_names ~ "trip",
-      "day" %in% tbl_names & !grepl("2021", survey) ~ "day",
-      any(c("person","day") %in% tbl_names) & grepl("2021", survey) & all(vars %not_in% ph_vars) ~ "person",
+      "day"  %in% tbl_names & all(dyear==2021) ~ "day",
+      any(c("person","day") %in% tbl_names) & all(dyear > 2020) & all(vars %not_in% ph_vars) ~ "person",
       TRUE ~ "hh"))
-    subset <- case_when(grepl("2021", survey) & any(c("person","day") %in% tbl_names) &
-                            any(grepl("^employment_change_|^workplace_pre_covid|_freq_pre_covid|_mode_pre_covid", 
-                                colnames(df))) ~ "_respondent", 
-                        grepl("2021", survey) & any(grepl("person|trip|day", tbl_names)) & grepl("2021", survey) & 
-                            all(vars %not_in% ph_vars) ~ "_adult",
-                        "trip" %in% tbl_names ~ "_adult",
-                        TRUE ~ "")
+    subset <- case_when(
+      all(dyear==2021) & any(c("person","day") %in% tbl_names) & 
+        any(grepl("^employment_change_|(^workplace|_freq|_mode)_pre_covid", colnames(df))) ~ "_respondent", 
+      all(dyear > 2020) & any(c("person","trip","day") %in% tbl_names) & all(vars %not_in% ph_vars) ~ "_adult",
+      "trip" %in% tbl_names & survey=="2017_2019" ~ "_adult",
+      TRUE ~ "")
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(tblname, subset, "_weight_", yearz)                                          # Otherwise weight determined by rules
   }

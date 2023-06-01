@@ -15,3 +15,6 @@ the data.table with missing values recoded NA
 \description{
 Recode missing values to NA
 }
+\author{
+Michael Jensen
+}

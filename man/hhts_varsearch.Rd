@@ -17,3 +17,6 @@ data.table of filtered variable attributes
 \description{
 Look for a variable name using a search term
 }
+\author{
+Michael Jensen
+}

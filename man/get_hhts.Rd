@@ -21,3 +21,6 @@ dataframe with variables and necessary weights
 \description{
 Gets requested Household Travel Survey variables
 }
+\author{
+Michael Jensen
+}

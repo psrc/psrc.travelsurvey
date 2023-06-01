@@ -17,3 +17,6 @@ data.table of filtered variable attributes
 \description{
 Gets requested variable attributes--e.g. data type, associated weight name & priority
 }
+\author{
+Michael Jensen
+}

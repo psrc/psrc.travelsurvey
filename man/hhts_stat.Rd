@@ -95,3 +95,6 @@ Given specific form by related \code{\link{hhts_stat}} functions.
 
 Separate function for total, count, median, mean'
 }
+\author{
+Michael Jensen
+}

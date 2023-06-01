@@ -21,3 +21,6 @@ srvyr object with sampling weights
 \description{
 Creates srvyr object from HHTS
 }
+\author{
+Michael Jensen
+}

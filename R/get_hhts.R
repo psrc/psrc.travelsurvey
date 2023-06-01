@@ -1,5 +1,4 @@
 #' @importFrom magrittr %<>% %>%
-#' @author Michael Jensen
 
 NULL
 
@@ -34,6 +33,7 @@ hhts_connect <- function(connection = NULL){
 #' @param regex search term
 #' @param ... pass-through for hhts parameters--either Elmer or SQLite
 #' @return data.table of filtered variable attributes
+#' @author Michael Jensen
 #' 
 #' @import data.table
 #' @export
@@ -67,6 +67,7 @@ hhts_varsearch <- function(regex, ...){
 #' @param vars character vector with requested variables
 #' @param ... pass-through for hhts parameters--either Elmer or SQLite
 #' @return data.table of filtered variable attributes
+#' @author Michael Jensen
 #' 
 #' @import data.table
 get_var_defs <- function(vars, ...){
@@ -86,6 +87,7 @@ get_var_defs <- function(vars, ...){
 #' Recode missing values to NA
 #' @param dt the data.table
 #' @return the data.table with missing values recoded NA
+#' @author Michael Jensen
 #' 
 #' @import data.table
 hhts_recode_na <- function(dt){
@@ -109,6 +111,7 @@ hhts_recode_na <- function(dt){
 #' @param vars character vector with requested variables
 #' @param ... pass-through for hhts parameters--either Elmer or SQLite
 #' @return dataframe with variables and necessary weights
+#' @author Michael Jensen
 #'  
 #' @import data.table
 #' @export
@@ -164,6 +167,7 @@ get_hhts <- function(survey, level, vars, ...){
 #' @param vars character vector with requested variables
 #' @param spec_wgt optional user-specified expansion weight; only possible if the variable name is included in the \code{\link{get_hhts}} call.
 #' @return srvyr object with sampling weights
+#' @author Michael Jensen
 #'
 #' @import data.table
 #' @importFrom tidyselect all_of
@@ -219,6 +223,7 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
 #' Given specific form by related \code{\link{hhts_stat}} functions.
 #' @inheritParams hhts_stat
 #' @return A summary tibble, including variable names, summary statistic and margin of error
+#' @author Michael Jensen
 #'
 #' @importFrom tidyselect all_of
 #' @importFrom dplyr filter if_all ungroup across coalesce
@@ -296,6 +301,7 @@ hhts_stat <- function(df, stat_type, stat_var, group_vars=NULL,
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @param rr optional relative reliability column, i.e. coefficient of variation as category levels (breakpoints: .15/.3./.5 -> good/fair/weak/unreliable)
 #' @return A table with the variable names and labels, summary statistic and margin of error
+#' @author Michael Jensen
 #' 
 #' @name hhts_stat
 NULL
@@ -390,6 +396,7 @@ hhts_summary <- function(df, stat_var, group_vars=NULL, geographic_unit=NULL, sp
 #' @param spec_wgt optional user-specified expansion weight, i.e. in place of the standard expansion weight determined by the variable hierarchy. Only possible if the variable name is included in the \code{\link{get_hhts}} call. 
 #' @param incl_na option to remove NA from group_vars (if FALSE, the total will not reflect the full dataset)
 #' @return A table with the variable names and labels, summary statistic and margin of error
+#' @author Michael Jensen
 #' 
 #' @importFrom data.table rbindlist setDF
 #' @importFrom dplyr mutate rename relocate
@@ -419,6 +426,7 @@ hhts_bulk_stat <- function(df, stat_type, stat_var=NULL, group_var_list=NULL, ge
 #' @param x a row of aggregate table to compare--includes a count/sum/mean/median and its MOE
 #' @param y a row of aggregate table to compare--also includes a count/sum/mean/median and its MOE
 #' @return Z score; if larger than 1, difference is significant
+#' @author Michael Jensen
 #'
 #' @export
 z_score <- function(x, y){

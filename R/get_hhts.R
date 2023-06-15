@@ -193,7 +193,6 @@ hhts2srvyr <- function(df, survey, vars, spec_wgt=NULL){
       all(dyear==2021) & any(c("person","day") %in% tbl_names) & 
         any(grepl("^employment_change_|(^workplace|_freq|_mode)_pre_covid", colnames(df))) ~ "_respondent", 
       all(dyear > 2020) & any(c("person","trip","day") %in% tbl_names) & all(vars %not_in% ph_vars) ~ "_adult",
-      "trip" %in% tbl_names & survey=="2017_2019" ~ "_adult",
       TRUE ~ "")
     yearz <- paste0(dyear, collapse="_")
     wgt_var <- paste0(tblname, subset, "_weight_", yearz)                                          # Otherwise weight determined by rules

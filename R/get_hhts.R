@@ -117,7 +117,9 @@ hhts_recode_na <- function(dt){
 #' @export
 get_hhts <- function(survey, level, vars, ...){
   abbr <- tbl_ref <- NULL
-    dyears <- survey
+    dyears <- if(survey %in% (c("2017","2019","2017_2019","2021"))){
+      strsplit(survey,"_") %>% as.list() %>% lapply(as.integer) %>% unlist()
+      }else{c(2017,2019)}
     wgt_str <- paste0("_weight_",survey,"(_\\D|$)")
     if(config::is_active('default')){
       sql_hhts_lookup <- data.frame(

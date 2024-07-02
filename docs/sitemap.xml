@@ -4,15 +4,6 @@
     <loc>https://psrc.github.io/psrc.travelsurvey/404.html</loc>
   </url>
   <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/articles/calculate_hhts_summaries.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/articles/psrc.travelsurvey_tips_and_tricks.html</loc>
-  </url>
-  <url>
     <loc>https://psrc.github.io/psrc.travelsurvey/authors.html</loc>
   </url>
   <url>
@@ -22,33 +13,15 @@
     <loc>https://psrc.github.io/psrc.travelsurvey/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/get_hhts.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/get_var_defs.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/hhts2srvyr.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/hhts_bulk_stat.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/hhts_connect.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/hhts_recode_na.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/hhts_stat.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/hhts_varsearch.html</loc>
+    <loc>https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.html</loc>
   </url>
   <url>
     <loc>https://psrc.github.io/psrc.travelsurvey/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/z_score.html</loc>
+    <loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_recode_na.html</loc>
+  </url>
+  <url>
+    <loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_varsearch.html</loc>
   </url>
 </urlset>

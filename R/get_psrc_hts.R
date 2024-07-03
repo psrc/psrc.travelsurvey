@@ -36,6 +36,9 @@ get_psrc_hts <- function(survey_years, survey_vars){
                     stuff(tblvars), paste0(tblname, "_weight"),
                     " FROM HHSurvey.v_", tblname, "s_labels", 
                     " WHERE survey_year IN(", stuff(survey_years),");")
+      if(tblname=="household"){
+        sql <- stringr::str_replace_all(sql, "household_weight", "hh_weight")
+      }
       rs <- psrcelmer::get_query(sql) %>% setDT() %>% psrc_hts_recode_na()
     }
   }

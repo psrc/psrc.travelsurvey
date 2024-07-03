@@ -32,7 +32,8 @@ get_psrc_hts <- function(survey_years, survey_vars){
       }else{
         paste0(tblnames[1:(which(tblnames==tblname))], "_id")
       }
-      sql <- paste0("SELECT ", paste0("CAST(", id_vars, " AS nvarchar)", collapse=", "), stuff(tblvars), 
+      sql <- paste0("SELECT ", paste0("CAST(", id_vars, " AS nvarchar)", collapse=", "), 
+                    stuff(tblvars), paste0(tblname, "_weight"),
                     " FROM HHSurvey.v_", tblname, "s_labels", 
                     " WHERE survey_year IN(", stuff(survey_years),");")
       rs <- psrcelmer::get_query(sql) %>% setDT() %>% psrc_hts_recode_na()

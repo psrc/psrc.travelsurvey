@@ -76,8 +76,9 @@ psrc_hts_recode_na <- function(dt){
 #' @export
 psrc_hts_varsearch <- function(regex){
   variable_list <- variable <- description <- NULL
-  description <- var_name <- NULL
-  rs <- variable_list %>%
-    .[grepl(regex, description, ignore.case=TRUE)|grepl(regex, variable, ignore.case=TRUE), ] %>% unique()
+  rs <- init_variable_list %>%
+    .[grepl(regex, description, ignore.case=TRUE)|
+      grepl(regex, variable,    ignore.case=TRUE), 
+      .(variable, description)] %>% unique()
   return(rs)
 }

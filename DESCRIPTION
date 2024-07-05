@@ -18,8 +18,11 @@ Imports:
     magrittr,
     psrcelmer,
     readxl,
-    stringr
+    rlang,
+    travelSurveyTools
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://psrc.github.io/psrc.travelsurvey/
+Depends: 
+    R (>= 2.10)

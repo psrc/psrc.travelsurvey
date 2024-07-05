@@ -13,37 +13,46 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @return surveyDataTools data object, i.e. named list 
 #' @author Michael Jensen
 #' @import data.table
+#' @importFrom dplyr case_when
+#' @importFrom stringr str_replace_all
+#' @importFrom rlang is_empty
+#' @importFrom travelSurveyTools factorize_df
 #'
 #' @export
 get_psrc_hts <- function(survey_years, survey_vars){
-  tblnames <- tblname <- survey_vars <- hts_split_vars <- variable <- NULL # For CMD check
+  tblnames <- tblname <- hts_split_vars <- hts_query_elmer <- variable <- data_type <- NULL # For CMD check
   tblnames <- c("household","person","day","trip","vehicle")
   # Helper function; identifies which tables the desired variables are in, using codebook
   hts_split_vars <- function(tblname, survey_vars){
     rs <- init_variable_list[get(tblname)==1 & variable %in% (survey_vars), variable] %>% unlist()
   }
   # Helper function; queries Elmer for specified variables
-  hts_query_elmer <- function(tblname, tblvars, survey_years){
-    if(is.null(tblvars)){
-      NULL
-    }else{
+  hts_query_elmer <- function(tblname, tblvars){
+    if(!rlang::is_empty(unlist(tblvars))){
       id_vars <- if(tblname=="vehicle"){
-        "vehicle_id"
+        c("household_id","vehicle_id")
       }else{
         paste0(tblnames[1:(which(tblnames==tblname))], "_id")
       }
-      sql <- paste0("SELECT ", paste0("CAST(", id_vars, " AS nvarchar)", collapse=", "), 
-                    stuff(tblvars), paste0(tblname, "_weight"),
-                    " FROM HHSurvey.v_", tblname, "s_labels", 
-                    " WHERE survey_year IN(", stuff(survey_years),");")
-      if(tblname=="household"){
-        sql <- stringr::str_replace_all(sql, "household_weight", "hh_weight")
+      sql_vars <- paste(c(paste0("CAST(", id_vars, " AS nvarchar) AS ", id_vars, collapse=", "), 
+                        paste(unlist(tblvars), collapse=", ")), collapse=", ")
+      if(tblname!="vehicle"){
+        sql_vars %<>% paste(", ", dplyr::case_when(tblname=="household" ~"hh_weight", 
+                                                   TRUE ~ paste0(tblname, "_weight")))
       }
-      rs <- psrcelmer::get_query(sql) %>% setDT() %>% psrc_hts_recode_na()
+      sql <- paste0("SELECT ", sql_vars, 
+                  " FROM HHSurvey.v_", tblname, "s_labels", 
+                  " WHERE survey_year IN(", stuff(survey_years),");")
+      cols_to_factor <- init_variable_list[data_type=="integer/categorical", variable] %>% 
+        unlist() %>% paste(collapse="|") %>% grep(tblvars, value = TRUE)
+      rs <- psrcelmer::get_query(sql) %>% setDT() %>% psrc_hts_recode_na() #%>% travelSurveyTools::factorize_df(init_value_labels)
+      return(rs)
+    }else{
+     return(NULL)
     }
   }
   split_vars <- sapply(tblnames, hts_split_vars, survey_vars, simplify = FALSE, USE.NAMES = TRUE)
-  hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, survey_years, USE.NAMES = TRUE)
+  hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE)
 }
 
 #' Recode missing values to NA

@@ -14,9 +14,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @author Michael Jensen
 #' @import data.table
 #' @importFrom dplyr case_when
-#' @importFrom stringr str_replace_all
 #' @importFrom rlang is_empty
-#' @importFrom travelSurveyTools factorize_df
 #'
 #' @export
 get_psrc_hts <- function(survey_years, survey_vars){
@@ -43,9 +41,8 @@ get_psrc_hts <- function(survey_years, survey_vars){
       sql <- paste0("SELECT ", sql_vars, 
                   " FROM HHSurvey.v_", tblname, "s_labels", 
                   " WHERE survey_year IN(", stuff(survey_years),");")
-      cols_to_factor <- init_variable_list[data_type=="integer/categorical", variable] %>% 
-        unlist() %>% paste(collapse="|") %>% grep(tblvars, value = TRUE)
-      rs <- psrcelmer::get_query(sql) %>% setDT() %>% psrc_hts_recode_na() #%>% travelSurveyTools::factorize_df(init_value_labels)
+      rs <- psrcelmer::get_query(sql) %>% setDT() %>% setnames("household_id","hh_id") %>% 
+        psrc_hts_recode_na() %>% psrc_hts_to_factor()
       return(rs)
     }else{
      return(NULL)
@@ -53,6 +50,7 @@ get_psrc_hts <- function(survey_years, survey_vars){
   }
   split_vars <- sapply(tblnames, hts_split_vars, survey_vars, simplify = FALSE, USE.NAMES = TRUE)
   hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE)
+  names(hts_data)[1] <- "hh"
 }
 
 #' Recode missing values to NA
@@ -71,6 +69,24 @@ psrc_hts_recode_na <- function(dt){
     unique() %>% paste0(collapse="|")
   for(col in colnames(dt))
     set(dt, i=grep(na_codes, dt[[col]]), j=col, value=NA)
+  return (dt)
+}
+
+#' Convert a column to factor datatype w/ levels specified from codebook
+#' 
+#' @param dt the data.table
+#' @return the data.table with column in factor datatype
+#' @author Michael Jensen
+#' @import data.table
+#'
+psrc_hts_to_factor <- function(dt){
+  data_type <- variable <- value_label <- NULL
+  ftr_cols <- init_variable_list[data_type=="integer/categorical", variable] %>% 
+    unlist() %>% paste(collapse="|") %>% grep(colnames(dt), value = TRUE)
+  for(col in ftr_cols){
+    levels <- init_value_labels[variable==col, value_label] %>% as.vector() %>% unique()
+    set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, exclude = NA, ordered = TRUE))
+  }
   return (dt)
 }
 

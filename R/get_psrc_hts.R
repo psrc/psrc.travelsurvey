@@ -14,7 +14,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @author Michael Jensen
 #' @import data.table
 #' @importFrom dplyr case_when
-#' @importFrom rlang is_empty
+#' @importFrom rlang is_empty set_names
 #'
 #' @export
 get_psrc_hts <- function(survey_years, survey_vars){
@@ -49,8 +49,8 @@ get_psrc_hts <- function(survey_years, survey_vars){
     }
   }
   split_vars <- sapply(tblnames, hts_split_vars, survey_vars, simplify = FALSE, USE.NAMES = TRUE)
-  hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE)
-  names(hts_data)[1] <- "hh"
+  hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE) %>%
+  rlang::set_names(c("hh","person","day","trip","vehicle")) #travelSurveyTools uses "hh"
 }
 
 #' Recode missing values to NA

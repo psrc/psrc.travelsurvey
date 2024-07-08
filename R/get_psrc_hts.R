@@ -33,7 +33,7 @@ get_psrc_hts <- function(survey_years, survey_vars){
         paste0(tblnames[1:(which(tblnames==tblname))], "_id")
       }
       sql_vars <- paste(c(paste0("CAST(", id_vars, " AS nvarchar) AS ", id_vars, collapse=", "), 
-                        paste(unlist(tblvars), collapse=", ")), collapse=", ")
+                        "survey_year", paste(unlist(tblvars), collapse=", ")), collapse=", ")
       if(tblname!="vehicle"){
         sql_vars %<>% paste(", ", dplyr::case_when(tblname=="household" ~"hh_weight", 
                                                    TRUE ~ paste0(tblname, "_weight")))

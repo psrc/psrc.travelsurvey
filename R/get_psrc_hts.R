@@ -23,7 +23,7 @@ get_psrc_hts <- function(survey_years, survey_vars){
   tblnames <- c("household","person","day","trip","vehicle")
   # Helper function; identifies which tables the desired variables are in, using codebook
   hts_split_vars <- function(tblname, survey_vars){
-    rs <- init_variable_list[get(tblname)==1 & variable %in% c("hhgroup", "survey_year", survey_vars), variable] %>% unlist()
+    rs <- init_variable_list[get(tblname)==1 & variable %in% c("sample_segment", "survey_year", survey_vars), variable] %>% unlist()
   }
   # Helper function; queries Elmer for specified variables
   hts_query_elmer <- function(tblname, tblvars){

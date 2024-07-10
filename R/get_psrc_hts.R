@@ -19,7 +19,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @export
 get_psrc_hts <- function(survey_years, survey_vars){
   tblnames <- tblname <- hts_split_vars <- hts_query_elmer <-  NULL # For CMD check
-  variable <- data_type <-hhgroup <- hh_id <- NULL # For CMD check
+  variable <- data_type <- sample_segment <- hh_id <- NULL # For CMD check
   tblnames <- c("household","person","day","trip","vehicle")
   # Helper function; identifies which tables the desired variables are in, using codebook
   hts_split_vars <- function(tblname, survey_vars){
@@ -51,12 +51,12 @@ get_psrc_hts <- function(survey_years, survey_vars){
      return(NULL)
     }
   }
-  # Helper function: add hhgroup (strata variable) to tables without it
-  add_hhgroup <- function(dt, hh){
-    if(!rlang::is_empty(dt$hhgroup)){
+  # Helper function: add strata variable to tables without it
+  add_strata_var <- function(dt, hh){
+    if(!rlang::is_empty(dt$sample_segment)){
       return(dt)
     }else{
-      dt[hh, hhgroup:=hhgroup, on=.(hh_id)]
+      dt[hh, sample_segment:=sample_segment, on=.(hh_id)]
       return(dt)
     }
   }
@@ -65,8 +65,8 @@ get_psrc_hts <- function(survey_years, survey_vars){
   split_vars <- sapply(tblnames, hts_split_vars, survey_vars, simplify = FALSE, USE.NAMES = TRUE)
   hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE) %>%
   rlang::set_names(c("hh","person","day","trip","vehicle"))                     # travelSurveyTools uses "hh"
-  hh_reference <- copy(hts_data$hh)
-  hts_data %<>% lapply(add_hhgroup, hh=hh_reference)
+  hh_reference <- copy(hts_data$hh) %>% .[,.(hh_id, sample_segment)] %>% setkey(hh_id)
+  hts_data %<>% lapply(add_strata_var, hh=hh_reference)
   return(hts_data)
 }
 

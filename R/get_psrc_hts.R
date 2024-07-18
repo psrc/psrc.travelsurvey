@@ -28,21 +28,23 @@ get_psrc_hts <- function(survey_years, survey_vars){
   # Helper function; queries Elmer for specified variables
   hts_query_elmer <- function(tblname, tblvars){
     if(!rlang::is_empty(unlist(tblvars))){
-      id_vars <- if(tblname=="vehicle"){
-        c("household_id","vehicle_id")
+      if(tblname=="vehicle"){
+        id_vars <- c("household_id","vehicle_id")
+        wgt_filter <- ""
       }else{
-        paste0(tblnames[1:(which(tblnames==tblname))], "_id")
+        id_vars <- paste0(tblnames[1:(which(tblnames==tblname))], "_id")
+        wgt_filter <- paste0(" AND ", hts_wgt_var(tblname), ">0;")
       }
       tblvars %<>% .[. %not_in% id_vars]
       sql_vars <- paste(c(paste0("CAST(", id_vars, " AS nvarchar) AS ", id_vars, collapse=", "), 
                         paste(unlist(tblvars), collapse=", ")), collapse=", ")
       if(tblname!="vehicle"){
-        sql_vars %<>% paste(", ", dplyr::case_when(tblname=="household" ~"hh_weight", 
-                                                   TRUE ~ paste0(tblname, "_weight")))
+        sql_vars %<>% paste(", ", hts_wgt_var(tblname))
       }
       sql <- paste0("SELECT ", sql_vars, 
                     " FROM HHSurvey.v_", tblname, "s_labels", 
-                    " WHERE survey_year IN(", stuff(survey_years),");")
+                    " WHERE survey_year IN(", stuff(survey_years),")",
+                    wgt_filter)
       rs <- psrcelmer::get_query(sql) %>% setDT() %>% 
         setnames("household_id","hh_id") %>%                                    # travelSurveyTools uses "hh_id"
         psrc_hts_recode_na() %>% psrc_hts_to_factor()
@@ -68,6 +70,20 @@ get_psrc_hts <- function(survey_years, survey_vars){
   hh_reference <- copy(hts_data$hh) %>% .[,.(hh_id, sample_segment)] %>% setkey(hh_id)
   hts_data %<>% lapply(add_strata_var, hh=hh_reference)
   return(hts_data)
+}
+
+#' Return weight variable name
+#' 
+#' @param tblname table name
+#' @return weight variable name
+#' @import data.table
+#'
+hts_wgt_var <- function(tblname){
+  wgt_var <- NULL
+  if(tblname!="vehicle"){
+    wgtname <- dplyr::case_when(tblname=="household" ~"hh_weight", 
+                                TRUE ~ paste0(tblname, "_weight"))
+  }
 }
 
 #' Recode missing values to NA
@@ -98,8 +114,9 @@ psrc_hts_recode_na <- function(dt){
 #'
 psrc_hts_to_factor <- function(dt){
   data_type <- variable <- value_label <- NULL
-  ftr_cols <- init_variable_list[data_type=="integer/categorical", variable] %>% 
-    unlist() %>% paste(collapse="|") %>% grep(colnames(dt), value = TRUE)
+  lbl_ftrs <- init_value_labels$variable %>% unique()
+  ftr_cols <- psrc.travelsurvey:::init_variable_list[data_type=="integer/categorical" & variable %in% lbl_ftrs, variable] %>% 
+    unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
   for(col in ftr_cols){
     levels <- init_value_labels[variable==col, value_label] %>% as.vector() %>% unique()
     set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, exclude = NA, ordered = TRUE))
@@ -124,4 +141,3 @@ psrc_hts_varsearch <- function(regex){
       .(variable, description)] %>% unique()
   return(rs)
 }
-

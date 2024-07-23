@@ -17,7 +17,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @importFrom rlang is_empty set_names
 #'
 #' @export
-get_psrc_hts <- function(survey_years, survey_vars){
+get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   tblnames <- tblname <- hts_split_vars <- hts_query_elmer <-  NULL # For CMD check
   variable <- data_type <- sample_segment <- hh_id <- NULL # For CMD check
   tblnames <- c("household","person","day","trip","vehicle")
@@ -53,6 +53,22 @@ get_psrc_hts <- function(survey_years, survey_vars){
      return(NULL)
     }
   }
+  # Helper function: recode missing values to NA
+  psrc_hts_recode_na <- function(dt){
+    na_codes <- c("^Missing: Technical Error$",
+                  "^Missing: Non-response$",
+                  "^Missing: Skip Logic$",
+                  "^Children or missing$",
+                  "^-9998$",
+                  "^-9997$",
+                  "^-995$",
+                  "^$") %>%
+      unique() %>% paste0(collapse="|")
+    for(col in colnames(dt))
+      set(dt, i=grep(na_codes, dt[[col]]), j=col, value=NA)
+    return (dt)
+  }
+  
   # Helper function: add strata variable to tables without it
   add_strata_var <- function(dt, hh){
     if(!rlang::is_empty(dt$sample_segment)){
@@ -61,6 +77,19 @@ get_psrc_hts <- function(survey_years, survey_vars){
       dt[hh, sample_segment:=sample_segment, on=.(hh_id)]
       return(dt)
     }
+  }
+  
+  # Helper function: Convert a column to factor datatype w/ levels specified from codebook
+  psrc_hts_to_factor <- function(dt){
+    data_type <- variable <- value_label <- NULL
+    lbl_ftrs <- init_value_labels$variable %>% unique()
+    ftr_cols <- init_variable_list[data_type=="integer/categorical" & variable %in% lbl_ftrs, variable] %>% 
+      unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
+    for(col in ftr_cols){
+      levels <- init_value_labels[variable==col, value_label] %>% as.vector() %>% unique()
+      set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, exclude = NA, ordered = TRUE))
+    }
+    return (dt)
   }
   
   # Main workflow
@@ -84,44 +113,6 @@ hts_wgt_var <- function(tblname){
     wgtname <- dplyr::case_when(tblname=="household" ~"hh_weight", 
                                 TRUE ~ paste0(tblname, "_weight"))
   }
-}
-
-#' Recode missing values to NA
-#' 
-#' @param dt the data.table
-#' @return the data.table with missing values recoded NA
-#' @author Michael Jensen
-#' @import data.table
-#'
-psrc_hts_recode_na <- function(dt){
-  na_codes <- c("^Missing: Technical Error$",
-                "^Missing: Non-response$",
-                "^Missing: Skip Logic$",
-                "^Children or missing$",
-                "^$") %>%
-    unique() %>% paste0(collapse="|")
-  for(col in colnames(dt))
-    set(dt, i=grep(na_codes, dt[[col]]), j=col, value=NA)
-  return (dt)
-}
-
-#' Convert a column to factor datatype w/ levels specified from codebook
-#' 
-#' @param dt the data.table
-#' @return the data.table with column in factor datatype
-#' @author Michael Jensen
-#' @import data.table
-#'
-psrc_hts_to_factor <- function(dt){
-  data_type <- variable <- value_label <- NULL
-  lbl_ftrs <- init_value_labels$variable %>% unique()
-  ftr_cols <- psrc.travelsurvey:::init_variable_list[data_type=="integer/categorical" & variable %in% lbl_ftrs, variable] %>% 
-    unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
-  for(col in ftr_cols){
-    levels <- init_value_labels[variable==col, value_label] %>% as.vector() %>% unique()
-    set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, exclude = NA, ordered = TRUE))
-  }
-  return (dt)
 }
 
 #' Search PSRC travel survey variable definitions

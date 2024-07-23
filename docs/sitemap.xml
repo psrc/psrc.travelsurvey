@@ -1,27 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/404.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_recode_na.html</loc>
-  </url>
-  <url>
-    <loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_varsearch.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/404.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/authors.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/index.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/LICENSE-text.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_wgt_var.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/index.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_varsearch.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/variable_value_lookup.html</loc></url>
 </urlset>
+

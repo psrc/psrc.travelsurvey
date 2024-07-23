@@ -1,9 +1,8 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2024-07-02T23:08Z
+last_built: 2024-07-23T18:15Z
 urls:
   reference: https://psrc.github.io/psrc.travelsurvey/reference
   article: https://psrc.github.io/psrc.travelsurvey/articles
-

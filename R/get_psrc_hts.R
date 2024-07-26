@@ -83,13 +83,13 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   # Helper function: Convert a column to factor datatype w/ levels specified from codebook
   psrc_hts_to_factor <- function(dt){
     data_type <- variable <- value <- NULL
-    lbl_ftrs <- init_value_labels$variable %>% unique()
-    ftr_cols <- init_variable_list[data_type=="integer/categorical" & variable %in% lbl_ftrs, variable] %>% 
+    lbl_ftrs <- psrc.travelsurvey:::init_value_labels$variable %>% unique()
+    ftr_cols <- psrc.travelsurvey:::init_variable_list[data_type=="integer/categorical" & variable %in% lbl_ftrs, variable] %>% 
       unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
     for(col in ftr_cols){
-      levels <- init_value_labels[variable==col, value] %>% as.vector() %>% unique()
-      datavalues <- dt[[col]] %>% unique()
-      if(setequal(datavalues, levels)){
+      levels <- psrc.travelsurvey:::init_value_labels[variable==col, label] %>% as.vector() %>% unique() %>% trimws()
+      datavalues <- dt[!is.na(get(col)),get(col)] %>% as.vector() %>% unique() %>% trimws()
+      if(all(datavalues %in% levels)){
         set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, ordered = TRUE))
       }
     }

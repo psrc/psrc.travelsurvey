@@ -23,7 +23,8 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   tblnames <- c("household","person","day","trip","vehicle")
   # Helper function; identifies which tables the desired variables are in, using codebook
   hts_split_vars <- function(tblname, survey_vars){
-    rs <- init_variable_list[get(tblname)==1 & variable %in% c("sample_segment", "survey_year", survey_vars), variable] %>% unlist()
+    rs <- copy(psrc.travelsurvey:::init_variable_list) %>% setnames("hh","household") %>%
+    .[get(tblname)==1 & variable %in% c("sample_segment", "survey_year", survey_vars), variable] %>% unlist()
   }
   # Helper function; queries Elmer for specified variables
   hts_query_elmer <- function(tblname, tblvars){
@@ -69,25 +70,28 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
     return (dt)
   }
   
-  # Helper function: add strata variable to tables without it
-  add_strata_var <- function(dt, hh){
-    if(!rlang::is_empty(dt$sample_segment)){
-      return(dt)
-    }else{
-      dt[hh, sample_segment:=sample_segment, on=.(hh_id)]
-      return(dt)
-    }
-  }
+  # # Helper function: add strata variable to tables without it
+  # add_strata_var <- function(dt, hh){
+  #   if(!rlang::is_empty(dt$sample_segment)){
+  #     return(dt)
+  #   }else{
+  #     dt[hh, sample_segment:=sample_segment, on=.(hh_id)]
+  #     return(dt)
+  #   }
+  # }
   
   # Helper function: Convert a column to factor datatype w/ levels specified from codebook
   psrc_hts_to_factor <- function(dt){
-    data_type <- variable <- value_label <- NULL
+    data_type <- variable <- value <- NULL
     lbl_ftrs <- init_value_labels$variable %>% unique()
     ftr_cols <- init_variable_list[data_type=="integer/categorical" & variable %in% lbl_ftrs, variable] %>% 
       unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
     for(col in ftr_cols){
-      levels <- init_value_labels[variable==col, value_label] %>% as.vector() %>% unique()
-      set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, exclude = NA, ordered = TRUE))
+      levels <- init_value_labels[variable==col, value] %>% as.vector() %>% unique()
+      datavalues <- dt[[col]] %>% unique()
+      if(setequal(datavalues, levels)){
+        set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, ordered = TRUE))
+      }
     }
     return (dt)
   }
@@ -97,7 +101,7 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE) %>%
   rlang::set_names(c("hh","person","day","trip","vehicle"))                     # travelSurveyTools uses "hh"
   hh_reference <- copy(hts_data$hh) %>% .[,.(hh_id, sample_segment)] %>% setkey(hh_id)
-  hts_data %<>% lapply(add_strata_var, hh=hh_reference)
+  # hts_data %<>% lapply(add_strata_var, hh=hh_reference) # travelSurveyTools does this for you
   return(hts_data)
 }
 
@@ -126,7 +130,7 @@ hts_wgt_var <- function(tblname){
 #' @export
 psrc_hts_varsearch <- function(regex){
   variable_list <- variable <- description <- NULL
-  rs <- init_variable_list %>%
+  rs <- psrc.travelsurvey:::init_variable_list %>%
     .[grepl(regex, description, ignore.case=TRUE)|
       grepl(regex, variable,    ignore.case=TRUE), 
       .(variable, description)] %>% unique()

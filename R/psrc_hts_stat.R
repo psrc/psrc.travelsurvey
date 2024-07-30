@@ -13,6 +13,7 @@ NULL
 #' @author Michael Jensen
 #' @import data.table
 #' @importFrom stringr str_replace
+#' @importFrom travelSurveyTools hts_prep_variable hts_summary_cat hts_summary_num
 #'
 #' @export
 psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){

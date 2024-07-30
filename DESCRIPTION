@@ -18,7 +18,8 @@ Imports:
     magrittr,
     psrcelmer,
     readxl,
-    rlang
+    rlang,
+    stringr
 Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -49,7 +49,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
   }
   codebook_vars <- init_variable_list                                          # mutable copy
   newvars <- NULL                                                              # find any new variables
-  newvars <- setdiff(c(grpvars, statvar), c(init_variable_list$variables, "survey_year")) 
+  newvars <- setdiff(c(grpvars, statvar), codebook_vars$variable) 
   if(!is.null(newvars)){                                                       # add new variables to codebook
     newrows <- lapply(newvars, add_var) %>% rbindlist()
     codebook_vars %<>% rbind(newrows)

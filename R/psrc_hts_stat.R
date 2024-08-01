@@ -17,6 +17,9 @@ NULL
 #'
 #' @export
 psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
+  statvar <- grpvars <- found_idx <- found_tbl <- found_classes <- NULL
+  found_dtype <- codebook_vars <- var_row <- newvars <- newrows <- NULL
+  statvartype <- prepped_dt <- summary_dt <- NULL # For CMD check
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   
     statvar <- group_vars[length(group_vars)]
     grpvars <- group_vars[-length(group_vars)]
@@ -24,6 +27,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
     statvar <- stat_var
     grpvars <- group_vars 
   }
+  if(rlang::is_empty(grpvars)){grpvars <- NULL}
   # Helper function to add variable row to codebook         
   add_var <- function(var){
     found_idx <- lapply(hts_data, function(x) any(var %in% colnames(x))==TRUE) %>% unlist()
@@ -59,6 +63,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
                                   variables_dt = codebook_vars,
                                   data = hts_data,
                                   remove_outliers = FALSE,
+                                  #remove_missing = TRUE,
                                   weighted =TRUE,
                                   strataname = "sample_segment")
   if(is.null(stat_var)){                                                       # count

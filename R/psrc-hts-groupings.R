@@ -44,7 +44,7 @@ hts_bin_income <- function(hts_data){
 #' @export
 hts_bin_age <- function(hts_data, cats){
   age <- age_bin3 <- age_bin5 <- NULL # Bind variables locally for CMD check
-  rgx_yr <- ".*(\\d+) years (old)?"
+  rgx_yr <- "^.*\\b(\\d+) years.*$"
   if(cats %not_in% c(3,5)){
     print("cats must be either 3 or 5")
   }else if(!any(grepl("^age$", colnames(hts_data$person)))){
@@ -54,8 +54,8 @@ hts_bin_age <- function(hts_data, cats){
       .[, age_bin3:=factor(
         fcase(as.integer(safegsub(rgx_yr, as.character(age)))<=18, "Under 18 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=64, "18-64 Years",
-              !is.na(age),                                         "65 years or  older"),
-        levels=c("Under 18 Years","18-64 Years","65 years or  older"))]
+              as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
+        levels=c("Under 18 Years","18-64 Years","65 years or older"))]
   }else if(cats==5){
     hts_data$person %<>% setDT() %>%
       .[, age_bin5:=factor(
@@ -63,9 +63,9 @@ hts_bin_age <- function(hts_data, cats){
               as.integer(safegsub(rgx_yr, as.character(age)))<=24, "18-24 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=44, "25-44 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=64, "45-64 Years",
-              !is.na(age),                                         "65+"),
+              as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
         levels=c("Under 18 Years","18-24 Years","25-44 Years",
-                "45-64 Years","65 years or  older"))]
+                "45-64 Years","65 years or older"))]
   }
   return(hts_data)
 }

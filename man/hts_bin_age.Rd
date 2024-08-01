@@ -13,7 +13,7 @@ hts_bin_age(hts_data, cats)
 \item{cats}{number of binned categories--3 or 5}
 }
 \value{
-hts_data with an additional binned age field
+hts_data with an additional binned age variable
 }
 \description{
 Add a binned age variable

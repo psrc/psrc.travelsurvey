@@ -1,0 +1,33 @@
+---
+title: "add-standard-groupings"
+description: >
+  Add variables with standard PSRC category groupings
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{2: Add Standard Groupings}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(psrc.travelsurvey)
+```
+
+## Title
+
+Text
+
+```{r example, message=FALSE, eval=FALSE}
+
+
+
+```
+
+

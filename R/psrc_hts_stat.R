@@ -9,6 +9,7 @@ NULL
 #' @param analysis_unit string, either "household", "person", "day", "trip", or "vehicle"
 #' @param group_vars vector with names of one or more grouping variables, in order
 #' @param stat_var string, name of numeric variable for sum, median, mean; implicit for count
+#' @param incl_na logical, whether NA should be included in results--including calculated shares
 #' @return summary table
 #' @author Michael Jensen
 #' @import data.table
@@ -16,7 +17,7 @@ NULL
 #' @importFrom travelSurveyTools hts_prep_variable hts_summary_cat hts_summary_num
 #'
 #' @export
-psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
+psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NULL, incl_na=TRUE){
   statvar <- grpvars <- found_idx <- found_tbl <- found_classes <- NULL
   found_dtype <- codebook_vars <- var_row <- newvars <- newrows <- NULL
   statvartype <- prepped_dt <- summary_dt <- NULL # For CMD check
@@ -27,7 +28,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
     statvar <- stat_var
     grpvars <- group_vars 
   }
-  if(rlang::is_empty(grpvars)){grpvars <- NULL}
+  if("survey_year" %not_in% grpvars){grpvars <- c("survey_year", grpvars)}
   # Helper function to add variable row to codebook         
   add_var <- function(var){
     found_idx <- lapply(hts_data, function(x) any(var %in% colnames(x))==TRUE) %>% unlist()
@@ -58,16 +59,18 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
     newrows <- lapply(newvars, add_var) %>% rbindlist()
     codebook_vars %<>% rbind(newrows)
   }
-  prepped_dt <- hts_prep_variable(summarize_var = statvar,
-                                  summarize_by = grpvars,
-                                  variables_dt = codebook_vars,
-                                  data = hts_data,
-                                  remove_outliers = FALSE,
-                                  #remove_missing = TRUE,
-                                  weighted =TRUE,
-                                  strataname = "sample_segment")
+  prepped_dt <- suppressMessages(
+            hts_prep_variable(summarize_var = statvar,
+                              summarize_by = grpvars,
+                              variables_dt = codebook_vars,
+                              data = hts_data,
+                              remove_outliers = FALSE,
+                              remove_missing = !incl_na,
+                              weighted =TRUE,
+                              strataname = "sample_segment"))
   if(is.null(stat_var)){                                                       # count
     statvartype <- codebook_vars[variable==(statvar), data_type] %>% unique()
+    if(incl_na==FALSE){prepped_dt$cat %<>% .[!is.na(get(statvar))]}
     summary_dt <- hts_summary_cat(prepped_dt = prepped_dt$cat,
                               summarize_var = statvar,
                               summarize_by = grpvars,
@@ -77,6 +80,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars, stat_var=NULL){
                               strataname = "sample_segment",
                               se = TRUE) 
   }else{
+    if(incl_na==FALSE){prepped_dt$num %<>% .[!is.na(get(statvar))]}
     summary_dt <- hts_summary_num(prepped_dt = prepped_dt$num,                 # min/max/median/mean
                               summarize_var = statvar,
                               summarize_by = grpvars,

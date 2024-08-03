@@ -1,0 +1,91 @@
+---
+title: "retrieve-and-summarize-data"
+description: >
+  Retrieve and summarize household travel survey data
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{1: Retrieve and summarize data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(psrc.travelsurvey)
+library(magrittr)
+```
+## **travelSurveyTools** & **psrc.travelsurvey** packages work together
+
+The **psrc.travelsurvey** package is meant to complement and enhance the **travelSurveyTools** package for PSRC users. It delivers data in the `hts_data` format appropriate as input to subsequent **travelSurveyTools** functions. It also provides wrapper functions that provide PSRC defaults to **travelSurveyTools** functions, resulting in simpler workflows with fewer required arguments. **psrc.travelsurvey** is constrained to an extent by fitting into the **travelSurveyTools** system, but if you have suggestions for other features or functions you'd find helpful, please contact the authors and we'll see if we can implement them.
+
+## Data retrieval
+
+Since psrc.travelsurvey uses Elmer, the agency's central database, to retrieve PSRC household travel survey data you'll need to be connected (in office or via VPN). Then use `get_psrc_hts()`, which takes two arguments:
+
+  * **survey_years**  - a vector of one or more years; the default is all available i.e., `c(2017,2019,2021,2023)` as of this writing.
+  * **survey_vars** - a vector of variable names (regardless of the table in which they occur) 
+
+The return object is a list with separate data.table elements for each potential unit of analysis, i.e. household (`hh`), `person`, `day`, `trip`, and `vehicle`. The **travelSurveyTools** package workflow uses this central object for related or independent variable summaries. It can include the full set of variables for all your summaries, so it's unnecessary to request separate data objects to feed each separate summary data table. It also supports multiyear summaries (trends/comparisons) via the `survey_year` field.
+  
+For efficiency, `get_psrc_hts()` only requests the variables you specify, so you must know their precise names. A lookup function, `psrc_hts_varsearch()` can assist; it takes a single string argument as the codebook search term and matches either the variable name or description fields. Regular expressions are supported for more complex searches; for example, the word boundary operator `\\b` can be used to omit vehicle model from results when searching for "mode".
+
+```{r varsearch, message=FALSE, eval=FALSE}
+
+View(psrc_hts_varsearch("\\bmode\\b"))
+
+```
+
+Note: It is unnecessary to include the survey year, table ids, weights, or survey stratification variable (`sample_segment`) in your `survey_vars` argument; since they are necessary for later steps, `get_psrc_hts()` includes them implicitly. Factor variables and levels are applied from the codebook, and missing or skip-value codes are recoded as `NA`.
+
+## Summarization
+
+To summarize data, use `psrc_hts_stat()`. This has four primary arguments, and one option. The arguments are:
+
+  * **hts_data**  - the `hts_data` object
+  * **analysis_unit** - string specifying the scale at which statistics are calculated, either "hh", "person", "day","trip", or "vehicle".
+  * **group_vars** - any grouping variables, in nesting order (share summaries are calculated per categories of the variable listed last).
+  * **stat_var** (optional) - Numeric variable if min/max/median/mean is desired; omit for count/share summaries.
+
+As an example, we'll retrieve the following survey variables, then do one count/share summary, and one numeric summary. Notice, travelSurveyTools handles the relational element of the data, so tables lower in the organizational heirarchy (like `trips`) inherit attributes from those above them (such as `hh`); this is a handy feature and avoids unnecessary data duplication among tables.
+
+```{r retrieve_and_summarize, message=FALSE, eval=TRUE}
+# Specify which variables to retrieve
+vars <- c("hhsize", "employment", "commute_mode", "dest_purpose_cat", 
+          "mode_characterization", "distance_miles", "duration_minutes")
+
+# Retrieve the data
+hts_data <- get_psrc_hts(survey_vars = vars)  # default includes all survey_years
+
+# Calculate a numeric summary, i.e. min/max/median/mean
+rs1 <- psrc_hts_stat(hts_data, analysis_unit="trip", group_vars="hhsize", stat_var="duration_minutes")
+head(rs1)
+
+# Calculate a categorical summary, i.e. count/share
+rs2 <- psrc_hts_stat(hts_data, analysis_unit="trip", group_vars=c("hhsize", "mode_characterization"))
+head(rs2)
+
+```
+
+## Custom variables and filtering
+
+Since each `hts_data` element is a data.table, they can be manipulated with any combination of base r, tidyverse (e.g. `mutate()`), or data.table (e.g `:=`) syntax. Additionally, standard category groupings not present in the base data can be added via the functions described in [the accompanying vignette](add-standard-groupings.html).
+
+Keep in mind that filtering any table removes records available for subsequent analyses. Rather than manage multiple filtered copies of the data object, you may want to create a new variable on the relevant table with `NA` values for the records you intend to exclude from the summary. You can then use the `incl_na=FALSE` option to exclude that line from summary results (of particular value when you want shares calculated from only reported categories). Here we will add a dichotomous `worker` variable, then calculate shares with `NA` values excluded (they would otherwise comprise about 20 percent of the total). 
+
+```{r add_variable, message=FALSE, eval=TRUE}
+# Add the worker variable 
+hts_data %<>% hts_bin_worker()
+
+# Calculate a categorical summary, i.e. count/share
+rs3 <- psrc_hts_stat(hts_data, "person", c("survey_year", "worker"), incl_na=FALSE)
+head(rs3)
+
+```
+
+Note: **travelSurveyTools** summary functions require additional preparatory steps that **psrc.travelsurvey** handles for you, for simplicity. To use native **travelSurveyTools** summary functions, you'll need to handle these extra steps yourself, since **travelSurveyTools** does not have a dependency on the **psrc.travelsurvey** package.

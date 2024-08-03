@@ -24,3 +24,4 @@
 # R Environment Variables
 .Renviron
 
+inst/doc

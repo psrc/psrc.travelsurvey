@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 library(psrc.travelsurvey)
 library(magrittr)
 ```
-## **travelSurveyTools** & **psrc.travelsurvey** packages work together
+## Works with **travelSurveyTools**
 
 The **psrc.travelsurvey** package is meant to complement and enhance the **travelSurveyTools** package for PSRC users. It delivers data in the `hts_data` format appropriate as input to subsequent **travelSurveyTools** functions. It also provides wrapper functions that provide PSRC defaults to **travelSurveyTools** functions, resulting in simpler workflows with fewer required arguments. **psrc.travelsurvey** is constrained to an extent by fitting into the **travelSurveyTools** system, but if you have suggestions for other features or functions you'd find helpful, please contact the authors and we'll see if we can implement them.
 
@@ -36,9 +36,7 @@ The return object is a list with separate data.table elements for each potential
 For efficiency, `get_psrc_hts()` only requests the variables you specify, so you must know their precise names. A lookup function, `psrc_hts_varsearch()` can assist; it takes a single string argument as the codebook search term and matches either the variable name or description fields. Regular expressions are supported for more complex searches; for example, the word boundary operator `\\b` can be used to omit vehicle model from results when searching for "mode".
 
 ```{r varsearch, message=FALSE, eval=FALSE}
-
 View(psrc_hts_varsearch("\\bmode\\b"))
-
 ```
 
 Note: It is unnecessary to include the survey year, table ids, weights, or survey stratification variable (`sample_segment`) in your `survey_vars` argument; since they are necessary for later steps, `get_psrc_hts()` includes them implicitly. Factor variables and levels are applied from the codebook, and missing or skip-value codes are recoded as `NA`.

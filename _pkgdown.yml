@@ -1,4 +1,13 @@
 url: https://psrc.github.io/psrc.travelsurvey/
 template:
   bootstrap: 5
+navbar:
+ components:
+   articles:
+    text: Articles
+    menu:
+    - text: Retrieve and summarize data
+      href: articles/retrieve-and-summarize-data.html
+    - text: Add standard groupings
+      href: articles/add-standard-groupings.html
 

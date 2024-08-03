@@ -1,10 +1,10 @@
 ---
-title: "retrieve-and-summarize-data"
+title: "Retrieve and summarize data"
 description: >
   Retrieve and summarize household travel survey data
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{1: Retrieve and summarize data}
+  %\VignetteIndexEntry{Retrieve and summarize data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

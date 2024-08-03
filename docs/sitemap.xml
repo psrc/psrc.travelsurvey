@@ -1,9 +1,22 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/404.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/articles/add-standard-groupings.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/articles/index.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-data.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/authors.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/index.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/LICENSE-text.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_age.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_commute_freq.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_commute_mode.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_edu.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_gender.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_hhsize.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_income.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_telework_time.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_vehicle_count.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_worker.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_wgt_var.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/index.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_stat.html</loc></url>

@@ -1,10 +1,10 @@
 ---
-title: "add-standard-groupings"
+title: "Add Standard Groupings"
 description: >
   Add variables with standard PSRC category groupings
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{2: Add Standard Groupings}
+  %\VignetteIndexEntry{Add Standard Groupings}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

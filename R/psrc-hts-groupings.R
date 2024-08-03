@@ -38,25 +38,25 @@ hts_bin_income <- function(hts_data){
 #' Requires `age` variable
 #'
 #' @param hts_data the hts_data list object
-#' @param cats number of binned categories--3 or 5
+#' @param bins number of binned categories--3 or 5
 #' @return hts_data with an additional binned age variable
 #' @author Michael Jensen
 #' @export
-hts_bin_age <- function(hts_data, cats){
+hts_bin_age <- function(hts_data, bins){
   age <- age_bin3 <- age_bin5 <- NULL # Bind variables locally for CMD check
   rgx_yr <- "^.*\\b(\\d+) years.*$"
-  if(cats %not_in% c(3,5)){
-    print("cats must be either 3 or 5")
+  if(bins %not_in% c(3,5)){
+    print("bins must be either 3 or 5")
   }else if(!any(grepl("^age$", colnames(hts_data$person)))){
     print("`age` variable missing from data")
-  }else if(cats==3){
+  }else if(bins==3){
     hts_data$person %<>% setDT() %>% 
       .[, age_bin3:=factor(
         fcase(as.integer(safegsub(rgx_yr, as.character(age)))<=18, "Under 18 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=64, "18-64 Years",
               as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
         levels=c("Under 18 Years","18-64 Years","65 years or older"))]
-  }else if(cats==5){
+  }else if(bins==5){
     hts_data$person %<>% setDT() %>%
       .[, age_bin5:=factor(
         fcase(as.integer(safegsub(rgx_yr, as.character(age)))<=18, "Under 18 Years",

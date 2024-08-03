@@ -68,9 +68,6 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="works-with-travelsurveytools">Works with <strong>travelSurveyTools</strong><a class="anchor" aria-label="anchor" href="#works-with-travelsurveytools"></a>
 </h2>
@@ -119,7 +116,7 @@ the variable name or description fields. Regular expressions are
 supported for more complex searches; for example, the word boundary
 operator <code>\\b</code> can be used to omit vehicle model from results
 when searching for “mode”.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="fu"><a href="../reference/psrc_hts_varsearch.html">psrc_hts_varsearch</a></span><span class="op">(</span><span class="st">"\\bmode\\b"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Note: It is unnecessary to include the survey year, table ids,
 weights, or survey stratification variable (<code>sample_segment</code>)
@@ -154,8 +151,10 @@ travelSurveyTools handles the relational element of the data, so tables
 lower in the organizational heirarchy (like <code>trips</code>) inherit
 attributes from those above them (such as <code>hh</code>); this is a
 handy feature and avoids unnecessary data duplication among tables.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Specify which variables to retrieve</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Specify which variables to retrieve</span></span>
 <span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"employment"</span>, <span class="st">"commute_mode"</span>, <span class="st">"dest_purpose_cat"</span>, </span>
 <span>          <span class="st">"mode_characterization"</span>, <span class="st">"distance_miles"</span>, <span class="st">"duration_minutes"</span><span class="op">)</span></span>
 <span></span>
@@ -163,36 +162,33 @@ handy feature and avoids unnecessary data duplication among tables.</p>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span>  <span class="co"># default includes all survey_years</span></span>
 <span></span>
 <span><span class="co"># Calculate a numeric summary, i.e. min/max/median/mean</span></span>
-<span><span class="va">rs1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, analysis_unit<span class="op">=</span><span class="st">"trip"</span>, group_vars<span class="op">=</span><span class="st">"hhsize"</span>, stat_var<span class="op">=</span><span class="st">"duration_minutes"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    survey_year   hhsize count   min   max     mean mean_moe median</span></span>
-<span><span class="co">#&gt;          &lt;int&gt;    &lt;ord&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;num&gt;    &lt;num&gt;  &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        2017 1 person  8226 -1430   660 20.70311 2.843919     15</span></span>
-<span><span class="co">#&gt; 2:        2017 2 people 14021 -1435   900 16.63789 5.345446     15</span></span>
-<span><span class="co">#&gt; 3:        2017 3 people  4548 -1430   780 18.55237 5.678339     20</span></span>
-<span><span class="co">#&gt; 4:        2017 4 people  4605 -1420   735 19.20593 1.152697     15</span></span>
-<span><span class="co">#&gt; 5:        2017 5 people   621     2   160 26.28151 4.133729     15</span></span>
-<span><span class="co">#&gt; 6:        2017 6 people   230     1   110 27.38793 3.223868     20</span></span>
+<span><span class="va">rs1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, </span>
+<span>                     analysis_unit<span class="op">=</span><span class="st">"trip"</span>, </span>
+<span>                     group_vars<span class="op">=</span><span class="st">"hhsize"</span>, </span>
+<span>                     stat_var<span class="op">=</span><span class="st">"distance_miles"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs1</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span><span class="op">]</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">min</span>, <span class="va">max</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      hhsize count      mean   mean_moe   median</span></span>
+<span><span class="co">#&gt;       &lt;ord&gt; &lt;int&gt;     &lt;num&gt;      &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1 person 10075  6.380222  0.8284701 2.169828</span></span>
+<span><span class="co">#&gt; 2: 2 people 11871 13.174915  3.0272559 3.311287</span></span>
+<span><span class="co">#&gt; 3: 3 people  3517  8.357221  0.9016603 4.094215</span></span>
+<span><span class="co">#&gt; 4: 4 people  3595 10.254066  5.6922574 3.233616</span></span>
+<span><span class="co">#&gt; 5: 5 people  1018 32.329314 19.3722674 2.761995</span></span>
+<span><span class="co">#&gt; 6: 6 people   371  5.709866  0.8525478 3.046583</span></span>
 <span></span>
 <span><span class="co"># Calculate a categorical summary, i.e. count/share</span></span>
-<span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, analysis_unit<span class="op">=</span><span class="st">"trip"</span>, group_vars<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"mode_characterization"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs2</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    survey_year   hhsize mode_characterization count        prop    prop_moe</span></span>
-<span><span class="co">#&gt;          &lt;int&gt;    &lt;ord&gt;                &lt;char&gt; &lt;int&gt;       &lt;num&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        2017 1 person              Airplane    30 0.008162058 0.012210067</span></span>
-<span><span class="co">#&gt; 2:        2017 1 person    Bike/Micromobility   201 0.004731796 0.001277856</span></span>
-<span><span class="co">#&gt; 3:        2017 1 person            Drive HOV2   597 0.148052233 0.032233765</span></span>
-<span><span class="co">#&gt; 4:        2017 1 person           Drive HOV3+   174 0.011645097 0.004098572</span></span>
-<span><span class="co">#&gt; 5:        2017 1 person             Drive SOV  3534 0.573052855 0.039654050</span></span>
-<span><span class="co">#&gt; 6:        2017 1 person               Transit  1388 0.098198663 0.021481500</span></span>
-<span><span class="co">#&gt;           est    est_moe</span></span>
-<span><span class="co">#&gt;         &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:   18074.04  27221.212</span></span>
-<span><span class="co">#&gt; 2:   10478.08   2713.818</span></span>
-<span><span class="co">#&gt; 3:  327846.49  78895.081</span></span>
-<span><span class="co">#&gt; 4:   25786.87   8932.948</span></span>
-<span><span class="co">#&gt; 5: 1268966.79 133490.531</span></span>
-<span><span class="co">#&gt; 6:  217450.87  49295.115</span></span></code></pre></div>
+<span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"trip"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"mode_characterization"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span> <span class="op">&amp;</span> <span class="va">mode_characterization</span><span class="op">==</span><span class="st">"Transit"</span><span class="op">]</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">mode_characterization</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      hhsize count       prop    prop_moe       est   est_moe</span></span>
+<span><span class="co">#&gt;       &lt;ord&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1 person   908 0.08090005 0.012606740 173635.72 28466.102</span></span>
+<span><span class="co">#&gt; 2: 2 people   563 0.02056404 0.004167832  88135.46 17783.128</span></span>
+<span><span class="co">#&gt; 3: 3 people   165 0.01946050 0.005394446  32299.75  8864.421</span></span>
+<span><span class="co">#&gt; 4: 4 people   205 0.04214847 0.009085101 162495.97 35391.190</span></span>
+<span><span class="co">#&gt; 5: 5 people    77 0.06091950 0.015838454 131608.22 34802.763</span></span>
+<span><span class="co">#&gt; 6: 6 people    49 0.10200039 0.026777949 140783.94 38384.352</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="custom-variables-and-filtering">Custom variables and filtering<a class="anchor" aria-label="anchor" href="#custom-variables-and-filtering"></a>
@@ -212,12 +208,13 @@ want shares calculated from only reported categories). Here we will add
 a dichotomous <code>worker</code> variable, then calculate shares with
 <code>NA</code> values excluded (they would otherwise comprise about 20
 percent of the total).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add the worker variable </span></span>
-<span><span class="va">hts_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/compound.html" class="external-link">%&lt;&gt;%</a></span> <span class="fu"><a href="../reference/hts_bin_worker.html">hts_bin_worker</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hts_bin_worker.html">hts_bin_worker</a></span><span class="op">(</span><span class="va">hts_data</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Calculate a categorical summary, i.e. count/share</span></span>
 <span><span class="va">rs3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"person"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"survey_year"</span>, <span class="st">"worker"</span><span class="op">)</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    survey_year     worker count      prop   prop_moe      est  est_moe</span></span>
 <span><span class="co">#&gt;          &lt;int&gt;     &lt;fctr&gt; &lt;int&gt;     &lt;num&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>

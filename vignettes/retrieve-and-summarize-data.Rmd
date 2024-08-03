@@ -16,10 +16,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(psrc.travelsurvey)
-library(magrittr)
-```
 ## Works with **travelSurveyTools**
 
 The **psrc.travelsurvey** package is meant to complement and enhance the **travelSurveyTools** package for PSRC users. It delivers data in the `hts_data` format appropriate as input to subsequent **travelSurveyTools** functions. It also provides wrapper functions that provide PSRC defaults to **travelSurveyTools** functions, resulting in simpler workflows with fewer required arguments. **psrc.travelsurvey** is constrained to an extent by fitting into the **travelSurveyTools** system, but if you have suggestions for other features or functions you'd find helpful, please contact the authors and we'll see if we can implement them.
@@ -53,6 +49,8 @@ To summarize data, use `psrc_hts_stat()`. This has four primary arguments, and o
 As an example, we'll retrieve the following survey variables, then do one count/share summary, and one numeric summary. Notice, travelSurveyTools handles the relational element of the data, so tables lower in the organizational heirarchy (like `trips`) inherit attributes from those above them (such as `hh`); this is a handy feature and avoids unnecessary data duplication among tables.
 
 ```{r retrieve_and_summarize, message=FALSE, eval=TRUE}
+library(psrc.travelsurvey)
+
 # Specify which variables to retrieve
 vars <- c("hhsize", "employment", "commute_mode", "dest_purpose_cat", 
           "mode_characterization", "distance_miles", "duration_minutes")
@@ -61,13 +59,17 @@ vars <- c("hhsize", "employment", "commute_mode", "dest_purpose_cat",
 hts_data <- get_psrc_hts(survey_vars = vars)  # default includes all survey_years
 
 # Calculate a numeric summary, i.e. min/max/median/mean
-rs1 <- psrc_hts_stat(hts_data, analysis_unit="trip", group_vars="hhsize", stat_var="duration_minutes")
-head(rs1)
+rs1 <- psrc_hts_stat(hts_data, 
+                     analysis_unit="trip", 
+                     group_vars="hhsize", 
+                     stat_var="distance_miles")
+
+head(dplyr::select(rs1[survey_year==2023], -c(survey_year, min, max)))
 
 # Calculate a categorical summary, i.e. count/share
-rs2 <- psrc_hts_stat(hts_data, analysis_unit="trip", group_vars=c("hhsize", "mode_characterization"))
-head(rs2)
+rs2 <- psrc_hts_stat(hts_data, "trip", c("hhsize", "mode_characterization"))
 
+head(dplyr::select(rs2[survey_year==2023 & mode_characterization=="Transit"], -c(survey_year, mode_characterization)))
 ```
 
 ## Custom variables and filtering
@@ -78,10 +80,11 @@ Keep in mind that filtering any table removes records available for subsequent a
 
 ```{r add_variable, message=FALSE, eval=TRUE}
 # Add the worker variable 
-hts_data %<>% hts_bin_worker()
+hts_data <- hts_bin_worker(hts_data)
 
 # Calculate a categorical summary, i.e. count/share
 rs3 <- psrc_hts_stat(hts_data, "person", c("survey_year", "worker"), incl_na=FALSE)
+
 head(rs3)
 
 ```

@@ -35,6 +35,11 @@ For efficiency, `get_psrc_hts()` only requests the variables you specify, so you
 View(psrc_hts_varsearch("\\bmode\\b"))
 ```
 
+To browse the entire variable list, open the internal data object `init_variable_list`:
+```{r init_variable_list, message=FALSE, eval=FALSE}
+View(psrc.travelsurvey:::init_variable_list)
+```
+
 Note: It is unnecessary to include the survey year, table ids, weights, or survey stratification variable (`sample_segment`) in your `survey_vars` argument; since they are necessary for later steps, `get_psrc_hts()` includes them implicitly. Factor variables and levels are applied from the codebook, and missing or skip-value codes are recoded as `NA`.
 
 ## Summarization

@@ -118,6 +118,10 @@ operator <code>\\b</code> can be used to omit vehicle model from results
 when searching for “mode”.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="fu"><a href="../reference/psrc_hts_varsearch.html">psrc_hts_varsearch</a></span><span class="op">(</span><span class="st">"\\bmode\\b"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>To browse the entire variable list, open the internal data object
+<code>init_variable_list</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="fu">psrc.travelsurvey</span><span class="fu">:::</span><span class="va">init_variable_list</span><span class="op">)</span></span></code></pre></div>
 <p>Note: It is unnecessary to include the survey year, table ids,
 weights, or survey stratification variable (<code>sample_segment</code>)
 in your <code>survey_vars</code> argument; since they are necessary for
@@ -151,7 +155,7 @@ travelSurveyTools handles the relational element of the data, so tables
 lower in the organizational heirarchy (like <code>trips</code>) inherit
 attributes from those above them (such as <code>hh</code>); this is a
 handy feature and avoids unnecessary data duplication among tables.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specify which variables to retrieve</span></span>
@@ -208,7 +212,7 @@ want shares calculated from only reported categories). Here we will add
 a dichotomous <code>worker</code> variable, then calculate shares with
 <code>NA</code> values excluded (they would otherwise comprise about 20
 percent of the total).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add the worker variable </span></span>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hts_bin_worker.html">hts_bin_worker</a></span><span class="op">(</span><span class="va">hts_data</span><span class="op">)</span></span>
 <span></span>

@@ -74,7 +74,8 @@ head(dplyr::select(rs1[survey_year==2023], -c(survey_year, min, max)))
 # Calculate a categorical summary, i.e. count/share
 rs2 <- psrc_hts_stat(hts_data, "trip", c("hhsize", "mode_characterization"))
 
-head(dplyr::select(rs2[survey_year==2023 & mode_characterization=="Transit"], -c(survey_year, mode_characterization)))
+head(dplyr::select(rs2[survey_year==2023 & mode_characterization=="Transit"], 
+                   -c(survey_year, mode_characterization)))
 ```
 
 ## Custom variables and filtering

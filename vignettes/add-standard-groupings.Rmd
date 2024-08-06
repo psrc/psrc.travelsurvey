@@ -16,18 +16,55 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+## Agency standard category schemes
+
+In light of sample sizes, breakdowns from PSRC's Household Travel Survey instrument often involve category groupings with less than the most granular reported level of detail. **psrc.travelsurvey** functions provide the most commonly utilized groupings, which can be considered agency standard for the variables of interest. Although each new variable is specific to one unit of analysis (i.e. hh, person, day, trip, vehicle), the first (and often, only) argument to each grouping function is the entire `hts_data` object, in order to facilitate piping. In cases such as person age, where PSRC uses multiple standard groupings, the second argument is the number of categories for the output variable. 
+
+
+```{r example, message=FALSE, eval=TRUE}
 library(psrc.travelsurvey)
+library(magrittr)
+library(data.table)
+
+# Specify which variables to retrieve
+vars <- c("hhincome_broad", "age", "employment", "education", "hhsize", 
+          "mode_characterization", "distance_miles", "duration_minutes")
+
+# Retrieve the data
+hts_data <- get_psrc_hts(survey_vars = vars) 
+
+# Add standard age groupings
+hts_data <- hts_data %>% 
+  hts_bin_age(5) %>%
+  hts_bin_age(3)
+
+hts_data$person[, head(.SD), .SDcols=patterns("^age")]
+
 ```
 
-## Title
+These functions each require a disaggregate input variable to be requested in the earlier `get_psrc_hts()` call. Both the input variable and the output variable are included in the resulting `hts_data` object.
 
-Text
-
-```{r example, message=FALSE, eval=FALSE}
+Currently, the following functions exist, along with the required input variable.
 
 
+|           Function            |  Input variable  |   Output variable      |        Breakpoints        |
+|:------------------------------|:----------------:|:----------------------:|:-------------------------:|
+| **`hts_bin_income()`**        |  hhincome_broad  |  hhincome_bin5         |  $25K•$50K•$75K•$100K     |
+| **`hts_bin_age(bins)`**       |  age             |  age_bin3 or age_bin5  | 18•64•65 **or** 18•25•45•65 |
+| **`hts_bin_worker()`**        |  employment      |  worker                |  worker • non-worker      |
+| **`hts_bin_edu()`**           |  education       |  education_bin2        |  -/Bachelors+             |
+| **`hts_bin_hhsize()`**        |  hhsize          |  hhsize_bin4           |  1•2•3•4+                 |
+| **`hts_bin_gender()`**        |  gender          |  gender_bin3           |  m•f•nb/oth               |
+| **`hts_bin_commute_freq()`**  |  commute_freq    |  commute_freq_bin6     |  0•1•2•3•4•5+ days        |
+| **`hts_bin_commute_mode()`**  |  commute_mode    |  commute_mode_bin5     |  SOV•HOV•trnst•w/b•oth    |
+| **`hts_bin_telework_time()`** |  telework_time   |  telework_time_bin3    |  3•6 hrs                  |
+| **`hts_bin_vehicle_count()`** |  vehicle_count   |  vehicle_count_bin4    |  1•2•3•4+                 |
+|                               |                  |                        |                           |
 
-```
+
+
+
+
+
 
 

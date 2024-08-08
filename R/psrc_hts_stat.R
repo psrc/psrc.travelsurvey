@@ -13,6 +13,7 @@ NULL
 #' @return summary table
 #' @author Michael Jensen
 #' @import data.table
+#' @importFrom tidyr drop_na
 #' @importFrom stringr str_replace
 #' @importFrom travelSurveyTools hts_prep_variable hts_summary_cat hts_summary_num
 #'
@@ -68,10 +69,10 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
                               remove_missing = !incl_na,
                               weighted =TRUE,
                               strataname = "sample_segment"))
-  if(is.null(stat_var)){                                                       # count
+  if(is.null(stat_var)){                                                       
     statvartype <- codebook_vars[variable==(statvar), data_type] %>% unique()
-    if(incl_na==FALSE){prepped_dt$cat %<>% .[!is.na(get(statvar))]}
-    summary_dt <- hts_summary_cat(prepped_dt = prepped_dt$cat,
+    if(incl_na==FALSE){prepped_dt$cat %<>% tidyr::drop_na()}
+    summary_dt <- hts_summary_cat(prepped_dt = prepped_dt$cat,                 # count
                               summarize_var = statvar,
                               summarize_by = grpvars,
                               summarize_vartype = statvartype,
@@ -80,7 +81,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
                               strataname = "sample_segment",
                               se = TRUE) 
   }else{
-    if(incl_na==FALSE){prepped_dt$num %<>% .[!is.na(get(statvar))]}
+    if(incl_na==FALSE){prepped_dt$num %<>% tidyr::drop_na()}
     summary_dt <- hts_summary_num(prepped_dt = prepped_dt$num,                 # min/max/median/mean
                               summarize_var = statvar,
                               summarize_by = grpvars,

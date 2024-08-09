@@ -9,8 +9,8 @@
 #' @importFrom dplyr rename
 NULL
 
-# filepath <- "C:/Users/mjensen/Downloads/PSRC_Codebook_2023_v1.xlsx"
-# init_variable_list <- read_xlsx(filepath, sheet="variable_list") %>% setDT() %>% .[, logic:=NULL]
-# init_value_labels <- read_xlsx(filepath, sheet="value_labels") %>% setDT()
+filepath <- "C:/Users/mjensen/Downloads/PSRC_Codebook_2023_v1.xlsx"
+init_variable_list <- read_xlsx(filepath, sheet="variable_list") %>% setDT() %>% .[, logic:=NULL]
+init_value_labels <- read_xlsx(filepath, sheet="value_labels") %>% setDT()
 
 #usethis::use_data(init_variable_list, init_value_labels, internal=TRUE, overwrite=TRUE)           # Makes part of the package; push this to repo

@@ -1,4 +1,5 @@
 #' @importFrom magrittr %<>% %>%
+#' @importFrom labelled var_label
 NULL
 
 `%not_in%` <- Negate(`%in%`)
@@ -30,6 +31,7 @@ hts_bin_income <- function(hts_data){
              !is.na(hhincome_broad),                           as.character(hhincome_broad)),
        levels=c("Under $25,000","$25,000-$49,999","$50,000-$74,999",
                 "$75,000-$99,999","$100,000 or more","Prefer not to answer"))]
+    labelled::var_label(hts_data$hh$hhincome_bin5) <- "Nominal Household Income"
   }
   return(hts_data)
 }
@@ -56,6 +58,7 @@ hts_bin_age <- function(hts_data, bins){
               as.integer(safegsub(rgx_yr, as.character(age)))<=64, "18-64 Years",
               as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
         levels=c("Under 18 Years","18-64 Years","65 years or older"))]
+    labelled::var_label(hts_data$person$age_bin3) <- "Age"
   }else if(bins==5){
     hts_data$person %<>% setDT() %>%
       .[, age_bin5:=factor(
@@ -66,6 +69,7 @@ hts_bin_age <- function(hts_data, bins){
               as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
         levels=c("Under 18 Years","18-24 Years","25-44 Years",
                 "45-64 Years","65 years or older"))]
+    labelled::var_label(hts_data$person$age_bin5) <- "Age"
   }
   return(hts_data)
 }
@@ -87,6 +91,7 @@ hts_bin_worker <- function(hts_data){
         fcase(grepl("^(Self-)?[eE]mployed", as.character(employment)), "Worker",
               !is.na(employment),                                      "Not Worker"),
         levels=c("Worker","Not Worker"))]
+    labelled::var_label(hts_data$person$worker) <- "Employment status"
   }
   return(hts_data)
 }
@@ -109,6 +114,7 @@ hts_bin_edu <- function(hts_data){
       fcase(grepl("^(Bach|Grad)", as.character(education)), "Bachelors or higher",
             !is.na(education),                              "Less than Bachelors degree"),
       levels=c("Less than Bachelors degree","Bachelors or higher"))]
+    labelled::var_label(hts_data$person$edu_bin2) <- "Educational attainment"
   }
   return(hts_data)
 }
@@ -131,6 +137,7 @@ hts_bin_hhsize <- function(hts_data){
         fcase(as.integer(safegsub(rgx_size, as.character(hhsize))) > 3, "4+ people",
               as.integer(safegsub(rgx_size, as.character(hhsize))) %between% c(1,3), as.character(hhsize)),
         levels=c("1 person","2 people","3 people","4+ people"))]
+    labelled::var_label(hts_data$hh$hhsize_bin4) <- "Household size"
   }
   return(hts_data)
 }
@@ -153,6 +160,7 @@ hts_bin_gender <- function(hts_data){
             grepl("^Girl/Woman", as.character(gender)), "Female",
             !is.na(gender), "Non-binary, another, prefer not to answer"),
       levels=c("Male","Female","Non-binary, another, prefer not to answer"))]
+    labelled::var_label(hts_data$person$gender_bin3) <- "Gender"
   }
   return(hts_data)
 }
@@ -177,6 +185,7 @@ hts_bin_commute_freq <- function(hts_data){
               !is.na(commute_freq),                                                      "0 days or less than weekly"),
                            levels=c("5+ days","4 days a week","3 days a week","2 days a week",
                                     "1 day a week","0 days or less than weekly"))]
+    labelled::var_label(hts_data$person$commute_freq_bin6) <- "How often commuted to workplace last week"
   }
   return(hts_data)
 }
@@ -203,6 +212,7 @@ hts_bin_commute_mode <- function(hts_data){
                     as.character(commute_mode)),                      "Drive alone",
               !is.na(commute_mode),                                   "Other"),
         levels=c("Drive alone","Carpool","Walk/Bike","Transit","Other"))]
+    labelled::var_label(hts_data$person$commute_mode_bin5) <- "Method of commuting to work location/office last week"
   }
   return(hts_data)
 }
@@ -228,6 +238,7 @@ hts_bin_telework_time <- function(hts_data){
               as.character(telework_time)=="1-6 hours",                           "3-6 hours",
               !is.na(telework_time),                                              "0-3 hours"),
         levels=c("0-3 hours","3-6 hours","6+ hours"))]
+    labelled::var_label(hts_data$day$telework_time_bin3) <- "Telework time on travel day"
   }
   return(hts_data)
 }
@@ -250,6 +261,7 @@ hts_bin_vehicle_count <- function(hts_data){
         fcase(as.integer(safegsub(rgx_veh, as.character(vehicle_count))) >3, "4+",
               !is.na(vehicle_count), safegsub(rgx_veh, as.character(vehicle_count))),
         levels=c("0","1","2","3","4+"))]
+    labelled::var_label(hts_data$hh$vehicle_count_bin4) <- "Number of vehicles"
   }
   return(hts_data)
 }

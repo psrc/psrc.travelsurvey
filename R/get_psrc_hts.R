@@ -15,6 +15,7 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @import data.table
 #' @importFrom dplyr case_when
 #' @importFrom rlang is_empty set_names
+#' @importFrom labelled var_label
 #'
 #' @export
 get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
@@ -61,6 +62,14 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
     }
     return (dt)
   }
+  # Helper function: apply descriptive labels
+  psrc_hts_desc_labels <- function(dt){
+    for(col in colnames(dt))
+      if(col %in% init_variable_list$variable){
+        labelled::var_label(dt[[col]]) <- init_variable_list[variable==col, description]
+      }
+    return (dt)
+  }
   # Helper function; queries Elmer for specified variables
   hts_query_elmer <- function(tblname, tblvars){
     if(!rlang::is_empty(unlist(tblvars))){
@@ -83,7 +92,9 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
                     wgt_filter)
       rs <- psrcelmer::get_query(sql) %>% setDT() %>% 
         setnames("household_id","hh_id") %>%                                    # travelSurveyTools uses "hh_id"
-        psrc_hts_recode_na() %>% psrc_hts_to_factor()
+        psrc_hts_recode_na() %>% 
+        psrc_hts_to_factor() %>% 
+        psrc_hts_desc_labels()
       return(rs)
     }else{
      return(NULL)

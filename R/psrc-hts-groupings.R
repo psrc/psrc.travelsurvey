@@ -111,7 +111,8 @@ hts_bin_edu <- function(hts_data){
   }else{
   hts_data$person %<>% setDT() %>%
     .[, edu_bin2:=factor(
-      fcase(grepl("^(Bach|Grad)", as.character(education)), "Bachelors or higher",
+      fcase(grepl("^(Bach|Grad)", as.character(education)),        "Bachelors or higher",
+            as.character(education)=="Prefer not to answer",      "Prefer not to answer"
             !is.na(education),                              "Less than Bachelors degree"),
       levels=c("Less than Bachelors degree","Bachelors or higher"))]
     labelled::var_label(hts_data$person$edu_bin2) <- "Educational attainment"
@@ -161,6 +162,28 @@ hts_bin_gender <- function(hts_data){
             !is.na(gender), "Non-binary, another, prefer not to answer"),
       levels=c("Male","Female","Non-binary, another, prefer not to answer"))]
     labelled::var_label(hts_data$person$gender_bin3) <- "Gender"
+  }
+  return(hts_data)
+}
+
+#' Add simplified sexuality variable
+#' Requires `sexuality` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a simplified sexuality variable
+#' @author Michael Jensen
+#' @export
+hts_bin_sexuality <- function(hts_data){
+  sexuality <- sexuality_bin3 <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^sexuality$", colnames(hts_data$person)))){
+    print("`sexuality` variable missing from data")
+  }else{
+    hts_data$person %<>% setDT() %>%
+      .[, sexuality_bin3:=factor(
+        fcase(grepl("^(Heterosexual|Missing)", as.character(sexuality)), sexuality,
+              !is.na(sexuality), "Bisexual, gay, lesbian, queer, don't know, something else"),
+        levels=c("Heterosexual (straight)","Missing","Bisexual, gay, lesbian, queer, don't know, something else"))]
+    labelled::var_label(hts_data$person$sexuality_bin3) <- "sexuality"
   }
   return(hts_data)
 }
@@ -243,6 +266,32 @@ hts_bin_telework_time <- function(hts_data){
   return(hts_data)
 }
 
+#' Add simplified telework time variable
+#' Requires `telecommute_freq` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a simplified telework time variable
+#' @author Michael Jensen
+#' @export
+hts_bin_telecommute_freq <- function(hts_data){
+  telecommute_freq <- telecommute_freq_bin4 <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^telecommute_freq$", colnames(hts_data$day)))){
+    print("`telecommute_freq` variable missing from data")
+  }else{
+    hts_data$day %<>% setDT() %>%
+      .[, telecommute_freq_bin4:=factor(
+        fcase(grepl("^(N|Less|A few)", telecommute_freq),             "Never or less than weekly",
+              as.integer(safegsub("^(\\d) days?", as.character(telecommute_freq))) >=5, "5+ days",
+              as.integer(safegsub("^(\\d) days?", 
+                                  as.character(telecommute_freq))) %between% c(3,4),   "3-4 days",
+              as.integer(safegsub("^(\\d) days?", 
+                                  as.character(telecommute_freq))) %between% c(1,2),  "1-2 days"),
+        levels=c("5+ days","3-4 days","1-2 days","Never or less than weekly"))]
+    labelled::var_label(hts_data$day$telecommute_freq_bin4) <- "How many days typically working from home"
+  }
+  return(hts_data)
+}
+
 #' Add simplified vehicle count variable
 #' Requires `vehicle_count` variable
 #'
@@ -262,6 +311,39 @@ hts_bin_vehicle_count <- function(hts_data){
               !is.na(vehicle_count), safegsub(rgx_veh, as.character(vehicle_count))),
         levels=c("0","1","2","3","4+"))]
     labelled::var_label(hts_data$hh$vehicle_count_bin4) <- "Number of vehicles"
+  }
+  return(hts_data)
+}
+
+#' Add land use modeling industry classification
+#' Requires `industry` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a simplified vehicle count variable
+#' @author Michael Jensen
+#' @export
+hts_bin_lum_sector <- function(hts_data){
+  industry <- lum_sector <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^industry$", colnames(hts_data$hh)))){
+    print("`industry` variable missing from data")
+  }else{
+    hts_data$hh %<>% setDT() %>%
+      .[, lum_sector:=factor(
+        fcase(grepl("^(Gov|Mil)"), as.character(industry),                    "Gov",
+              grepl("^(Fin|Real|Prof|Landsc|Tech)"), as.character(industry),  "Business Services",
+              grepl("^(Pers|Sport|Soci|Art|Media)"), as.character(industry),  "Personal Services",
+              grepl("^Hospitality"), as.character(industry),                  "Food Services",
+              grepl("^Natural"), as.character(industry),                      "Natural Resources",
+              grepl("care$"), as.character(industry),                         "Healthcare",
+              as.character(industry)=="Public Education",                     "Educ",
+              as.character(industry)=="Private Education",                    "Private Ed",
+              as.character(industry) %in% c("Retail","Construction","Other"), as.character(industry),
+              as.character(industry)=="Transportation and utilities",         "WTU",
+              grepl("^Manufacturing"), as.character(industry),                "Manuf",
+              !is.na(industry), safegsub(rgx_veh, as.character(industry))),
+        levels=c("Natural Resources","Construction","Manuf","Retail","WTU","Healthcare","Private Ed",
+                 "Business Services","Personal Services","Food Services","Other","Educ","Gov"))]
+    labelled::var_label(hts_data$hh$lum_sector) <- "Industry Sector (Land Use Modeling)"
   }
   return(hts_data)
 }

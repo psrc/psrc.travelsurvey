@@ -40,29 +40,25 @@ hts_bin_income <- function(hts_data){
 #' Requires `age` variable
 #'
 #' @param hts_data the hts_data list object
-#' @param bins number of binned categories--3 or 5
 #' @return hts_data with an additional binned age variable
 #' @author Michael Jensen
 #' @export
-hts_bin_age <- function(hts_data, bins){
+hts_bin_age <- function(hts_data){
   age <- age_bin3 <- age_bin5 <- NULL # Bind variables locally for CMD check
   rgx_yr <- "^.*\\b(\\d+) years.*$"
-  if(bins %not_in% c(3,5)){
-    print("bins must be either 3 or 5")
-  }else if(!any(grepl("^age$", colnames(hts_data$person)))){
+  if(!any(grepl("^age$", colnames(hts_data$person)))){
     print("`age` variable missing from data")
-  }else if(bins==3){
+  }else{
     hts_data$person %<>% setDT() %>% 
       .[, age_bin3:=factor(
-        fcase(as.integer(safegsub(rgx_yr, as.character(age)))<=18, "Under 18 Years",
+        fcase(as.integer(safegsub(rgx_yr, as.character(age))) <18, "Under 18 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=64, "18-64 Years",
               as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
         levels=c("Under 18 Years","18-64 Years","65 years or older"))]
     labelled::var_label(hts_data$person$age_bin3) <- "Age"
-  }else if(bins==5){
     hts_data$person %<>% setDT() %>%
       .[, age_bin5:=factor(
-        fcase(as.integer(safegsub(rgx_yr, as.character(age)))<=18, "Under 18 Years",
+        fcase(as.integer(safegsub(rgx_yr, as.character(age))) <18, "Under 18 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=24, "18-24 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=44, "25-44 Years",
               as.integer(safegsub(rgx_yr, as.character(age)))<=64, "45-64 Years",
@@ -107,12 +103,11 @@ hts_bin_edu <- function(hts_data){
   education <- edu_bin2 <- NULL # Bind variables locally for CMD check
   if(!any(grepl("^education$", colnames(hts_data$person)))){
     print("`education` variable missing from data")
-
   }else{
   hts_data$person %<>% setDT() %>%
     .[, edu_bin2:=factor(
       fcase(grepl("^(Bach|Grad)", as.character(education)),        "Bachelors or higher",
-            as.character(education)=="Prefer not to answer",      "Prefer not to answer"
+            as.character(education)=="Prefer not to answer",      "Prefer not to answer",
             !is.na(education),                              "Less than Bachelors degree"),
       levels=c("Less than Bachelors degree","Bachelors or higher"))]
     labelled::var_label(hts_data$person$edu_bin2) <- "Educational attainment"
@@ -319,31 +314,99 @@ hts_bin_vehicle_count <- function(hts_data){
 #' Requires `industry` variable
 #'
 #' @param hts_data the hts_data list object
-#' @return hts_data with a simplified vehicle count variable
+#' @return hts_data with a land use modeling industry classification variable
 #' @author Michael Jensen
 #' @export
 hts_bin_lum_sector <- function(hts_data){
   industry <- lum_sector <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^industry$", colnames(hts_data$hh)))){
+  if(!any(grepl("^industry$", colnames(hts_data$person)))){
     print("`industry` variable missing from data")
   }else{
-    hts_data$hh %<>% setDT() %>%
+    hts_data$person %<>% setDT() %>%
       .[, lum_sector:=factor(
         fcase(grepl("^(Gov|Mil)"), as.character(industry),                    "Gov",
               grepl("^(Fin|Real|Prof|Landsc|Tech)"), as.character(industry),  "Business Services",
               grepl("^(Pers|Sport|Soci|Art|Media)"), as.character(industry),  "Personal Services",
               grepl("^Hospitality"), as.character(industry),                  "Food Services",
               grepl("^Natural"), as.character(industry),                      "Natural Resources",
-              grepl("care$"), as.character(industry),                         "Healthcare",
+              grepl("care\\b"), as.character(industry),                       "Healthcare",
               as.character(industry)=="Public Education",                     "Educ",
               as.character(industry)=="Private Education",                    "Private Ed",
               as.character(industry) %in% c("Retail","Construction","Other"), as.character(industry),
               as.character(industry)=="Transportation and utilities",         "WTU",
               grepl("^Manufacturing"), as.character(industry),                "Manuf",
-              !is.na(industry), safegsub(rgx_veh, as.character(industry))),
+              !is.na(industry),                                               as.character(industry)),
         levels=c("Natural Resources","Construction","Manuf","Retail","WTU","Healthcare","Private Ed",
                  "Business Services","Personal Services","Food Services","Other","Educ","Gov"))]
-    labelled::var_label(hts_data$hh$lum_sector) <- "Industry Sector (Land Use Modeling)"
+    labelled::var_label(hts_data$person$lum_sector) <- "Industry Sector (Land Use Modeling)"
   }
+  return(hts_data)
+}
+
+#' Add generalized industry classification
+#' Requires `industry` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a generalized industry classification variable
+#' @author Michael Jensen
+#' @export
+hts_bin_industry_sector <- function(hts_data){
+  industry <- industry_sector <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^industry$", colnames(hts_data$person)))){
+    print("`industry` variable missing from data")
+  }else{
+    hts_data$person %<>% setDT() %>%
+      .[, lum_sector:=factor(
+        fcase(grepl("^(Natural|Constr|Manuf|Trans)"), as.character(industry),         "Construction & Manufacturing",
+              grepl("^(Fin|Real|Prof|Landsc|Tech)"), as.character(industry),          "Professional & Business Services",
+              grepl("^(Pers|Hospitality|Sport|Soci|Retail)"), as.character(industry), "Retail & Personal Services",              
+              grepl("^(Art|Media)"), as.character(industry),                          "Arts & Media", 
+              grepl("^(Pers|Hospitality|Sport|Soci|Retail)"), as.character(industry), "Retail & Personal Services",
+              grepl("(care\\b|education$)"), as.character(industry),                  "Healthcare & Education",
+              !is.na(industry),                                                       as.character(industry),
+              grepl("^(Gov|Mil)"), as.character(industry),                            "Gov"),
+        levels=c("Construction & Manufacturing","Professional & Business Services","Retail & Personal Services",
+                 "Arts & Media","Retail & Personal Services","Healthcare & Education","Other","Gov"))]
+    labelled::var_label(hts_data$person$industry_sector) <- "Industry Sector"
+  }
+  return(hts_data)
+}
+
+#' Add destination purposeclassification
+#' Requires `dest_purpose` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a simplified vehicle count variable
+#' @author Michael Jensen
+#' @export
+hts_bin_dest_purpose <- function(hts_data){
+  dest_purpose <- dest_purpose_bin9 <- dest_purpose_bin4 <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^dest_purpose$", colnames(hts_data$trip)))){
+    print("`dest_purpose` variable missing from data")
+  }else{
+    hts_data$trip %<>% setDT() %>% 
+      .[, dest_purpose_bin11:=factor(
+        fcase(grepl("^Went (home|to another(residence|temporary))"), as.character(dest_purpose),       "Home",
+              grepl("^(Attend|Went) .* (college|school|education|class)"), as.character(dest_purpose), "School",
+              as.character(dest_purpose)=="Went to primary workplace",                                 "Primary work",
+              grepl("Went to( other)? work-related"), as.character(dest_purpose),                      "Work-related",
+              grepl("([pP]ick(ed)? up)|([dD]rop(ped)? off)"), as.character(dest_purpose),              "Pick up/Drop off",
+              grepl("(shopping|^Got gas)"), as.character(dest_purpose),                                "Shopping",              
+              grepl("\\beat\\b", as.character(dest_purpose)),                                          "Eat Meal",
+              grepl("([sS]ocial|[rR]ecreation|exercise|[vV]olunteer|Vacation|family activity)", 
+                    as.character(dest_purpose)),                                                       "Social/Recreation",
+              !is.na(dest_purpose),                                                                    "Errands/Appointments/Other"),
+        levels=c("Home","Primary work","Work-related","School","Pick up/Drop off",
+                 "Shopping","Social/Recreation", "Errands/Appointments/Other"))]
+    labelled::var_label(hts_data$trip$dest_purpose_bin11) <- "Destination Purpose"
+    hts_data$trip %>%
+      .[, dest_purpose_bin4:=factor(
+        fcase(as.character(dest_purpose_bin11)=="Home",                               "Home",
+              as.character(dest_purpose_bin11) %in% c("Primary work","Work-related"), "Work",
+              grepl("^(Eat|Social)"), as.character(dest_purpose_bin11),               "Social, Recreation, Eat Meal",
+              !is.na(dest_purpose_bin11),                                             "Errands/Appointments/Other"),
+        levels=c("Home","Work","Social, Recreation, Eat Meal","Errands/Appointments/Other"))]
+    labelled::var_label(hts_data$trip$dest_purpose_bin4) <- "Destination Purpose"
+    }
   return(hts_data)
 }

@@ -77,11 +77,12 @@ most granular reported level of detail.
 <strong>psrc.travelsurvey</strong> functions provide the most commonly
 utilized groupings, which can be considered agency standard for the
 variables of interest. Although each new variable is specific to one
-unit of analysis (i.e. hh, person, day, trip, vehicle), the first (and
-often, only) argument to each grouping function is the entire
-<code>hts_data</code> object, in order to facilitate piping. In cases
-such as person age, where PSRC uses multiple standard groupings, the
-second argument is the number of categories for the output variable.</p>
+unit of analysis (i.e. hh, person, day, trip, vehicle), the first and
+only argument to each grouping function is the entire
+<code>hts_data</code> object, in order to facilitate piping. When more
+than one standard grouping exists for a variable, the function returns
+them all, for convenience; they can be distinguished by a suffix
+denoting the number of categories.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
@@ -96,16 +97,15 @@ second argument is the number of categories for the output variable.</p>
 <span></span>
 <span><span class="co"># Add standard age groupings</span></span>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="va">hts_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">hts_data</span><span class="op">$</span><span class="va">person</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols<span class="op">=</span><span class="fu">patterns</span><span class="op">(</span><span class="st">"^age"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;                  age          age_bin5          age_bin3</span></span>
+<span><span class="co">#&gt;                  age          age_bin3          age_bin5</span></span>
 <span><span class="co">#&gt;                &lt;ord&gt;            &lt;fctr&gt;            &lt;fctr&gt;</span></span>
-<span><span class="co">#&gt; 1:       55-64 years       45-64 Years       18-64 Years</span></span>
+<span><span class="co">#&gt; 1:       55-64 years       18-64 Years       45-64 Years</span></span>
 <span><span class="co">#&gt; 2:       65-74 years 65 years or older 65 years or older</span></span>
-<span><span class="co">#&gt; 3:       25-34 years       25-44 Years       18-64 Years</span></span>
-<span><span class="co">#&gt; 4:       25-34 years       25-44 Years       18-64 Years</span></span>
+<span><span class="co">#&gt; 3:       25-34 years       18-64 Years       25-44 Years</span></span>
+<span><span class="co">#&gt; 4:       25-34 years       18-64 Years       25-44 Years</span></span>
 <span><span class="co">#&gt; 5: Under 5 years old    Under 18 Years    Under 18 Years</span></span>
 <span><span class="co">#&gt; 6:       65-74 years 65 years or older 65 years or older</span></span></code></pre></div>
 <p>These functions each require a disaggregate input variable to be
@@ -116,15 +116,15 @@ input variable and the output variable are included in the resulting
 input variable.</p>
 <table class="table">
 <colgroup>
-<col width="31%">
-<col width="18%">
-<col width="24%">
 <col width="27%">
+<col width="15%">
+<col width="20%">
+<col width="36%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Function</th>
 <th align="center">Input variable</th>
-<th align="center">Output variable</th>
+<th align="center">Output variable(s)</th>
 <th align="center">Breakpoints</th>
 </tr></thead>
 <tbody>
@@ -132,13 +132,26 @@ input variable.</p>
 <td align="left"><strong><code><a href="../reference/hts_bin_income.html">hts_bin_income()</a></code></strong></td>
 <td align="center">hhincome_broad</td>
 <td align="center">hhincome_bin5</td>
-<td align="center">$25K•$50K•$75K•$100K</td>
+<td align="center">$25K ]( $50K ]( $75K ]( $100K</td>
 </tr>
 <tr class="even">
-<td align="left"><strong><code>hts_bin_age(bins)</code></strong></td>
+<td align="left"><strong><code><a href="../reference/hts_bin_hhsize.html">hts_bin_hhsize()</a></code></strong></td>
+<td align="center">hhsize</td>
+<td align="center">hhsize_bin4</td>
+<td align="center">1 • 2 • 3 • 4+</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong><code><a href="../reference/hts_bin_vehicle_count.html">hts_bin_vehicle_count()</a></code></strong></td>
+<td align="center">vehicle_count</td>
+<td align="center">vehicle_count_bin4</td>
+<td align="center">1 • 2 • 3 • 4+</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code><a href="../reference/hts_bin_age.html">hts_bin_age()</a></code></strong></td>
 <td align="center">age</td>
-<td align="center">age_bin3 or age_bin5</td>
-<td align="center">18•64•65 <strong>or</strong> 18•25•45•65</td>
+<td align="center">age_bin3/bin5</td>
+<td align="center">18 )[ 64 )[ 65 <strong>or</strong> 18 )[ 25 )[ 45 )[
+65</td>
 </tr>
 <tr class="odd">
 <td align="left"><strong><code><a href="../reference/hts_bin_worker.html">hts_bin_worker()</a></code></strong></td>
@@ -150,45 +163,63 @@ input variable.</p>
 <td align="left"><strong><code><a href="../reference/hts_bin_edu.html">hts_bin_edu()</a></code></strong></td>
 <td align="center">education</td>
 <td align="center">education_bin2</td>
-<td align="center">-/Bachelors+</td>
+<td align="center">Less )[ Bachelors+</td>
 </tr>
 <tr class="odd">
-<td align="left"><strong><code><a href="../reference/hts_bin_hhsize.html">hts_bin_hhsize()</a></code></strong></td>
-<td align="center">hhsize</td>
-<td align="center">hhsize_bin4</td>
-<td align="center">1•2•3•4+</td>
-</tr>
-<tr class="even">
 <td align="left"><strong><code><a href="../reference/hts_bin_gender.html">hts_bin_gender()</a></code></strong></td>
 <td align="center">gender</td>
 <td align="center">gender_bin3</td>
-<td align="center">m•f•nb/oth</td>
+<td align="center">m • f • nb/oth</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code><a href="../reference/hts_bin_sexuality.html">hts_bin_sexuality()</a></code></strong></td>
+<td align="center">sexuality</td>
+<td align="center">sexuality_bin3</td>
+<td align="center">hetero • LGBTQ+ • Missing</td>
 </tr>
 <tr class="odd">
 <td align="left"><strong><code><a href="../reference/hts_bin_commute_freq.html">hts_bin_commute_freq()</a></code></strong></td>
 <td align="center">commute_freq</td>
 <td align="center">commute_freq_bin6</td>
-<td align="center">0•1•2•3•4•5+ days</td>
+<td align="center">Less • 1 • 2 • 3 • 4 • 5+ days/week</td>
 </tr>
 <tr class="even">
 <td align="left"><strong><code><a href="../reference/hts_bin_commute_mode.html">hts_bin_commute_mode()</a></code></strong></td>
 <td align="center">commute_mode</td>
 <td align="center">commute_mode_bin5</td>
-<td align="center">SOV•HOV•trnst•w/b•oth</td>
+<td align="center">SOV • HOV • trnst • w/b • oth</td>
 </tr>
 <tr class="odd">
+<td align="left"><strong><code><a href="../reference/hts_bin_lum_sector.html">hts_bin_lum_sector()</a></code></strong></td>
+<td align="center">industry</td>
+<td align="center">lum_sector</td>
+<td align="center">(13 sectors)</td>
+</tr>
+<tr class="even">
+<td align="left"><strong><code><a href="../reference/hts_bin_industry_sector.html">hts_bin_industry_sector()</a></code></strong></td>
+<td align="center">industry</td>
+<td align="center">industry_sector</td>
+<td align="center">(8 sectors)</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong><code><a href="../reference/hts_bin_telecommute_freq.html">hts_bin_telecommute_freq()</a></code></strong></td>
+<td align="center">telecommute_freq</td>
+<td align="center">telecommute_freq_bin4</td>
+<td align="center">Less )[ 1 )[ 3 )[ 5+</td>
+</tr>
+<tr class="even">
 <td align="left"><strong><code><a href="../reference/hts_bin_telework_time.html">hts_bin_telework_time()</a></code></strong></td>
 <td align="center">telework_time</td>
 <td align="center">telework_time_bin3</td>
-<td align="center">3•6 hrs</td>
-</tr>
-<tr class="even">
-<td align="left"><strong><code><a href="../reference/hts_bin_vehicle_count.html">hts_bin_vehicle_count()</a></code></strong></td>
-<td align="center">vehicle_count</td>
-<td align="center">vehicle_count_bin4</td>
-<td align="center">1•2•3•4+</td>
+<td align="center">Less )[ 3 )[ 6 hrs</td>
 </tr>
 <tr class="odd">
+<td align="left"><strong><code><a href="../reference/hts_bin_dest_purpose.html">hts_bin_dest_purpose()</a></code></strong></td>
+<td align="center">dest_purpose</td>
+<td align="center">dest_purpose_bin4/bin9</td>
+<td align="center">Home • Work • Social/Rec/Eat • Errand</td>
+</tr>
+<tr class="even">
 <td align="left"></td>
 <td align="center"></td>
 <td align="center"></td>

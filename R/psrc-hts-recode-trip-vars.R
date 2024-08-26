@@ -35,7 +35,7 @@ hts_bin_dest_purpose <- function(hts_data){
               grepl("\\beat\\b", as.character(dest_purpose)),                                          "Eat Meal",
               grepl("([sS]ocial|[rR]ecreation|exercise|[vV]olunteer|Vacation|family activity)", 
                     as.character(dest_purpose)),                                                       "Social/Recreation",
-              !is.na(dest_purpose),                                                                    "Errands/Appointments/Other"),
+              !is.na(dest_purpose),                                                                    "Errands/Other"),
         levels=c("Home","Primary work","Work-related","School","Pick up/Drop off",
                  "Shopping","Social/Recreation", "Errands/Appointments/Other"))]
     labelled::var_label(hts_data$trip$dest_purpose_bin11) <- "Destination Purpose"
@@ -43,8 +43,8 @@ hts_bin_dest_purpose <- function(hts_data){
       .[, dest_purpose_bin4:=factor(
         fcase(as.character(dest_purpose_bin11)=="Home",                               "Home",
               as.character(dest_purpose_bin11) %in% c("Primary work","Work-related"), "Work",
-              grepl("^(Eat|Social)"), as.character(dest_purpose_bin11),               "Social, Recreation, Eat Meal",
-              !is.na(dest_purpose_bin11),                                             "Errands/Appointments/Other"),
+              grepl("^(Eat|Social)"), as.character(dest_purpose_bin11),               "Social/Recreation/Meal",
+              !is.na(dest_purpose_bin11),                                             "Errands/Other"),
         levels=c("Home","Work","Social, Recreation, Eat Meal","Errands/Appointments/Other"))]
     labelled::var_label(hts_data$trip$dest_purpose_bin4) <- "Destination Purpose"
   }

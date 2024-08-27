@@ -71,7 +71,7 @@ hts_bin_vehicle_count <- function(hts_data){
   if(!any(grepl("^vehicle_count$", colnames(hts_data$hh)))){
     print("`vehicle_count` variable missing from data")
   }else{
-    rgx_veh <- "^(\\d+) .*$"
+    rgx_veh <- "^(\\d+).*"
     hts_data$hh %<>% setDT() %>%
       .[, vehicle_count_bin4:=factor(
         fcase(as.integer(safegsub(rgx_veh, as.character(vehicle_count))) >3, "4+",

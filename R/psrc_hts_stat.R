@@ -15,6 +15,7 @@ NULL
 #' @import data.table
 #' @importFrom tidyr drop_na
 #' @importFrom stringr str_replace
+#' @importFrom rlang is_empty
 #' @importFrom travelSurveyTools hts_prep_variable hts_summary_cat hts_summary_num
 #'
 #' @export
@@ -22,9 +23,10 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   statvar <- grpvars <- found_idx <- found_tbl <- found_classes <- NULL
   found_dtype <- codebook_vars <- var_row <- newvars <- newrows <- NULL
   statvartype <- prepped_dt <- summary_dt <- NULL # For CMD check
+  pk_id <- paste0(analysis_unit,"_id")
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   
     statvar <- group_vars[length(group_vars)]
-    grpvars <- group_vars[-length(group_vars)]
+    grpvars <- if(is_empty(group_vars[-length(group_vars)])){NULL}else{group_vars[-length(group_vars)]}
   }else{
     statvar <- stat_var
     grpvars <- group_vars 
@@ -55,7 +57,11 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   }
   codebook_vars <- init_variable_list                                          # mutable copy
   newvars <- NULL                                                              # find any new variables
-  newvars <- setdiff(c(grpvars, statvar), codebook_vars$variable) 
+  newvars <- if(is_empty(setdiff(c(grpvars, statvar), codebook_vars$variable))){
+    NULL
+  }else{
+      setdiff(c(grpvars, statvar), codebook_vars$variable) 
+  }
   if(!is.null(newvars)){                                                       # add new variables to codebook
     newrows <- lapply(newvars, add_var) %>% rbindlist()
     codebook_vars %<>% rbind(newrows)
@@ -65,10 +71,11 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
                               summarize_by = grpvars,
                               variables_dt = codebook_vars,
                               data = hts_data,
+                              weighted = TRUE,
                               remove_outliers = FALSE,
                               remove_missing = !incl_na,
-                              weighted =TRUE,
-                              strataname = "sample_segment"))
+                              strataname = "sample_segment") %>% lapply(setDT) %>%
+    lapply(unique, by=pk_id))
   if(is.null(stat_var)){                                                       
     statvartype <- codebook_vars[variable==(statvar), data_type] %>% unique()
     if(incl_na==FALSE){prepped_dt$cat %<>% tidyr::drop_na()}
@@ -79,7 +86,8 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
                               weighted = TRUE,
                               wtname = hts_wgt_var(analysis_unit),
                               strataname = "sample_segment",
-                              se = TRUE) 
+                              se = TRUE,
+                              id_cols = pk_id) 
   }else{
     if(incl_na==FALSE){prepped_dt$num %<>% tidyr::drop_na()}
     summary_dt <- hts_summary_num(prepped_dt = prepped_dt$num,                 # min/max/median/mean

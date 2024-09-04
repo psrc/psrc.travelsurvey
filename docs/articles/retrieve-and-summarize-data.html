@@ -221,14 +221,14 @@ percent of the total).</p>
 <span><span class="va">rs3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"person"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"survey_year"</span>, <span class="st">"worker"</span><span class="op">)</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    survey_year     worker count      prop   prop_moe      est  est_moe</span></span>
-<span><span class="co">#&gt;          &lt;int&gt;     &lt;fctr&gt; &lt;int&gt;     &lt;num&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        2017     Worker 22410 0.7063481 0.01354619  9673300 288287.3</span></span>
-<span><span class="co">#&gt; 2:        2017 Not Worker  6665 0.2936519 0.01354619  4021506 211522.6</span></span>
-<span><span class="co">#&gt; 3:        2019     Worker 28498 0.7312252 0.01065477 15595816 389674.2</span></span>
-<span><span class="co">#&gt; 4:        2019 Not Worker  7616 0.2687748 0.01065477  5732519 247627.2</span></span>
-<span><span class="co">#&gt; 5:        2021     Worker  5766 0.6997530 0.01119662  6801352 151145.4</span></span>
-<span><span class="co">#&gt; 6:        2021 Not Worker  3273 0.3002470 0.01119662  2918295 112326.6</span></span></code></pre></div>
+<span><span class="co">#&gt;    survey_year     worker count      prop   prop_moe       est   est_moe</span></span>
+<span><span class="co">#&gt;          &lt;int&gt;     &lt;fctr&gt; &lt;int&gt;     &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:        2017     Worker  3863 0.6681291 0.03075054 1991691.5 139270.04</span></span>
+<span><span class="co">#&gt; 2:        2017 Not Worker  1517 0.3318709 0.03075054  989306.5 104621.62</span></span>
+<span><span class="co">#&gt; 3:        2019     Worker  3585 0.6718722 0.03146935 2024432.5 142762.94</span></span>
+<span><span class="co">#&gt; 4:        2019 Not Worker  1325 0.3281278 0.03146935  988688.8 109105.54</span></span>
+<span><span class="co">#&gt; 5:        2021     Worker  2125 0.6848086 0.01923162 2268045.2  88724.59</span></span>
+<span><span class="co">#&gt; 6:        2021 Not Worker  1313 0.3151914 0.01923162 1043894.8  66403.29</span></span></code></pre></div>
 <p>Note: <strong>travelSurveyTools</strong> summary functions require
 additional preparatory steps that <strong>psrc.travelsurvey</strong>
 handles for you, for simplicity. To use native

@@ -157,14 +157,15 @@ attributes from those above them (such as <code>hh</code>); this is a
 handy feature and avoids unnecessary data duplication among tables.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specify which variables to retrieve</span></span>
-<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"employment"</span>, <span class="st">"commute_mode"</span>, <span class="st">"dest_purpose_cat"</span>, </span>
-<span>          <span class="st">"mode_characterization"</span>, <span class="st">"distance_miles"</span>, <span class="st">"duration_minutes"</span><span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"employment"</span>, <span class="st">"commute_mode"</span>, </span>
+<span>          <span class="st">"mode_characterization"</span>, <span class="st">"distance_miles"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Retrieve the data</span></span>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span>  <span class="co"># default includes all survey_years</span></span>
-<span></span>
+<span>  </span>
 <span><span class="co"># Calculate a numeric summary, i.e. min/max/median/mean</span></span>
 <span><span class="va">rs1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, </span>
 <span>                     analysis_unit<span class="op">=</span><span class="st">"trip"</span>, </span>
@@ -184,7 +185,7 @@ handy feature and avoids unnecessary data duplication among tables.</p>
 <span><span class="co"># Calculate a categorical summary, i.e. count/share</span></span>
 <span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"trip"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"mode_characterization"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span> <span class="op">&amp;</span> <span class="va">mode_characterization</span><span class="op">==</span><span class="st">"Transit"</span><span class="op">]</span>, </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">mode_characterization</span><span class="op">)</span><span class="op">==</span><span class="st">"Transit"</span><span class="op">]</span>,</span>
 <span>                   <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">mode_characterization</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      hhsize count       prop    prop_moe       est   est_moe</span></span>
 <span><span class="co">#&gt;       &lt;ord&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>

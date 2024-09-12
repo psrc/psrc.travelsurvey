@@ -55,14 +55,15 @@ As an example, we'll retrieve the following survey variables, then do one count/
 
 ```{r retrieve_and_summarize, message=FALSE, eval=TRUE}
 library(psrc.travelsurvey)
+library(data.table)
 
 # Specify which variables to retrieve
-vars <- c("hhsize", "employment", "commute_mode", "dest_purpose_cat", 
-          "mode_characterization", "distance_miles", "duration_minutes")
+vars <- c("hhsize", "employment", "commute_mode", 
+          "mode_characterization", "distance_miles")
 
 # Retrieve the data
 hts_data <- get_psrc_hts(survey_vars = vars)  # default includes all survey_years
-
+  
 # Calculate a numeric summary, i.e. min/max/median/mean
 rs1 <- psrc_hts_stat(hts_data, 
                      analysis_unit="trip", 
@@ -74,7 +75,7 @@ head(dplyr::select(rs1[survey_year==2023], -c(survey_year, min, max)))
 # Calculate a categorical summary, i.e. count/share
 rs2 <- psrc_hts_stat(hts_data, "trip", c("hhsize", "mode_characterization"))
 
-head(dplyr::select(rs2[survey_year==2023 & mode_characterization=="Transit"], 
+head(dplyr::select(rs2[survey_year==2023 & as.character(mode_characterization)=="Transit"],
                    -c(survey_year, mode_characterization)))
 ```
 

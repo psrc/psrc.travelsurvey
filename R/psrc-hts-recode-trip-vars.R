@@ -46,7 +46,7 @@ hts_bin_dest_purpose <- function(hts_data){
       .[, dest_purpose_bin11:=factor(    
         fcase(as.character(dest_purpose_bin12) %in% c("Home","Overnight"),                             "Home",
               as.character(dest_purpose_bin12) %in% c("Errands","Changed mode","Other"),               "Errands/Other",
-              !is.na(dest_purpose_bin12),                                                              dest_purpose_bin13),
+              !is.na(dest_purpose_bin12),                                                              dest_purpose_bin12),
         levels=c("Home", "Primary work", "Work-related", "School", "Pick up/Drop off",
                  "Shopping", "Eat Meal", "Social/Recreation", "Errands/Other"))]
     labelled::var_label(hts_data$trip$dest_purpose_bin9) <- "Destination Purpose"    

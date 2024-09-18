@@ -22,17 +22,11 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   tblnames <- tblname <- hts_split_vars <- hts_query_elmer <-  NULL # For CMD check
   variable <- data_type <- sample_segment <- hh_id <- NULL # For CMD check
   tblnames <- c("household","person","day","trip","vehicle")
-  na_rgx <- c("^Missing: Technical Error$",
-              "^Missing: [nN]on-response$",
-              "^Missing: Skip Logic$",
-              "^Missing Response$",
-              "^Missing [dD]ata$",
+  na_rgx <- c("^Missing(: (Technical Error|[nN]on-response|Skip Logic))?( [dD]ata)?$",
               "Not [iI]mputable",
               "^Children or [mM]issing$",
-              "^-9998$",
-              "^-9997$",
-              "^-995$",
-              "^995$",
+              "^-999[78]$",
+              "^-?995$",
               "^$") %>%
     unique() %>% paste0(collapse="|")
   

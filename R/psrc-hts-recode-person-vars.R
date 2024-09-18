@@ -15,26 +15,6 @@ safegsub <- function(rgx, x){
 #' Add binned income variable
 #' Requires `hhincome_broad` variable
 #'
-#' @param hts_data the hts_data list object
-#' @return hts_data with a binned income variable
-#' @importFrom dplyr coalesce
-#' @author Michael Jensen
-#' @export
-hts_bin_income <- function(hts_data){
-  hhincome_broad <- hhincome_bin5 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^hhincome_broad$", colnames(hts_data$hh)))){
-    print("`hhincome_broad` variable missing from data")
-  }else{
-    hts_data$hh %<>% setDT() %>%
-      .[, hhincome_bin5:=factor(
-        fcase(grepl("\\$(1|2)00,", as.character(hhincome_broad)), "$100,000 or more",
-             !is.na(hhincome_broad),                           as.character(hhincome_broad)),
-       levels=c("Under $25,000","$25,000-$49,999","$50,000-$74,999",
-                "$75,000-$99,999","$100,000 or more","Prefer not to answer"))]
-    labelled::var_label(hts_data$hh$hhincome_bin5) <- "Nominal Household Income"
-  }
-  return(hts_data)
-}
 
 #' Add a binned age variable
 #' Requires `age` variable

@@ -95,9 +95,12 @@ denoting the number of categories.</p>
 <span><span class="co"># Retrieve the data</span></span>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="co"># Add standard age groupings</span></span>
+<span><span class="co"># Add standard groupings for age and household size</span></span>
+<span><span class="co"># -- Notice age and hhsize use different tables (person, hh)</span></span>
+<span><span class="co"># -- but you don't need to worry about that; the package knows</span></span>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="va">hts_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/hts_bin_hhsize.html">hts_bin_hhsize</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">hts_data</span><span class="op">$</span><span class="va">person</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols<span class="op">=</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/patterns.html" class="external-link">patterns</a></span><span class="op">(</span><span class="st">"^age"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;                  age          age_bin3          age_bin5</span></span>

@@ -32,9 +32,12 @@ vars <- c("hhincome_broad", "age", "employment", "education", "hhsize",
 # Retrieve the data
 hts_data <- get_psrc_hts(survey_vars = vars) 
 
-# Add standard age groupings
+# Add standard groupings for age and household size
+# -- Notice age and hhsize use different tables (person, hh)
+# -- but you don't need to worry about that; the package knows
 hts_data <- hts_data %>% 
-  hts_bin_age()
+  hts_bin_age() %>%
+  hts_bin_hhsize()
 
 hts_data$person[, head(.SD), .SDcols=patterns("^age")]
 

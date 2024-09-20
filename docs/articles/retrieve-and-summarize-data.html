@@ -160,7 +160,7 @@ handy feature and avoids unnecessary data duplication among tables.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Specify which variables to retrieve</span></span>
-<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"employment"</span>, <span class="st">"commute_mode"</span>, </span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hhsize"</span>, <span class="st">"employment"</span>, <span class="st">"commute_mode"</span>, <span class="st">"dest_purpose"</span>,</span>
 <span>          <span class="st">"mode_characterization"</span>, <span class="st">"distance_miles"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Retrieve the data</span></span>
@@ -201,9 +201,18 @@ handy feature and avoids unnecessary data duplication among tables.</p>
 </h2>
 <p>Since each <code>hts_data</code> element is a data.table, they can be
 manipulated with any combination of base r, tidyverse
-(e.g. <code>mutate()</code>), or data.table (e.g <code>:=</code>)
-syntax. Additionally, standard category groupings not present in the
-base data can be added via the functions described in <a href="add-standard-groupings.html">the accompanying vignette</a>.</p>
+(e.g. <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate()</a></code>), or data.table (e.g <code>:=</code>)
+syntax. The example below illustrates adding variables specific to the
+<code>hts_data$trip</code> element. Notice, the inheritance capability
+mentioned earlier applies to custom variables as well, so if you want to
+recode a household-level variable to feature in a trip-level analysis,
+just add it to <code>hts_data$hh</code> (not to
+<code>hts_data$trip</code>).</p>
+<p>Standard category groupings not present in the base data can be added
+via the functions described in <a href="add-standard-groupings.html">the
+accompanying vignette</a>. These take the entire <code>hts_data</code>
+object as argument, not a specific table (the package knows which is
+involved). This lends itself to piping multiple standard recodes.</p>
 <p>Keep in mind that filtering any table removes records available for
 subsequent analyses. Rather than manage multiple filtered copies of the
 data object, you may want to create a new variable on the relevant table
@@ -211,25 +220,48 @@ with <code>NA</code> values for the records you intend to exclude from
 the summary. You can then use the <code>incl_na=FALSE</code> option to
 exclude that line from summary results (of particular value when you
 want shares calculated from only reported categories). Here we will add
-a dichotomous <code>worker</code> variable, then calculate shares with
-<code>NA</code> values excluded (they would otherwise comprise about 20
-percent of the total).</p>
+a variable specific to work-related trips, and use the
+<code>incl_na=FALSE</code> option to limit the statistics (including
+percentages) to work-related trips only, without erasing non-work trips
+from the <code>hts_data</code> object or creating a separate
+<code>hts_data</code> object for this summary.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Add the worker variable </span></span>
-<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hts_bin_worker.html">hts_bin_worker</a></span><span class="op">(</span><span class="va">hts_data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use a standard variable recode to get simpler trip purpose</span></span>
+<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hts_bin_dest_purpose.html">hts_bin_dest_purpose</a></span><span class="op">(</span><span class="va">hts_data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use dplyr::mutate to add a simplified mode field &amp; work purpose specifier</span></span>
+<span><span class="va">hts_data</span><span class="op">$</span><span class="va">trip</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="va">hts_data</span><span class="op">$</span><span class="va">trip</span>, </span>
+<span>  purpose_work <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">dest_purpose_bin4</span><span class="op">==</span><span class="st">"Work"</span> <span class="op">~</span> <span class="st">"Work"</span>,</span>
+<span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">dest_purpose_bin4</span><span class="op">)</span> <span class="op">~</span> <span class="cn">NA_character_</span><span class="op">)</span>,</span>
+<span>  mode_basic <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">mode_characterization</span><span class="op">==</span><span class="st">"Airplane"</span>                 <span class="op">~</span><span class="cn">NA_character_</span>,</span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">mode_characterization</span>, <span class="st">"HOV"</span><span class="op">)</span>          <span class="op">~</span><span class="st">"HOV2+"</span>,</span>
+<span>    <span class="va">mode_characterization</span><span class="op">==</span><span class="st">"Drive SOV"</span>                <span class="op">~</span><span class="st">"Drive alone"</span>,</span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html" class="external-link">str_detect</a></span><span class="op">(</span><span class="va">mode_characterization</span>, <span class="st">"^(Walk|Bike)"</span><span class="op">)</span> <span class="op">~</span><span class="st">"Walk/Bike/Micromobility"</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span><span class="va">mode_characterization</span><span class="op">)</span></span>
+<span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># Calculate a categorical summary, i.e. count/share</span></span>
-<span><span class="va">rs3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"person"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"survey_year"</span>, <span class="st">"worker"</span><span class="op">)</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">rs3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"trip"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"purpose_work"</span>, <span class="st">"mode_basic"</span><span class="op">)</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    survey_year     worker count      prop   prop_moe       est   est_moe</span></span>
-<span><span class="co">#&gt;          &lt;int&gt;     &lt;fctr&gt; &lt;int&gt;     &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        2017     Worker  3863 0.6681291 0.03075054 1991691.5 139270.04</span></span>
-<span><span class="co">#&gt; 2:        2017 Not Worker  1517 0.3318709 0.03075054  989306.5 104621.62</span></span>
-<span><span class="co">#&gt; 3:        2019     Worker  3585 0.6718722 0.03146935 2024432.5 142762.94</span></span>
-<span><span class="co">#&gt; 4:        2019 Not Worker  1325 0.3281278 0.03146935  988688.8 109105.54</span></span>
-<span><span class="co">#&gt; 5:        2021     Worker  2125 0.6848086 0.01923162 2268045.2  88724.59</span></span>
-<span><span class="co">#&gt; 6:        2021 Not Worker  1313 0.3151914 0.01923162 1043894.8  66403.29</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2019</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    survey_year purpose_work              mode_basic count       prop   prop_moe</span></span>
+<span><span class="co">#&gt;          &lt;int&gt;       &lt;char&gt;                  &lt;char&gt; &lt;int&gt;      &lt;num&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:        2019         Work             Drive alone  3278 0.68177995 0.03150230</span></span>
+<span><span class="co">#&gt; 2:        2019         Work                   HOV2+   818 0.11826841 0.02005792</span></span>
+<span><span class="co">#&gt; 3:        2019         Work                 Transit  1473 0.08219558 0.01666021</span></span>
+<span><span class="co">#&gt; 4:        2019         Work Walk/Bike/Micromobility  1940 0.11775606 0.02278418</span></span>
+<span><span class="co">#&gt;          est   est_moe</span></span>
+<span><span class="co">#&gt;        &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1679133.3 140406.62</span></span>
+<span><span class="co">#&gt; 2:  291279.4  50291.72</span></span>
+<span><span class="co">#&gt; 3:  202436.8  41370.62</span></span>
+<span><span class="co">#&gt; 4:  290017.5  58883.96</span></span></code></pre></div>
 <p>Note: <strong>travelSurveyTools</strong> summary functions require
 additional preparatory steps that <strong>psrc.travelsurvey</strong>
 handles for you, for simplicity. To use native

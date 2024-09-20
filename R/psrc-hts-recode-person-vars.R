@@ -12,10 +12,6 @@ safegsub <- function(rgx, x){
   return(ans)
 }
 
-#' Add binned income variable
-#' Requires `hhincome_broad` variable
-#'
-
 #' Add a binned age variable
 #' Requires `age` variable
 #'

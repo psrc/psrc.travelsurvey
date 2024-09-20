@@ -6,7 +6,7 @@ NULL
 #' Summarize PSRC travel survey data
 #'
 #' @param hts_data the data object, a list with either data.table or NULL for hh, person, day, trip, vehicle
-#' @param analysis_unit string, either "household", "person", "day", "trip", or "vehicle"
+#' @param analysis_unit string, either "hh", "person", "day", "trip", or "vehicle"
 #' @param group_vars vector with names of one or more grouping variables, in order
 #' @param stat_var string, name of numeric variable for sum, median, mean; implicit for count
 #' @param incl_na logical, whether NA should be included in results--including calculated shares

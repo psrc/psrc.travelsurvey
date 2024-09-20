@@ -58,7 +58,7 @@ library(psrc.travelsurvey)
 library(data.table)
 
 # Specify which variables to retrieve
-vars <- c("hhsize", "employment", "commute_mode", 
+vars <- c("hhsize", "employment", "commute_mode", "dest_purpose",
           "mode_characterization", "distance_miles")
 
 # Retrieve the data
@@ -81,18 +81,37 @@ head(dplyr::select(rs2[survey_year==2023 & as.character(mode_characterization)==
 
 ## Custom variables and filtering
 
-Since each `hts_data` element is a data.table, they can be manipulated with any combination of base r, tidyverse (e.g. `mutate()`), or data.table (e.g `:=`) syntax. Additionally, standard category groupings not present in the base data can be added via the functions described in [the accompanying vignette](add-standard-groupings.html).
+Since each `hts_data` element is a data.table, they can be manipulated with any combination of base r, tidyverse (e.g. `mutate()`), or data.table (e.g `:=`) syntax. The example below illustrates adding variables specific to the `hts_data$trip` element. Notice, the inheritance capability mentioned earlier applies to custom variables as well, so if you want to recode a household-level variable to feature in a trip-level analysis, just add it to `hts_data$hh` (not to `hts_data$trip`).  
 
-Keep in mind that filtering any table removes records available for subsequent analyses. Rather than manage multiple filtered copies of the data object, you may want to create a new variable on the relevant table with `NA` values for the records you intend to exclude from the summary. You can then use the `incl_na=FALSE` option to exclude that line from summary results (of particular value when you want shares calculated from only reported categories). Here we will add a dichotomous `worker` variable, then calculate shares with `NA` values excluded (they would otherwise comprise about 20 percent of the total). 
+Standard category groupings not present in the base data can be added via the functions described in [the accompanying vignette](add-standard-groupings.html). These take the entire `hts_data` object as argument, not a specific table (the package knows which is involved). This lends itself to piping multiple standard recodes.
+
+Keep in mind that filtering any table removes records available for subsequent analyses. Rather than manage multiple filtered copies of the data object, you may want to create a new variable on the relevant table with `NA` values for the records you intend to exclude from the summary. You can then use the `incl_na=FALSE` option to exclude that line from summary results (of particular value when you want shares calculated from only reported categories). Here we will add a variable specific to work-related trips, and use the `incl_na=FALSE` option to limit the statistics (including percentages) to work-related trips only, without erasing non-work trips from the `hts_data` object or creating a separate `hts_data` object for this summary. 
 
 ```{r add_variable, message=FALSE, eval=TRUE}
-# Add the worker variable 
-hts_data <- hts_bin_worker(hts_data)
+library(dplyr)
+library(stringr)
+
+# Use a standard variable recode to get simpler trip purpose
+hts_data <- hts_bin_dest_purpose(hts_data)
+
+# Use dplyr::mutate to add a simplified mode field & work purpose specifier
+hts_data$trip <- mutate(
+  hts_data$trip, 
+  purpose_work = case_when(
+    dest_purpose_bin4=="Work" ~ "Work",
+    !is.na(dest_purpose_bin4) ~ NA_character_),
+  mode_basic = case_when(
+    mode_characterization=="Airplane"                 ~NA_character_,
+    str_detect(mode_characterization, "HOV")          ~"HOV2+",
+    mode_characterization=="Drive SOV"                ~"Drive alone",
+    str_detect(mode_characterization, "^(Walk|Bike)") ~"Walk/Bike/Micromobility",
+    TRUE ~mode_characterization)
+) 
 
 # Calculate a categorical summary, i.e. count/share
-rs3 <- psrc_hts_stat(hts_data, "person", c("survey_year", "worker"), incl_na=FALSE)
+rs3 <- psrc_hts_stat(hts_data, "trip", c("purpose_work", "mode_basic"), incl_na=FALSE)
 
-head(rs3)
+head(rs3[survey_year==2019])
 
 ```
 

@@ -15,7 +15,7 @@ psrc_hts_stat(
 \arguments{
 \item{hts_data}{the data object, a list with either data.table or NULL for hh, person, day, trip, vehicle}
 
-\item{analysis_unit}{string, either "household", "person", "day", "trip", or "vehicle"}
+\item{analysis_unit}{string, either "hh", "person", "day", "trip", or "vehicle"}
 
 \item{group_vars}{vector with names of one or more grouping variables, in order}
 

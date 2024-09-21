@@ -219,12 +219,11 @@ data object, you may want to create a new variable on the relevant table
 with <code>NA</code> values for the records you intend to exclude from
 the summary. You can then use the <code>incl_na=FALSE</code> option to
 exclude that line from summary results (of particular value when you
-want shares calculated from only reported categories). Here we will add
-a variable specific to work-related trips, and use the
-<code>incl_na=FALSE</code> option to limit the statistics (including
-percentages) to work-related trips only, without erasing non-work trips
-from the <code>hts_data</code> object or creating a separate
-<code>hts_data</code> object for this summary.</p>
+want shares calculated from only reported categories). Here we calculate
+mode split percentages for work trips only by adding a variable coded
+<code>NA</code> for all non-work-related trips, then using the
+<code>incl_na=FALSE</code> option to limit statistics to that
+category.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org" class="external-link">stringr</a></span><span class="op">)</span></span>
@@ -249,19 +248,14 @@ from the <code>hts_data</code> object or creating a separate
 <span><span class="co"># Calculate a categorical summary, i.e. count/share</span></span>
 <span><span class="va">rs3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_stat.html">psrc_hts_stat</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"trip"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"purpose_work"</span>, <span class="st">"mode_basic"</span><span class="op">)</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2019</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    survey_year purpose_work              mode_basic count       prop   prop_moe</span></span>
-<span><span class="co">#&gt;          &lt;int&gt;       &lt;char&gt;                  &lt;char&gt; &lt;int&gt;      &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        2019         Work             Drive alone  3278 0.68177995 0.03150230</span></span>
-<span><span class="co">#&gt; 2:        2019         Work                   HOV2+   818 0.11826841 0.02005792</span></span>
-<span><span class="co">#&gt; 3:        2019         Work                 Transit  1473 0.08219558 0.01666021</span></span>
-<span><span class="co">#&gt; 4:        2019         Work Walk/Bike/Micromobility  1940 0.11775606 0.02278418</span></span>
-<span><span class="co">#&gt;          est   est_moe</span></span>
-<span><span class="co">#&gt;        &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 1679133.3 140406.62</span></span>
-<span><span class="co">#&gt; 2:  291279.4  50291.72</span></span>
-<span><span class="co">#&gt; 3:  202436.8  41370.62</span></span>
-<span><span class="co">#&gt; 4:  290017.5  58883.96</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span><span class="op">]</span>,</span>
+<span>                   <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">purpose_work</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                 mode_basic count       prop    prop_moe        est   est_moe</span></span>
+<span><span class="co">#&gt;                     &lt;char&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:             Drive alone  2734 0.79225316 0.022564259 1811897.29 115484.22</span></span>
+<span><span class="co">#&gt; 2:                   HOV2+   338 0.09876046 0.019141481  225866.97  45747.05</span></span>
+<span><span class="co">#&gt; 3:                 Transit   419 0.03180004 0.007017877   72727.26  15812.50</span></span>
+<span><span class="co">#&gt; 4: Walk/Bike/Micromobility   846 0.07718633 0.011570575  176526.54  26040.61</span></span></code></pre></div>
 <p>Note: <strong>travelSurveyTools</strong> summary functions require
 additional preparatory steps that <strong>psrc.travelsurvey</strong>
 handles for you, for simplicity. To use native

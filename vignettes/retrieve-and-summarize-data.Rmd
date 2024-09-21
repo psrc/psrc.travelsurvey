@@ -85,7 +85,7 @@ Since each `hts_data` element is a data.table, they can be manipulated with any 
 
 Standard category groupings not present in the base data can be added via the functions described in [the accompanying vignette](add-standard-groupings.html). These take the entire `hts_data` object as argument, not a specific table (the package knows which is involved). This lends itself to piping multiple standard recodes.
 
-Keep in mind that filtering any table removes records available for subsequent analyses. Rather than manage multiple filtered copies of the data object, you may want to create a new variable on the relevant table with `NA` values for the records you intend to exclude from the summary. You can then use the `incl_na=FALSE` option to exclude that line from summary results (of particular value when you want shares calculated from only reported categories). Here we will add a variable specific to work-related trips, and use the `incl_na=FALSE` option to limit the statistics (including percentages) to work-related trips only, without erasing non-work trips from the `hts_data` object or creating a separate `hts_data` object for this summary. 
+Keep in mind that filtering any table removes records available for subsequent analyses. Rather than manage multiple filtered copies of the data object, you may want to create a new variable on the relevant table with `NA` values for the records you intend to exclude from the summary. You can then use the `incl_na=FALSE` option to exclude that line from summary results (of particular value when you want shares calculated from only reported categories). Here we calculate mode split percentages for work trips only by adding a variable coded `NA` for all non-work-related trips, then using the `incl_na=FALSE` option to limit statistics to that category.
 
 ```{r add_variable, message=FALSE, eval=TRUE}
 library(dplyr)
@@ -111,7 +111,8 @@ hts_data$trip <- mutate(
 # Calculate a categorical summary, i.e. count/share
 rs3 <- psrc_hts_stat(hts_data, "trip", c("purpose_work", "mode_basic"), incl_na=FALSE)
 
-head(rs3[survey_year==2019])
+head(dplyr::select(rs3[survey_year==2023],
+                   -c(survey_year, purpose_work)))
 
 ```
 

@@ -66,7 +66,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     newrows <- lapply(newvars, add_var) %>% rbindlist()
     codebook_vars %<>% rbind(newrows)
   }
-  if(analysis_unit=="vehicle"){                           # keep only tables relevant to analysis unit
+  if(analysis_unit=="vehicle"){                                                # keep only tables relevant to analysis unit
     hts_data_relevant <- copy(hts_data)[c("hh","vehicle")]                     # for vehicle, hh is only other table
     codebook_vars %<>% .[(hh==1|vehicle==1)]
   }else{

@@ -16,7 +16,7 @@ hts_bin_dest_purpose(hts_data)
 \value{
 hts_data with a simplified vehicle count variable
 
-hts_data with a simplified vehicle count variable
+hts_data with a simplified destination purpose variable
 }
 \description{
 Add destination purposeclassification

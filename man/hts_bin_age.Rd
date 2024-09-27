@@ -2,7 +2,7 @@
 % Please edit documentation in R/psrc-hts-recode-person-vars.R
 \name{hts_bin_age}
 \alias{hts_bin_age}
-\title{Add a binned age variable
+\title{Add binned age variables
 Requires `age` variable}
 \usage{
 hts_bin_age(hts_data)
@@ -11,10 +11,10 @@ hts_bin_age(hts_data)
 \item{hts_data}{the hts_data list object}
 }
 \value{
-hts_data with an additional binned age variable
+hts_data with additional binned age variables
 }
 \description{
-Add a binned age variable
+Add binned age variables
 Requires `age` variable
 }
 \author{

@@ -16,7 +16,7 @@ safegsub <- function(rgx, x){
 #' Requires `dest_purpose` variable
 #'
 #' @param hts_data the hts_data list object
-#' @return hts_data with a simplified vehicle count variable
+#' @return hts_data with a simplified destination purpose variable
 #' @author Michael Jensen
 #' @export
 hts_bin_dest_purpose <- function(hts_data){
@@ -61,3 +61,33 @@ hts_bin_dest_purpose <- function(hts_data){
   }
   return(hts_data)
 }
+
+#' Add simplified mode classification
+#' Requires `mode_characterization` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a simplified mode variable
+#' @author Michael Jensen
+#' @export
+hts_bin_mode <- function(hts_data){
+  mode_characterization <- mode_basic <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^mode_characterization$", colnames(hts_data$trip)))){
+    print("`mode_characterization` variable missing from data")
+  }else{
+    hts_data$trip %<>% setDT() %>% 
+      .[, mode_basic:=factor(
+        fcase(mode_characterization=="Airplane"                 ,NA_character_,
+              str_detect(mode_characterization, "HOV")          ,"Carpool",
+              mode_characterization=="Drive SOV"                ,"Drive alone",
+              str_detect(mode_characterization, "^(Walk|Bike)") ,"Walk/Bike/Micromobility",
+              !is.na(mode_characterization), as.character(mode_characterization)),
+        levels=c("Drive alone", "Carpool", "Walk/Bike/Micromobility")),]
+    labelled::var_label(hts_data$trip$mode_basic) <- "Travel mode"
+  }
+  return(hts_data)
+}
+
+
+
+
+

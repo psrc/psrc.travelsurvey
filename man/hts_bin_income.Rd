@@ -2,7 +2,7 @@
 % Please edit documentation in R/psrc-hts-recode-hh-vars.R
 \name{hts_bin_income}
 \alias{hts_bin_income}
-\title{Add binned income variable
+\title{Add binned income variables
 Requires `hhincome_broad` variable}
 \usage{
 hts_bin_income(hts_data)
@@ -11,10 +11,10 @@ hts_bin_income(hts_data)
 \item{hts_data}{the hts_data list object}
 }
 \value{
-hts_data with a binned income variable
+hts_data with binned income variables
 }
 \description{
-Add binned income variable
+Add binned income variables
 Requires `hhincome_broad` variable
 }
 \author{

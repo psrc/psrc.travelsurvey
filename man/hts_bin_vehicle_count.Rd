@@ -3,7 +3,7 @@
 %   R/psrc-hts-recode-person-vars.R
 \name{hts_bin_vehicle_count}
 \alias{hts_bin_vehicle_count}
-\title{Add simplified vehicle count variable
+\title{Add simplified vehicle count variables
 Requires `vehicle_count` variable}
 \usage{
 hts_bin_vehicle_count(hts_data)
@@ -14,12 +14,12 @@ hts_bin_vehicle_count(hts_data)
 \item{hts_data}{the hts_data list object}
 }
 \value{
-hts_data with a simplified vehicle count variable
+hts_data with simplified vehicle count variables
 
 hts_data with a simplified vehicle count variable
 }
 \description{
-Add simplified vehicle count variable
+Add simplified vehicle count variables
 Requires `vehicle_count` variable
 
 Add simplified vehicle count variable

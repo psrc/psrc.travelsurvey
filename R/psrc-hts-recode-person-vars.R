@@ -12,11 +12,11 @@ safegsub <- function(rgx, x){
   return(ans)
 }
 
-#' Add a binned age variable
+#' Add binned age variables
 #' Requires `age` variable
 #'
 #' @param hts_data the hts_data list object
-#' @return hts_data with an additional binned age variable
+#' @return hts_data with additional binned age variables
 #' @author Michael Jensen
 #' @export
 hts_bin_age <- function(hts_data){
@@ -25,23 +25,26 @@ hts_bin_age <- function(hts_data){
   if(!any(grepl("^age$", colnames(hts_data$person)))){
     print("`age` variable missing from data")
   }else{
-    hts_data$person %<>% setDT() %>% 
-      .[, age_bin3:=factor(
-        fcase(as.integer(safegsub(rgx_yr, as.character(age))) <18, "Under 18 Years",
-              as.integer(safegsub(rgx_yr, as.character(age)))<=64, "18-64 Years",
-              as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
-        levels=c("Under 18 Years","18-64 Years","65 years or older"))]
-    labelled::var_label(hts_data$person$age_bin3) <- "Age"
     hts_data$person %<>% setDT() %>%
       .[, age_bin5:=factor(
-        fcase(as.integer(safegsub(rgx_yr, as.character(age))) <18, "Under 18 Years",
-              as.integer(safegsub(rgx_yr, as.character(age)))<=24, "18-24 Years",
-              as.integer(safegsub(rgx_yr, as.character(age)))<=44, "25-44 Years",
-              as.integer(safegsub(rgx_yr, as.character(age)))<=64, "45-64 Years",
-              as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
-        levels=c("Under 18 Years","18-24 Years","25-44 Years",
-                "45-64 Years","65 years or older"))]
-    labelled::var_label(hts_data$person$age_bin5) <- "Age"
+          fcase(as.integer(safegsub(rgx_yr, as.character(age))) <18, "Under 18 Years",
+                as.integer(safegsub(rgx_yr, as.character(age)))<=24, "18-24 Years",
+                as.integer(safegsub(rgx_yr, as.character(age)))<=44, "25-44 Years",
+                as.integer(safegsub(rgx_yr, as.character(age)))<=64, "45-64 Years",
+                as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
+          levels=c("Under 18 Years","18-24 Years","25-44 Years",
+                   "45-64 Years","65 years or older"))]        
+    labelled::var_label(hts_data$person$age_bin3) <- "Age"       
+    hts_data$person %<>%
+      .[, age_bin3:=factor(
+        fcase(grepl("^(18|25|45)", as.character(age_bin5)), "18-64 Years",
+              !is.na(age_bin5), as.character(age_bin5)),
+        levels=c("Under 18 Years","18-64 Years","65 years or older"))]
+    labelled::var_label(hts_data$person$age_bin3) <- "Age"
+    hts_data$person %<>%
+      .[, adult:=fcase(any(substr(age_bin3, 1L, 2L) %in% c("18","65")), "Adult", 
+                       !is.na(age_bin3), NA_character_)] 
+    labelled::var_label(hts_data$person$adult) <- "Age 18 or older"
   }
   return(hts_data)
 }

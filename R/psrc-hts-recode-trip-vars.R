@@ -76,18 +76,13 @@ hts_bin_mode <- function(hts_data){
   }else{
     hts_data$trip %<>% setDT() %>% 
       .[, mode_basic:=factor(
-        fcase(mode_characterization=="Airplane"                 ,NA_character_,
-              str_detect(mode_characterization, "HOV")          ,"Carpool",
-              mode_characterization=="Drive SOV"                ,"Drive alone",
-              str_detect(mode_characterization, "^(Walk|Bike)") ,"Walk/Bike/Micromobility",
-              !is.na(mode_characterization), as.character(mode_characterization)),
+        fcase(mode_characterization=="Airplane",                          NA_character_,
+              grepl("HOV", as.character(mode_characterization)),          "Carpool",
+              as.character(mode_characterization)=="Drive SOV",           "Drive alone",
+              grepl("^(Walk|Bike)", as.character(mode_characterization)), "Walk/Bike/Micromobility",
+              !is.na(mode_characterization),                   as.character(mode_characterization)),
         levels=c("Drive alone", "Carpool", "Walk/Bike/Micromobility"))]
     labelled::var_label(hts_data$trip$mode_basic) <- "Travel mode"
   }
   return(hts_data)
 }
-
-
-
-
-

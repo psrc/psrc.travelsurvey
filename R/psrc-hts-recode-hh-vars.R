@@ -108,10 +108,11 @@ hts_bin_rent_own <- function(hts_data){
     print("`rent_own` variable missing from data")
   }else{
     hts_data$hh %<>% setDT() %>%
-      .[, rent_own_bin2=factor(
+      .[, rent_own_bin2:=factor(
         fcase(grepl("^Provided", rent_own) ,"Rent",
               grepl("^(Other|Prefer)", as.character(rent_own)), NA_character_,
               !is.na(rent_own), as.character(rent_own)))]
     labelled::var_label(hts_data$hh$rent_own_bin2) <- "Housing tenure"
   }
+  return(hts_data)
 }

@@ -151,7 +151,7 @@ hts_bin_sexuality <- function(hts_data){
   }else{
     hts_data$person %<>% setDT() %>%
       .[, sexuality_bin3:=factor(
-        fcase(grepl("^(Heterosexual|Missing)", as.character(sexuality)), sexuality,
+        fcase(grepl("^(Heterosexual|Missing)", as.character(sexuality)), as.character(sexuality),
               !is.na(sexuality), "Bisexual, gay, lesbian, queer, don't know, something else"),
         levels=c("Heterosexual (straight)","Missing","Bisexual, gay, lesbian, queer, don't know, something else"))]
     labelled::var_label(hts_data$person$sexuality_bin3) <- "sexuality"

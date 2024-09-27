@@ -28,16 +28,17 @@ hts_bin_income <- function(hts_data){
     hts_data$hh %<>% setDT() %>%
       .[, hhincome_bin5:=factor(
         fcase(grepl("\\$(1|2)00,", as.character(hhincome_broad)), "$100,000 or more",
-              !is.na(hhincome_broad),                           as.character(hhincome_broad)),
+              !is.na(hhincome_broad),                   as.character(hhincome_broad)),
         levels=c("Under $25,000","$25,000-$49,999","$50,000-$74,999",
                  "$75,000-$99,999","$100,000 or more","Prefer not to answer"))]
     labelled::var_label(hts_data$hh$hhincome_bin5) <- "Nominal Household Income"
-    hts_data$hh %<>% 
-      .[, hhincome_bin3=factor(
-      fcase(str_detect(as.character(hhincome_bin5),"\\$25"), "Less than $50,000",
-            str_detect(as.character(hhincome_bin5),"\\$7"), "$50,000-$99,999",
+    hts_data$hh %<>%
+      .[, hhincome_bin3:=factor(
+      fcase(grepl("\\$25", as.character(hhincome_bin5)), "Less than $50,000",
+            grepl("\\$7", as.character(hhincome_bin5)), "$50,000-$99,999",
             !is.na(hhincome_bin5), as.character(hhincome_bin5)),
-      levels= c("Less than $50,000","$50,000-$99,999","$100,000 or more"))]
+      levels= c("Less than $50,000","$50,000-$99,999",
+                "$100,000 or more","Prefer not to answer"))]
     labelled::var_label(hts_data$hh$hhincome_bin3) <- "Nominal Household Income"
   }
   return(hts_data)

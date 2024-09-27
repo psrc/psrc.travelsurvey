@@ -31,10 +31,11 @@ hts_bin_age <- function(hts_data){
                 as.integer(safegsub(rgx_yr, as.character(age)))<=24, "18-24 Years",
                 as.integer(safegsub(rgx_yr, as.character(age)))<=44, "25-44 Years",
                 as.integer(safegsub(rgx_yr, as.character(age)))<=64, "45-64 Years",
-                as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older"),
+                as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older",
+                !is.na(as.character(age)), as.character(age)),
           levels=c("Under 18 Years","18-24 Years","25-44 Years",
                    "45-64 Years","65 years or older"))]        
-    labelled::var_label(hts_data$person$age_bin3) <- "Age"       
+    labelled::var_label(hts_data$person$age_bin5) <- "Age"       
     hts_data$person %<>%
       .[, age_bin3:=factor(
         fcase(grepl("^(18|25|45)", as.character(age_bin5)), "18-64 Years",

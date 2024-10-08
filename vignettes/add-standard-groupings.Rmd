@@ -55,7 +55,7 @@ Currently, the following functions exist, along with the required input variable
 | **`hts_bin_rent_own()`**         | rent_own         | rent_own_bin2                         |  rent • own                                |
 | **`hts_bin_age()`**              | age              | adult / age_bin3 / <br>age_bin5       | 18[ **or** 18 )[ 64 )[ 65 **or**<br> 18 )[ 25 )[ 45 )[ 65 |
 | **`hts_bin_worker()`**           | employment       | worker                                |  worker • non-worker                       |
-| **`hts_bin_edu()`**              | education        | education_bin2                        |  Less )[ Bachelors+                        |
+| **`hts_bin_edu()`**              | education        | edu_bin2                              |  Less )[ Bachelors+                        |
 | **`hts_bin_gender()`**           | gender           | gender_bin3                           |  m • f • nb/oth                            |
 | **`hts_bin_sexuality()`**        | sexuality        | sexuality_bin3                        |  hetero • LGBTQ+ • Missing                 |
 | **`hts_bin_commute_freq()`**     | commute_freq     | commute_freq_bin6                     |  Less • 1 • 2 • 3 • 4 • 5+ days/week       |

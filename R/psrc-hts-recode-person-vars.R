@@ -109,10 +109,10 @@ hts_bin_gender <- function(hts_data){
   }else{
   hts_data$person %<>% setDT() %>%
     .[, gender_bin3:=factor(
-      fcase(grepl("^Boy/Man", as.character(gender)),    "Male",
-            grepl("^Girl/Woman", as.character(gender)), "Female",
+      fcase(grepl("^Male|Boy", as.character(gender)),    "Boy/Man",
+            grepl("^Female|Girl", as.character(gender)), "Girl/Woman",
             !is.na(gender), "Non-binary, another, prefer not to answer"),
-      levels=c("Male","Female","Non-binary, another, prefer not to answer"))]
+      levels=c("Girl/Woman","Boy/Man","Non-binary, another, prefer not to answer"))]
     labelled::var_label(hts_data$person$gender_bin3) <- "Gender"
   }
   return(hts_data)

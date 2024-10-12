@@ -244,6 +244,32 @@ hts_bin_telecommute_freq <- function(hts_data){
   return(hts_data)
 }
 
+#' Add telecommute status variable
+#' Requires `telecommute_freq` and `workplace` variables
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with telecommute status variable
+#' @author Michael Jensen
+#' @export
+hts_bin_telecommute_trichotomy <- function(hts_data){
+  telecommute_freq <- workplace <- telecommute_trichotomy <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^telecommute_freq$", colnames(hts_data$person)))){
+    print("`telecommute_freq` variable missing from data")
+  }else if(!any(grepl("^workplace$", colnames(hts_data$person)))){
+    print("`workplace` variable missing from data")
+  }else{
+    hts_data$person %<>% setDT() %>%
+      .[, telecommute_trichotomy:=factor(
+        fcase(is.na(workplace), NA_character_,
+              workplace=="At home (telecommute or self-employed with home office)", "Fully At Home", 
+              grepl("^\\d+", as.character(telecommute_freq)), "Hybrid",
+              !is.na(telecommute_freq), "Fully In Person"),
+        levels=c("Fully At Home","Hybrid","Fully In Person"))]
+    #labelled::var_label(hts_data$person$telecommute_trichotomy) <- ""
+  }
+  return(hts_data)
+}
+
 #' Add simplified vehicle count variable
 #' Requires `vehicle_count` variable
 #'

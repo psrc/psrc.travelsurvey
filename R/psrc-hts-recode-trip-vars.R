@@ -81,7 +81,7 @@ hts_bin_mode <- function(hts_data){
               as.character(mode_characterization)=="Drive SOV",           "Drive alone",
               grepl("^(Walk|Bike)", as.character(mode_characterization)), "Walk/Bike/Micromobility",
               !is.na(mode_characterization),                   as.character(mode_characterization)),
-        levels=c("Drive alone", "Carpool", "Walk/Bike/Micromobility"))]
+        levels=c("Walk/Bike/Micromobility", "Transit", "Carpool", "Drive alone"))]
     labelled::var_label(hts_data$trip$mode_basic) <- "Travel mode"
   }
   return(hts_data)

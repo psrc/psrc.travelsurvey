@@ -20,7 +20,7 @@ safegsub <- function(rgx, x){
 #' @author Michael Jensen
 #' @export
 hts_bin_age <- function(hts_data){
-  age <- age_bin3 <- age_bin5 <- NULL # Bind variables locally for CMD check
+  age <- age_bin3 <- age_bin5 <- adult <- NULL # Bind variables locally for CMD check
   rgx_yr <- "^.*\\b(\\d+) years.*$"
   if(!any(grepl("^age$", colnames(hts_data$person)))){
     print("`age` variable missing from data")

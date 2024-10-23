@@ -16,10 +16,13 @@ NULL
 #' @importFrom tidyr drop_na
 #' @importFrom stringr str_replace
 #' @importFrom rlang is_empty
+#' @importFrom pkgcond suppress_warnings
 #' @importFrom travelSurveyTools hts_prep_variable hts_summary_cat hts_summary_num
 #'
 #' @export
 psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NULL, incl_na=TRUE){
+  options(survey.adjust.domain.lonely=TRUE)
+  options(survey.lonely.psu="adjust")
   statvar <- grpvars <- found_idx <- found_tbl <- found_classes <- NULL
   found_dtype <- codebook_vars <- var_row <- newvars <- newrows <- NULL
   statvartype <- prepped_dt <- summary_dt <- NULL # For CMD check
@@ -35,8 +38,11 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   # Helper function to add variable row to codebook         
   add_var <- function(var){
     found_idx <- lapply(hts_data, function(x) any(var %in% colnames(x))==TRUE) %>% unlist()
+    if(is.null(found_idx)){
+      NULL
+    }else if(!is.null(found_idx)){
     found_tbl <- names(hts_data[found_idx])
-    found_classes <- class(hts_data[[found_tbl]][[var]]) 
+    found_classes <- class(hts_data[[found_tbl]][[var]])
     found_dtype <- if("numeric" %in% found_classes){"numeric"
                  }else if("Date" %in% found_classes){"date"    
                  }else if(any(c("POSIXct","POSIXt") %in% found_classes)){"date-time" 
@@ -54,6 +60,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
                           description="Added",
                           shared_name=var)
     return(var_row)
+    }
   }
   codebook_vars <- copy(init_variable_list) %>% setDT()                        # mutable copy
   newvars <- NULL                                                              # find any new variables
@@ -91,26 +98,32 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   if(is.null(stat_var)){
     statvartype <- codebook_vars[variable==(statvar), data_type] %>% unique()
     if(incl_na==FALSE){prepped_dt$cat %<>% tidyr::drop_na()}
-    summary_dt <- travelSurveyTools::hts_summary_cat(                          # count
-      prepped_dt = prepped_dt$cat,                 
-      summarize_var = statvar,
-      summarize_by = grpvars,
-      summarize_vartype = statvartype,
-      weighted = TRUE,
-      wtname = hts_wgt_var(analysis_unit),
-      strataname = "sample_segment",
-      se = TRUE,
-      id_cols = pk_id)
+    pkgcond::suppress_warnings(
+      summary_dt <- travelSurveyTools::hts_summary_cat(                          # count
+        prepped_dt = prepped_dt$cat,                 
+        summarize_var = statvar,
+        summarize_by = grpvars,
+        summarize_vartype = statvartype,
+        weighted = TRUE,
+        wtname = hts_wgt_var(analysis_unit),
+        strataname = "sample_segment",
+        se = TRUE,
+        id_cols = pk_id),
+      pattern="NAs introduced by coercion"
+    )
   }else{
     if(incl_na==FALSE){prepped_dt$num %<>% tidyr::drop_na()}
-    summary_dt <- travelSurveyTools::hts_summary_num(                          # min/max/median/mean
-      prepped_dt = prepped_dt$num,                 
-      summarize_var = statvar,
-      summarize_by = grpvars,
-      weighted = TRUE,
-      wtname = hts_wgt_var(analysis_unit),
-      strataname = "sample_segment",
-      se = TRUE)
+    pkgcond::suppress_warnings(    
+      summary_dt <- travelSurveyTools::hts_summary_num(                          # min/max/median/mean
+        prepped_dt = prepped_dt$num,                 
+        summarize_var = statvar,
+        summarize_by = grpvars,
+        weighted = TRUE,
+        wtname = hts_wgt_var(analysis_unit),
+        strataname = "sample_segment",
+        se = TRUE),
+    pattern="NAs introduced by coercion"
+    )
   }
   summary_dt$wtd %<>%                                                          # convert se to moe
     .[, grep("_se$", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se$", colnames(.))] %>%

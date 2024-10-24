@@ -270,29 +270,6 @@ hts_bin_telecommute_trichotomy <- function(hts_data){
   return(hts_data)
 }
 
-#' Add simplified vehicle count variable
-#' Requires `vehicle_count` variable
-#'
-#' @param hts_data the hts_data list object
-#' @return hts_data with a simplified vehicle count variable
-#' @author Michael Jensen
-#' @export
-hts_bin_vehicle_count <- function(hts_data){
-  vehicle_count <- vehicle_count_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^vehicle_count$", colnames(hts_data$hh)))){
-    print("`vehicle_count` variable missing from data")
-  }else{
-    rgx_veh <- "^(\\d+) .*$"
-    hts_data$hh %<>% setDT() %>%
-      .[, vehicle_count_bin4:=factor(
-        fcase(as.integer(safegsub(rgx_veh, as.character(vehicle_count))) >3, "4+",
-              !is.na(vehicle_count), safegsub(rgx_veh, as.character(vehicle_count))),
-        levels=c("0","1","2","3","4+"))]
-    labelled::var_label(hts_data$hh$vehicle_count_bin4) <- "Number of vehicles"
-  }
-  return(hts_data)
-}
-
 #' Add land use modeling industry classification
 #' Requires `industry` variable
 #'

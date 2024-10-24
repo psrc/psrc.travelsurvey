@@ -86,8 +86,8 @@ hts_bin_vehicle_count <- function(hts_data){
               !is.na(vehicle_count), safegsub(rgx_veh, as.character(vehicle_count))),
         levels=c("0","1","2","3","4+")),
       veh_yn=factor(
-        fcase(vehicle_count=="0 (no vehicles)", "No vehicle",
-              !is.na(vehicle_count),            "1+ vehicle"),
+        fcase(grepl("^0",     as.character(vehicle_count)), "No vehicle",
+              grepl("^[1-9]", as.character(vehicle_count)), "1+ vehicle"),
         levels= c("No vehicle","1+ vehicle")))]
     labelled::var_label(hts_data$hh$vehicle_count_bin4) <- "Number of vehicles"
     labelled::var_label(hts_data$hh$veh_yn) <- "Presence or absence of own vehicle(s)"   

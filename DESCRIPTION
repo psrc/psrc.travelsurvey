@@ -17,6 +17,7 @@ Imports:
     dplyr,
     magrittr,
     labelled,
+    pkgcond,
     psrcelmer,
     readxl,
     rlang,

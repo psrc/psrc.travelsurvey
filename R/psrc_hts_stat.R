@@ -15,6 +15,7 @@ NULL
 #' @import data.table
 #' @importFrom tidyr drop_na
 #' @importFrom stringr str_replace
+#' @importFrom dplyr filter
 #' @importFrom rlang is_empty
 #' @importFrom pkgcond suppress_warnings
 #' @importFrom travelSurveyTools hts_prep_variable hts_summary_cat hts_summary_num
@@ -70,7 +71,8 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     setdiff(c(grpvars, statvar), codebook_vars$variable) 
   }
   if(!is.null(newvars)){                                                       # add new variables to codebook
-    newrows <- lapply(newvars, add_var) %>% rbindlist()
+    newrows <- lapply(newvars, add_var) %>% rbindlist() %>%
+      filter(complete.cases(.))
     codebook_vars %<>% rbind(newrows)
   }
   if(analysis_unit=="vehicle"){                                                # keep only tables relevant to analysis unit

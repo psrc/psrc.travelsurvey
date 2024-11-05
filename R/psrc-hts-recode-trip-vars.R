@@ -101,7 +101,7 @@ hts_bin_transit_mode_acc <- function(hts_data){
   }else{
     hts_data$trip %<>% setDT() %>% 
       .[, transit_mode_acc:=factor(
-        fcase((mode_characterization!='Transit'|!is.na(mode_characterization)), NA_character_, 
+        fcase((as.character(mode_characterization)!='Transit'|is.na(mode_characterization)), NA_character_, 
               grepl("([bB]i(ke|cycle)|[sS]cooter)", as.character(mode_acc)), "Bike/Micromobility",
               grepl("[wW]alk", as.character(mode_acc)), "Walked or jogged",
               !is.na(mode_acc), "Vehicular"),

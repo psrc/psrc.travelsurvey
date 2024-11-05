@@ -187,14 +187,14 @@ handy feature and avoids unnecessary data duplication among tables.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">mode_characterization</span><span class="op">)</span><span class="op">==</span><span class="st">"Transit"</span><span class="op">]</span>,</span>
 <span>                   <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">mode_characterization</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      hhsize count       prop    prop_moe       est   est_moe</span></span>
-<span><span class="co">#&gt;       &lt;ord&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 1 person   908 0.08090005 0.012606740 173635.72 28466.102</span></span>
-<span><span class="co">#&gt; 2: 2 people   563 0.02056404 0.004167832  88135.46 17783.128</span></span>
-<span><span class="co">#&gt; 3: 3 people   165 0.01946050 0.005394446  32299.75  8864.421</span></span>
-<span><span class="co">#&gt; 4: 4 people   205 0.04214847 0.009085101 162495.97 35391.190</span></span>
-<span><span class="co">#&gt; 5: 5 people    77 0.06091950 0.015838454 131608.22 34802.763</span></span>
-<span><span class="co">#&gt; 6: 6 people    49 0.10200039 0.026777949 140783.94 38384.352</span></span></code></pre></div>
+<span><span class="co">#&gt;      hhsize count       prop    prop_moe       est est_moe</span></span>
+<span><span class="co">#&gt;       &lt;ord&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;     &lt;num&gt;   &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1 person   908 0.08090005 0.012606740 173635.72     Inf</span></span>
+<span><span class="co">#&gt; 2: 2 people   563 0.02056404 0.004167832  88135.46     Inf</span></span>
+<span><span class="co">#&gt; 3: 3 people   165 0.01946050 0.005394446  32299.75     Inf</span></span>
+<span><span class="co">#&gt; 4: 4 people   205 0.04214847 0.009085101 162495.97     Inf</span></span>
+<span><span class="co">#&gt; 5: 5 people    77 0.06091950 0.015838454 131608.22     Inf</span></span>
+<span><span class="co">#&gt; 6: 6 people    49 0.10200039 0.026777949 140783.94     Inf</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="custom-variables-and-filtering">Custom variables and filtering<a class="anchor" aria-label="anchor" href="#custom-variables-and-filtering"></a>
@@ -250,12 +250,12 @@ category.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span><span class="op">]</span>,</span>
 <span>                   <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">purpose_work</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 mode_basic count       prop    prop_moe        est   est_moe</span></span>
-<span><span class="co">#&gt;                     &lt;char&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:             Drive alone  2734 0.79225316 0.022564259 1811897.29 115484.22</span></span>
-<span><span class="co">#&gt; 2:                   HOV2+   338 0.09876046 0.019141481  225866.97  45747.05</span></span>
-<span><span class="co">#&gt; 3:                 Transit   419 0.03180004 0.007017877   72727.26  15812.50</span></span>
-<span><span class="co">#&gt; 4: Walk/Bike/Micromobility   846 0.07718633 0.011570575  176526.54  26040.61</span></span></code></pre></div>
+<span><span class="co">#&gt;                 mode_basic count       prop    prop_moe        est  est_moe</span></span>
+<span><span class="co">#&gt;                     &lt;char&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;      &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:             Drive alone  2734 0.79225316 0.022564259 1811897.29 115484.2</span></span>
+<span><span class="co">#&gt; 2:                   HOV2+   338 0.09876046 0.019141481  225866.97      Inf</span></span>
+<span><span class="co">#&gt; 3:                 Transit   419 0.03180004 0.007017877   72727.26      Inf</span></span>
+<span><span class="co">#&gt; 4: Walk/Bike/Micromobility   846 0.07718633 0.011570575  176526.54      Inf</span></span></code></pre></div>
 <p>Note: <strong>travelSurveyTools</strong> summary functions require
 additional preparatory steps that <strong>psrc.travelsurvey</strong>
 handles for you, for simplicity. To use native
@@ -275,7 +275,7 @@ handle these extra steps yourself, since
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>

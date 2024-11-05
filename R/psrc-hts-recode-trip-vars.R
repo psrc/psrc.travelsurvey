@@ -87,25 +87,26 @@ hts_bin_mode <- function(hts_data){
   return(hts_data)
 }
 
-#' Add simplified access mode classification
+#' Add simplified transit access mode classification
 #' Requires `mode_acc` variable
 #'
 #' @param hts_data the hts_data list object
-#' @return hts_data with a simplified access mode variable
+#' @return hts_data with a simplified transit access mode variable
 #' @author Michael Jensen
 #' @export
-hts_bin_mode_acc <- function(hts_data){
-  mode_acc <- mode_acc_basic <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^mode_acc$", colnames(hts_data$trip)))){
-    print("`mode_acc` variable missing from data")
+hts_bin_transit_mode_acc <- function(hts_data){
+  transit_mode_acc <- mode_acc <- mode_characterization <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^mode_acc$|^mode_characterization$", colnames(hts_data$trip)))){
+    print("`mode_acc` and/or `mode_characterization` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 
-      .[, mode_acc_basic:=factor(
-        fcase(grepl("([bB]i(ke|cycle)|[sS]cooter)", mode_acc), "Bike/Micromobility",
-              grepl("[wW]alk", mode_acc), "Walked or jogged",
+      .[, transit_mode_acc:=factor(
+        fcase((mode_characterization!='Transit'|!is.na(mode_characterization)), NA_character_, 
+              grepl("([bB]i(ke|cycle)|[sS]cooter)", as.character(mode_acc)), "Bike/Micromobility",
+              grepl("[wW]alk", as.character(mode_acc)), "Walked or jogged",
               !is.na(mode_acc), "Vehicular"),
         levels=c("Walked or jogged", "Bike/Micromobility", "Vehicular"))]
-    labelled::var_label(hts_data$trip$mode_acc_basic) <- "Access mode"
+    labelled::var_label(hts_data$trip$transit_mode_acc) <- "Transit access mode"
   }
   return(hts_data)
 }

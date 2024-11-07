@@ -331,3 +331,72 @@ hts_bin_industry_sector <- function(hts_data){
   }
   return(hts_data)
 }
+
+#' Add generalized transit frequency
+#' Requires `transit_frequency` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a generalized transit frequency variable
+#' @author Michael Jensen
+#' @export
+hts_bin_transit_frequency <- function(hts_data){
+  transit_frequency <- transit_frequency_bin4 <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^transit_frequency$", colnames(hts_data$person)))){
+    print("`transit_frequency` variable missing from data")
+  }else{
+    hts_data$person %<>% setDT() %>%
+      .[, transit_frequency_bin4:=factor(
+        fcase(safegsub("(\\d-)?(\\d) days? a week$", as.character(telecommute_freq)) %between% c(1,4), "1-4 days a week",
+              safegsub("(\\d-)?(\\d) days a week$", as.character(telecommute_freq)) %between% c(5,7), "5-7 days a week",
+              !is.na(telecommute_freq), as.character(telecommute_freq)),
+        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
+    labelled::var_label(hts_data$person$transit_frequency_bin4) <- "Frequency of transit use"
+  }
+  return(hts_data)
+}
+
+#' Add generalized walk frequency
+#' Requires `walk_frequency` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a generalized walk frequency variable
+#' @author Michael Jensen
+#' @export
+hts_bin_walk_frequency <- function(hts_data){
+  walk_frequency <- walk_frequency_bin4 <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^walk_frequency$", colnames(hts_data$person)))){
+    print("`walk_frequency` variable missing from data")
+  }else{
+    hts_data$person %<>% setDT() %>%
+      .[, walk_frequency_bin4:=factor(
+        fcase(safegsub("(\\d-)?(\\d) days? a week$", as.character(telecommute_freq)) %between% c(1,4), "1-4 days a week",
+              safegsub("(\\d-)?(\\d) days a week$", as.character(telecommute_freq)) %between% c(5,7), "5-7 days a week",
+              !is.na(telecommute_freq), as.character(telecommute_freq)),
+        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
+    labelled::var_label(hts_data$person$walk_frequency_bin4) <- "Frequency of walk use"
+  }
+  return(hts_data)
+}
+
+#' Add generalized bike frequency
+#' Requires `bike_frequency` variable
+#'
+#' @param hts_data the hts_data list object
+#' @return hts_data with a generalized bike frequency variable
+#' @author Michael Jensen
+#' @export
+hts_bin_bike_frequency <- function(hts_data){
+  bike_frequency <- bike_frequency_bin4 <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^bike_frequency$", colnames(hts_data$person)))){
+    print("`bike_frequency` variable missing from data")
+  }else{
+    hts_data$person %<>% setDT() %>%
+      .[, bike_frequency_bin4:=factor(
+        fcase(safegsub("(\\d-)?(\\d) days? a week$", as.character(telecommute_freq)) %between% c(1,4), "1-4 days a week",
+              safegsub("(\\d-)?(\\d) days a week$", as.character(telecommute_freq)) %between% c(5,7), "5-7 days a week",
+              !is.na(telecommute_freq), as.character(telecommute_freq)),
+        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
+    labelled::var_label(hts_data$person$bike_frequency_bin4) <- "Frequency of bike use"
+  }
+  return(hts_data)
+}

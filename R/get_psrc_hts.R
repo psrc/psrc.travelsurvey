@@ -32,7 +32,7 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   
   # Helper function; identifies which tables the desired variables are in, using codebook
   hts_split_vars <- function(tblname, survey_vars){
-    rs <- copy(init_variable_list) %>% setnames("hh","household") %>%
+    rs <- copy(variable_list) %>% setnames("hh","household") %>%
     .[get(tblname)==1 & variable %in% c("sample_segment", "survey_year", survey_vars), variable] %>% unlist()
   }
   # Helper function: recode missing values to NA
@@ -44,12 +44,12 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   # Helper function: Convert a column to factor datatype w/ levels specified from codebook
   psrc_hts_to_factor <- function(dt){
     data_type <- variable <- value <- NULL
-    lbl_ftrs <- init_value_labels$variable %>% unique()
-    ftr_cols <- init_variable_list[data_type=="integer/categorical" & 
+    lbl_ftrs <- value_labels$variable %>% unique()
+    ftr_cols <- variable_list[data_type=="integer/categorical" & 
                                    variable %in% lbl_ftrs, variable] %>% 
       unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
     for(col in ftr_cols){
-      levels <- init_value_labels[variable==col & !grepl(na_rgx, label), label] %>% 
+      levels <- value_labels[variable==col & !grepl(na_rgx, label), label] %>% 
         as.vector() %>% unique() %>% trimws()
       datavalues <- dt[!is.na(get(col)), get(col)] %>% as.vector() %>% unique() %>% trimws()
       if(all(datavalues %in% levels)){
@@ -61,8 +61,8 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   # Helper function: apply descriptive labels
   psrc_hts_desc_labels <- function(dt){
     for(col in colnames(dt))
-      if(col %in% init_variable_list$variable){
-        labelled::var_label(dt[[col]]) <- init_variable_list[variable==col, description]
+      if(col %in% variable_list$variable){
+        labelled::var_label(dt[[col]]) <- variable_list[variable==col, description]
       }
     return (dt)
   }
@@ -128,7 +128,7 @@ hts_wgt_var <- function(tblname){
 #' @export
 psrc_hts_varsearch <- function(regex){
   variable_list <- variable <- description <- NULL
-  rs <- init_variable_list %>%
+  rs <- variable_list %>%
     .[grepl(regex, description, ignore.case=TRUE)|
       grepl(regex, variable,    ignore.case=TRUE), 
       .(variable, description)] %>% unique()

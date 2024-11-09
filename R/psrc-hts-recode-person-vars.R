@@ -346,9 +346,9 @@ hts_bin_transit_frequency <- function(hts_data){
   }else{
     hts_data$person %<>% setDT() %>%
       .[, transit_frequency_bin4:=factor(
-        fcase(safegsub("(\\d-)?(\\d) days? a week$", as.character(telecommute_freq)) %between% c(1,4), "1-4 days a week",
-              safegsub("(\\d-)?(\\d) days a week$", as.character(telecommute_freq)) %between% c(5,7), "5-7 days a week",
-              !is.na(telecommute_freq), as.character(telecommute_freq)),
+        fcase(safegsub("\\d?-?(\\d) days? a week$", as.character(transit_frequency)) %between% c(1,4), "1-4 days a week",
+              safegsub("\\d?-?(\\d) days a week$", as.character(transit_frequency)) %between% c(5,7), "5-7 days a week",
+              !is.na(transit_frequency), as.character(transit_frequency)),
         levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
     labelled::var_label(hts_data$person$transit_frequency_bin4) <- "Frequency of transit use"
   }
@@ -369,9 +369,9 @@ hts_bin_walk_frequency <- function(hts_data){
   }else{
     hts_data$person %<>% setDT() %>%
       .[, walk_frequency_bin4:=factor(
-        fcase(safegsub("(\\d-)?(\\d) days? a week$", as.character(telecommute_freq)) %between% c(1,4), "1-4 days a week",
-              safegsub("(\\d-)?(\\d) days a week$", as.character(telecommute_freq)) %between% c(5,7), "5-7 days a week",
-              !is.na(telecommute_freq), as.character(telecommute_freq)),
+        fcase(safegsub("\\d?-?(\\d) days? a week$", as.character(walk_frequency)) %between% c(1,4), "1-4 days a week",
+              safegsub("\\d?-?(\\d) days a week$", as.character(walk_frequency)) %between% c(5,7), "5-7 days a week",
+              !is.na(walk_frequency), as.character(walk_frequency)),
         levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
     labelled::var_label(hts_data$person$walk_frequency_bin4) <- "Frequency of walk use"
   }
@@ -392,9 +392,9 @@ hts_bin_bike_frequency <- function(hts_data){
   }else{
     hts_data$person %<>% setDT() %>%
       .[, bike_frequency_bin4:=factor(
-        fcase(safegsub("(\\d-)?(\\d) days? a week$", as.character(telecommute_freq)) %between% c(1,4), "1-4 days a week",
-              safegsub("(\\d-)?(\\d) days a week$", as.character(telecommute_freq)) %between% c(5,7), "5-7 days a week",
-              !is.na(telecommute_freq), as.character(telecommute_freq)),
+        fcase(safegsub("\\d?-?(\\d) days? a week$", as.character(bike_frequency)) %between% c(1,4), "1-4 days a week",
+              safegsub("\\d?-?(\\d) days a week$", as.character(bike_frequency)) %between% c(5,7), "5-7 days a week",
+              !is.na(bike_frequency), as.character(bike_frequency)),
         levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
     labelled::var_label(hts_data$person$bike_frequency_bin4) <- "Frequency of bike use"
   }

@@ -284,21 +284,21 @@ hts_bin_lum_sector <- function(hts_data){
   }else{
     hts_data$person %<>% setDT() %>%
       .[, lum_sector:=factor(
-        fcase(grepl("^(Gov|Mil)"), as.character(industry),                    "Gov",
-              grepl("^(Fin|Real|Prof|Landsc|Tech)"), as.character(industry),  "Business Services",
-              grepl("^(Pers|Sport|Soci|Art|Media)"), as.character(industry),  "Personal Services",
-              grepl("^Hospitality"), as.character(industry),                  "Food Services",
-              grepl("^Natural"), as.character(industry),                      "Natural Resources",
-              grepl("care\\b"), as.character(industry),                       "Healthcare",
+        fcase(grepl("^(Gov|Mil)", as.character(industry)),                    "Gov",
+              grepl("^(Fin|Real|Prof|Landsc|Tech)", as.character(industry)),  "Business Services",
+              grepl("^(Pers|Sport|Soci|Art|Media)", as.character(industry)),  "Personal Services",
+              grepl("^Hospitality", as.character(industry)),                  "Food Services",
+              grepl("^Natural", as.character(industry)),                      "Natural Resources",
+              grepl("care\\b", as.character(industry)),                       "Healthcare",
               as.character(industry)=="Public Education",                     "Educ",
               as.character(industry)=="Private Education",                    "Private Ed",
               as.character(industry) %in% c("Retail","Construction","Other"), as.character(industry),
               as.character(industry)=="Transportation and utilities",         "WTU",
-              grepl("^Manufacturing"), as.character(industry),                "Manuf",
+              grepl("^Manufacturing", as.character(industry)),                "Manuf",
               !is.na(industry),                                               as.character(industry)),
         levels=c("Natural Resources","Construction","Manuf","Retail","WTU","Healthcare","Private Ed",
                  "Business Services","Personal Services","Food Services","Other","Educ","Gov"))]
-    labelled::var_label(hts_data$person$lum_sector) <- "Industry Sector (Land Use Modeling)"
+    labelled::var_label(hts_data$person$lum_sector, .strict=FALSE) <- "Industry Sector (Land Use Modeling)"
   }
   return(hts_data)
 }
@@ -316,17 +316,17 @@ hts_bin_industry_sector <- function(hts_data){
     print("`industry` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
-      .[, lum_sector:=factor(
-        fcase(grepl("^(Natural|Constr|Manuf|Trans)"), as.character(industry),         "Construction & Manufacturing",
-              grepl("^(Fin|Real|Prof|Landsc|Tech)"), as.character(industry),          "Professional & Business Services",
-              grepl("^(Pers|Hospitality|Sport|Soci|Retail)"), as.character(industry), "Retail & Personal Services",              
-              grepl("^(Art|Media)"), as.character(industry),                          "Arts & Media", 
-              grepl("^(Pers|Hospitality|Sport|Soci|Retail)"), as.character(industry), "Retail & Personal Services",
-              grepl("(care\\b|education$)"), as.character(industry),                  "Healthcare & Education",
+      .[, industry_sector:=factor(
+        fcase(grepl("^(Natural|Constr|Manuf|Trans)", as.character(industry)),         "Construction & Manufacturing",
+              grepl("^(Fin|Real|Prof|Landsc|Tech)", as.character(industry)),          "Professional & Business Services",
+              grepl("^(Pers|Hospitality|Sport|Soci|Retail)", as.character(industry)), "Retail & Personal Services",              
+              grepl("^(Art|Media)", as.character(industry)),                          "Arts & Media", 
+              grepl("^(Pers|Hospitality|Sport|Soci|Retail)", as.character(industry)), "Retail & Personal Services",
+              grepl("(care\\b|education$)", as.character(industry)),                  "Healthcare & Education",
               !is.na(industry),                                                       as.character(industry),
-              grepl("^(Gov|Mil)"), as.character(industry),                            "Gov"),
+              grepl("^(Gov|Mil)", as.character(industry)),                            "Gov"),
         levels=c("Construction & Manufacturing","Professional & Business Services","Retail & Personal Services",
-                 "Arts & Media","Retail & Personal Services","Healthcare & Education","Other","Gov"))]
+                 "Healthcare & Education","Arts & Media","Other","Gov"))]
     labelled::var_label(hts_data$person$industry_sector) <- "Industry Sector"
   }
   return(hts_data)

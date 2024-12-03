@@ -31,5 +31,5 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://psrc.github.io/psrc.travelsurvey/
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 VignetteBuilder: knitr

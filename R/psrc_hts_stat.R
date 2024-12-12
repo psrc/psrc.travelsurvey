@@ -26,6 +26,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   options(survey.lonely.psu="adjust")
   statvar <- grpvars <- found_idx <- found_tbl <- found_classes <- NULL
   found_dtype <- codebook_vars <- var_row <- newvars <- newrows <- NULL
+  hh <- vehicle <- variable <- data_type <- label <- description <- NULL
   statvartype <- prepped_dt <- summary_dt <- NULL # For CMD check
   pk_id <- paste0(analysis_unit,"_id")
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   

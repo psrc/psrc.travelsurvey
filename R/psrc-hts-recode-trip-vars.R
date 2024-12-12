@@ -70,18 +70,17 @@ hts_bin_dest_purpose <- function(hts_data){
 #' @author Michael Jensen
 #' @export
 hts_bin_mode <- function(hts_data){
-  mode_characterization <- mode_basic <- NULL # Bind variables locally for CMD check
+  mode_class <- mode_basic <- NULL # Bind variables locally for CMD check
   if(!any(grepl("^mode_characterization$", colnames(hts_data$trip)))){
     print("`mode_characterization` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 
       .[, mode_basic:=factor(
-        fcase(mode_characterization=="Airplane",                          NA_character_,
-              grepl("HOV", as.character(mode_characterization)),          "Carpool",
-              as.character(mode_characterization)=="Drive SOV",           "Drive alone",
-              grepl("^(Walk|Bike)", as.character(mode_characterization)), "Walk/Bike/Micromobility",
-              !is.na(mode_characterization),                   as.character(mode_characterization)),
-        levels=c("Walk/Bike/Micromobility", "Transit", "Carpool", "Drive alone"))]
+        fcase(mode_class %in% c("Drive HOV2","Drive HOV3+"), "Carpool",
+              mode_class=="Drive SOV" , "Drive Alone",
+              mode_class=="Transit"), "Transit",
+              !is.na(mode_class) ~ "Walk/Bike/Other"),
+        levels=c("Walk/Bike/Other", "Transit", "Carpool", "Drive alone")]
     labelled::var_label(hts_data$trip$mode_basic) <- "Travel mode"
   }
   return(hts_data)

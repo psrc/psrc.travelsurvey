@@ -8,8 +8,8 @@
 <title>Add Standard Groupings • psrc.travelsurvey</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Add Standard Groupings">
 <meta name="description" content="Add variables with standard PSRC category groupings
 ">
@@ -85,6 +85,94 @@ them all, for convenience; they can be distinguished by a suffix
 denoting the number of categories.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_BAG.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_BAG.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_FITS.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_FITS.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_KEA.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_KEA.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_netCDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_netCDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_PDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_PDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_FileGDB.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_FileGDB.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_MSSQLSpatial.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_MSSQLSpatial.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_BAG.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_BAG.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_FITS.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_FITS.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF4Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_HDF5Image.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_KEA.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_KEA.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_netCDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_netCDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_PDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\gdal_PDF.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_FileGDB.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_FileGDB.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_MSSQLSpatial.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
+<span><span class="co">#&gt; Warning in CPL_gdal_init(): GDAL Error 1: Can't load requested DLL: C:\Program Files\GDAL\gdalplugins\ogr_MSSQLSpatial.dll</span></span>
+<span><span class="co">#&gt; 126: The specified module could not be found.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
@@ -101,7 +189,7 @@ denoting the number of categories.</p>
 <span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/hts_bin_hhsize.html">hts_bin_hhsize</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">hts_data</span><span class="op">$</span><span class="va">person</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols<span class="op">=</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/patterns.html" class="external-link">patterns</a></span><span class="op">(</span><span class="st">"^age"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">hts_data</span><span class="op">$</span><span class="va">person</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/patterns.html" class="external-link">patterns</a></span><span class="op">(</span><span class="st">"^age"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;            age       age_bin5       age_bin3</span></span>
 <span><span class="co">#&gt;          &lt;ord&gt;         &lt;fctr&gt;         &lt;fctr&gt;</span></span>
 <span><span class="co">#&gt; 1: 45-54 years    45-64 Years    18-64 Years</span></span>
@@ -109,7 +197,7 @@ denoting the number of categories.</p>
 <span><span class="co">#&gt; 3: 12-15 years Under 18 Years Under 18 Years</span></span>
 <span><span class="co">#&gt; 4: 35-44 years    25-44 Years    18-64 Years</span></span>
 <span><span class="co">#&gt; 5: 25-34 years    25-44 Years    18-64 Years</span></span>
-<span><span class="co">#&gt; 6: 25-34 years    25-44 Years    18-64 Years</span></span></code></pre></div>
+<span><span class="co">#&gt; 6: 45-54 years    45-64 Years    18-64 Years</span></span></code></pre></div>
 <p>These functions each require a disaggregate input variable to be
 requested in the earlier <code><a href="../reference/get_psrc_hts.html">get_psrc_hts()</a></code> call. Both the
 input variable and the output variable are included in the resulting
@@ -230,14 +318,14 @@ $75K ]( $100K</td>
 </tr>
 <tr class="odd">
 <td align="left"><strong><code><a href="../reference/hts_bin_mode.html">hts_bin_mode()</a></code></strong></td>
-<td align="center">mode_characterization</td>
+<td align="center">mode_class</td>
 <td align="center">mode_basic</td>
 <td align="center">Walk/Bike/Micromobility • Transit • Carpool • Drive
 alone</td>
 </tr>
 <tr class="even">
 <td align="left"><strong><code>hts_bin_transit_acc_mode()</code></strong></td>
-<td align="center">mode_acc, mode_characterization</td>
+<td align="center">mode_acc, mode_class</td>
 <td align="center">transit_mode_acc</td>
 <td align="center">Walked or jogged • Bike/Micromobility •
 Vehicular</td>

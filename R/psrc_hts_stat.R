@@ -110,7 +110,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         strataname = "sample_segment",
         se = TRUE,
         id_cols = pk_id),
-      pattern="NAs introduced by coercion"
+      pattern=c("NAs introduced by coercion","PSU")
     )
   }else{
     if(incl_na==FALSE){prepped_dt$num %<>% tidyr::drop_na()}
@@ -123,7 +123,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         wtname = hts_wgt_var(analysis_unit),
         strataname = "sample_segment",
         se = TRUE),
-    pattern="NAs introduced by coercion"
+      pattern=c("NAs introduced by coercion","PSU")
     )
   }
   summary_dt$wtd %<>%                                                          # convert se to moe

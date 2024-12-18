@@ -9,11 +9,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, eval=TRUE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+suppressWarnings(library(psrc.travelsurvey))
 ```
 
 ## Works with **travelSurveyTools**

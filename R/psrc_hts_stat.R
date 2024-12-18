@@ -24,10 +24,6 @@ NULL
 psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NULL, incl_na=TRUE){
   options(survey.adjust.domain.lonely=TRUE)
   options(survey.lonely.psu="adjust")
-  statvar <- grpvars <- found_idx <- found_tbl <- found_classes <- NULL
-  found_dtype <- codebook_vars <- var_row <- newvars <- newrows <- NULL
-  hh <- vehicle <- variable <- data_type  <- NULL
-  statvartype <- prepped_dt <- summary_dt <- NULL # For CMD check
   pk_id <- paste0(analysis_unit,"_id")
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   
     statvar <- group_vars[length(group_vars)]
@@ -64,7 +60,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     return(var_row)
     }
   }
-  codebook_vars <- copy(variable_list) %>% setDT()                        # mutable copy
+  codebook_vars <- copy(variable_list) %>% setDT()                             # mutable copy
   newvars <- NULL                                                              # find any new variables
   newvars <- if(rlang::is_empty(setdiff(c(grpvars, statvar), codebook_vars$variable))){
     NULL
@@ -101,7 +97,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     statvartype <- codebook_vars[variable==(statvar), data_type] %>% unique()
     if(incl_na==FALSE){prepped_dt$cat %<>% tidyr::drop_na()}
     pkgcond::suppress_warnings(
-      summary_dt <- travelSurveyTools::hts_summary_cat(                          # count
+      summary_dt <- travelSurveyTools::hts_summary_cat(                        # count
         prepped_dt = prepped_dt$cat,                 
         summarize_var = statvar,
         summarize_by = grpvars,
@@ -111,12 +107,12 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         strataname = "sample_segment",
         se = TRUE,
         id_cols = pk_id),
-      pattern=c("NAs introduced by coercion","PSU")
+      pattern="(NAs introduced by coercion|PSU)"
     )
   }else{
     if(incl_na==FALSE){prepped_dt$num %<>% tidyr::drop_na()}
     pkgcond::suppress_warnings(    
-      summary_dt <- travelSurveyTools::hts_summary_num(                          # min/max/median/mean
+      summary_dt <- travelSurveyTools::hts_summary_num(                        # min/max/median/mean
         prepped_dt = prepped_dt$num,                 
         summarize_var = statvar,
         summarize_by = grpvars,
@@ -124,7 +120,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         wtname = hts_wgt_var(analysis_unit),
         strataname = "sample_segment",
         se = TRUE),
-      pattern=c("NAs introduced by coercion","PSU")
+      pattern="(NAs introduced by coercion|PSU)"
     )
   }
   summary_dt$wtd %<>%                                                          # convert se to moe
@@ -132,3 +128,8 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     setnames(grep("_se$", colnames(.)), stringr::str_replace(grep("_se$", colnames(.), value=TRUE), "_se$", "_moe"))
   return(summary_dt$wtd)
 }
+
+## quiets concerns of R CMD check
+utils::globalVariables(c("statvar","grpvars","codebook_vars","found_idx",
+    "found_tbl","found_classes","found_dtype","var_row","newvars","newrows","hh",
+    "vehicle","variable","data_type ","statvartype","prepped_dt","summary_dt"))

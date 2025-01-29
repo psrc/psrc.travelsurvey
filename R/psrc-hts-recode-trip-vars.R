@@ -63,7 +63,7 @@ hts_bin_dest_purpose <- function(hts_data){
 }
 
 #' Add simplified mode classification
-#' Requires `mode_characterization` variable
+#' Requires `mode_class` variable
 #'
 #' @param hts_data the hts_data list object
 #' @return hts_data with a simplified mode variable
@@ -71,8 +71,8 @@ hts_bin_dest_purpose <- function(hts_data){
 #' @export
 hts_bin_mode <- function(hts_data){
   mode_class <- mode_basic <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^mode_characterization$", colnames(hts_data$trip)))){
-    print("`mode_characterization` variable missing from data")
+  if(!any(grepl("^mode_class$", colnames(hts_data$trip)))){
+    print("`mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 
       .[, mode_basic:=factor(
@@ -94,13 +94,13 @@ hts_bin_mode <- function(hts_data){
 #' @author Michael Jensen
 #' @export
 hts_bin_transit_mode_acc <- function(hts_data){
-  transit_mode_acc <- mode_acc <- mode_characterization <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^mode_acc$|^mode_characterization$", colnames(hts_data$trip)))){
-    print("`mode_acc` and/or `mode_characterization` variable missing from data")
+  transit_mode_acc <- mode_acc <- mode_class <- NULL # Bind variables locally for CMD check
+  if(!any(grepl("^mode_acc$|^mode_class$", colnames(hts_data$trip)))){
+    print("`mode_acc` and/or `mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 
       .[, transit_mode_acc:=factor(
-        fcase((as.character(mode_characterization)!='Transit'|is.na(mode_characterization)), NA_character_, 
+        fcase((as.character(mode_class)!='Transit'|is.na(mode_class)), NA_character_, 
               grepl("([bB]i(ke|cycle)|[sS]cooter)", as.character(mode_acc)), "Bike/Micromobility",
               grepl("[wW]alk", as.character(mode_acc)), "Walked or jogged",
               !is.na(mode_acc), "Vehicular"),

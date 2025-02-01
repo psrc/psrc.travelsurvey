@@ -3,7 +3,7 @@
 \name{hts_bin_mode}
 \alias{hts_bin_mode}
 \title{Add simplified mode classification
-Requires `mode_characterization` variable}
+Requires `mode_class` variable}
 \usage{
 hts_bin_mode(hts_data)
 }
@@ -15,7 +15,7 @@ hts_data with a simplified mode variable
 }
 \description{
 Add simplified mode classification
-Requires `mode_characterization` variable
+Requires `mode_class` variable
 }
 \author{
 Michael Jensen

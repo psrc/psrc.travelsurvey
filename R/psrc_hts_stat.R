@@ -13,7 +13,6 @@ NULL
 #' @import data.table
 #' @importFrom tidyr drop_na
 #' @importFrom stringr str_replace
-#' @importFrom dplyr filter
 #' @importFrom rlang is_empty
 #' @importFrom pkgcond suppress_warnings
 #' @importFrom travelSurveyTools hts_prep_variable hts_prep_triprate hts_summary_cat hts_summary_num
@@ -28,7 +27,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     grpvars <- if(rlang::is_empty(group_vars[-length(group_vars)])){NULL}else{group_vars[-length(group_vars)]}
   }else{
     statvar <- stat_var
-    grpvars <- group_vars 
+    grpvars <- group_vars
   }
   if(!"survey_year" %in% grpvars){grpvars <- c("survey_year", grpvars)}
   # Helper function to add variable row to codebook         
@@ -59,7 +58,8 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     return(var_row)
   }
   codebook_vars <- copy(psrc.travelsurvey:::variable_list) %>% setDT()         # mutable copy
-  newvars <- setdiff(c(grpvars, statvar), c(codebook_vars$variable, "num_trips_wtd")) # Identify any new variables
+  newvars <- setdiff(c(grpvars, statvar), 
+                     c(codebook_vars$variable, "num_trips_wtd", "vmt_wtd"))    # Identify any new variables
   if(!rlang::is_empty(newvars)){
     newrows <- lapply(newvars, add_var) %>% rbindlist()
     codebook_vars %<>% rbind(newrows)                                          # Add new variables to codebook
@@ -80,7 +80,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     filter_cols <- names(hts_data_relevant)
     codebook_vars %<>% .[.[, Reduce(`|`, lapply(.SD, `==`, 1)), .SDcols = filter_cols]] # filter variable list so prep doesn't complain
   }
-  if("num_trips_wtd" %in% c(statvar, grpvars)){
+  if(any(c("num_trips_wtd", "vmt_wtd") %in% c(statvar, grpvars))){
     analysis_unit <- "day"
   }
   pk_id <- paste0(analysis_unit,"_id")
@@ -96,11 +96,24 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         wts = paste0(names(hts_data_relevant),"_weight"),
         weighted = TRUE,
         remove_outliers = FALSE,
-        strataname = "sample_segment")) %>% lapply(setDT) #%>%
-      #lapply(unique, by=pk_id, na.rm=!incl_na) 
-  }else if("vmt" %in% c(statvar, grpvars)){
-    NULL
-    # Need VMT equivalent
+        strataname = "sample_segment")) %>% lapply(setDT)
+  }else if("vmt_wtd" %in% c(statvar, grpvars)){
+    prepped_dt <- suppressMessages(
+      travelSurveyTools::hts_prep_vmtrate(
+        summarize_by = grpvars,
+        variables_dt = codebook_vars,
+        hts_data = hts_data_relevant,
+        trip_name = "trip",
+        day_name = "day",
+        ids = paste0(names(hts_data_relevant),"_id"),
+        traveler_count_var="travelers_num",
+        dist_var="distance_miles",
+        mode_var="mode_class",
+        mode_regex="^Ride|Drive",
+        wts = paste0(names(hts_data_relevant),"_weight"),
+        weighted = TRUE,
+        remove_outliers = FALSE,
+        strataname = "sample_segment")) %>% lapply(setDT)
   }else{
     prepped_dt <- suppressMessages(
        travelSurveyTools::hts_prep_variable(
@@ -164,6 +177,29 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
 #' @export
 psrc_hts_triprate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
   rs <- psrc_hts_stat (hts_data, analysis_unit="trip", group_vars=group_vars, stat_var="num_trips_wtd", incl_na=incl_na)
+}
+
+#' Summarize PSRC travel survey vmt rates
+#'
+#' @param hts_data the data object, a list with either data.table or NULL for hh, person, day, trip, vehicle
+#' @param group_vars vector with names of one or more grouping variables, in order
+#' @param incl_na logical, whether NA should be included in results--including calculated shares
+#' @return summary table
+#' @author Michael Jensen
+#' @import data.table
+#' @importFrom stringr str_detect str_extract
+#'
+#' @export
+psrc_hts_vmtrate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
+  if(!any(grepl("^distance_miles$|^travelers_total$|^mode_class$", colnames(hts_data$trip)))){
+    print("`distance_miles`, `travelers_total` and/or `mode_class` variable missing from data")
+  }else{
+    hts_data$trip %<>% setDT() %>%
+      .[, travelers_num:=as.numeric(ifelse(str_detect(as.character(travelers_total), "^\\d+"), 
+                                           str_extract(as.character(travelers_total), "^\\d+"), 1))]
+  }
+  rs <- psrc_hts_stat (hts_data, analysis_unit="trip", group_vars=group_vars, stat_var="vmt_wtd", incl_na=incl_na)
+  return(rs)
 }
 
 ## quiets concerns of R CMD check

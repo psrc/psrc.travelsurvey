@@ -22,7 +22,7 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
   tblnames <- tblname <- variable <- hts_split_vars <- hts_query_elmer <-  NULL # For CMD check
   data_type <- sample_segment <- hh_id <- label <- description <- NULL # For CMD check
   tblnames <- c("household","person","day","trip","vehicle")
-  na_rgx <- c("^Missing(: ([tT]echnical [eE]rror|[nN]on-response|[sS]kip [lL]ogic|[dD]ata|[rR]esponse))?$",
+  na_rgx <- c("^Missing(:? ([tT]echnical [eE]rror|[nN]on-response|[sS]kip [lL]ogic|[dD]ata|[rR]esponse))?$",
               "Not [iI]mputable",
               "^Children or [mM]issing$",
               "^-999[78]$",

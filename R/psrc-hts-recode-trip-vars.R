@@ -77,10 +77,10 @@ hts_bin_mode <- function(hts_data){
     hts_data$trip %<>% setDT() %>% 
       .[, mode_basic:=factor(
         fcase(mode_class %in% c("Drive HOV2","Drive HOV3+"), "Carpool",
-              mode_class=="Drive SOV" , "Drive Alone",
-              mode_class=="Transit"), "Transit",
-              !is.na(mode_class) ~ "Walk/Bike/Other"),
-        levels=c("Walk/Bike/Other", "Transit", "Carpool", "Drive alone")]
+              mode_class=="Drive SOV", "Drive Alone",
+              mode_class=="Transit", "Transit",
+              !is.na(mode_class),  "Walk/Bike/Other"),
+        levels=c("Walk/Bike/Other", "Transit", "Carpool", "Drive alone"))]
     labelled::var_label(hts_data$trip$mode_basic) <- "Travel mode"
   }
   return(hts_data)

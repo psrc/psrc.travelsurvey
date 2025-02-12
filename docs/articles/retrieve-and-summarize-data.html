@@ -244,13 +244,13 @@ category.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs3</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span><span class="op">]</span>,</span>
 <span>                   <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">purpose_work</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    mode_class_5 count        prop    prop_moe        est    est_moe</span></span>
-<span><span class="co">#&gt;           &lt;ord&gt; &lt;int&gt;       &lt;num&gt;       &lt;num&gt;      &lt;num&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        Drive  3211 0.865739816 0.018028620 1835881.03 125651.228</span></span>
-<span><span class="co">#&gt; 2:      Transit   402 0.029027564 0.007653030   61555.62  16093.543</span></span>
-<span><span class="co">#&gt; 3:         Walk   728 0.079432698 0.013730924  168444.35  29070.846</span></span>
-<span><span class="co">#&gt; 4:         Bike   153 0.008963787 0.002837518   19008.54   5922.878</span></span>
-<span><span class="co">#&gt; 5:        Other   118 0.016836136 0.008717198   35702.58  18613.062</span></span></code></pre></div>
+<span><span class="co">#&gt;          mode_class_5 count        prop    prop_moe        est    est_moe</span></span>
+<span><span class="co">#&gt;                &lt;char&gt; &lt;int&gt;       &lt;num&gt;       &lt;num&gt;      &lt;num&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: Bike/Micromobility   172 0.009722362 0.002883724   20617.16   6002.697</span></span>
+<span><span class="co">#&gt; 2:              Drive  3211 0.865739816 0.018028620 1835881.03 125651.228</span></span>
+<span><span class="co">#&gt; 3:              Other    99 0.016077561 0.008704412   34093.95  18586.711</span></span>
+<span><span class="co">#&gt; 4:            Transit   402 0.029027564 0.007653030   61555.62  16093.543</span></span>
+<span><span class="co">#&gt; 5:               Walk   728 0.079432698 0.013730924  168444.35  29070.846</span></span></code></pre></div>
 <p>Note: <strong>travelSurveyTools</strong> summary functions require
 additional preparatory steps that <strong>psrc.travelsurvey</strong>
 handles for you, for simplicity. To use native

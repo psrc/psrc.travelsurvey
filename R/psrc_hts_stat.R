@@ -22,6 +22,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   options(survey.adjust.domain.lonely=TRUE)
   options(survey.lonely.psu="adjust")
   hts_tblnames <- c("hh", "person", "day", "trip", "vehicle")
+  if(!"survey_year" %in% group_vars){group_vars <- c("survey_year", group_vars)}
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   
     statvar <- group_vars[length(group_vars)]
     grpvars <- if(rlang::is_empty(group_vars[-length(group_vars)])){NULL}else{group_vars[-length(group_vars)]}
@@ -29,7 +30,6 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
     statvar <- stat_var
     grpvars <- group_vars
   }
-  if(!"survey_year" %in% grpvars){grpvars <- c("survey_year", grpvars)}
   # Helper function to add variable row to codebook         
   add_var <- function(var){
     found_idx <- lapply(hts_data, function(x) any(var %in% colnames(x))==TRUE) %>% unlist()

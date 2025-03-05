@@ -191,7 +191,7 @@ psrc_hts_triprate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
 #'
 #' @export
 psrc_hts_vmtrate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
-  if(!any(grepl("^distance_miles$|^travelers_total$|^mode_class$", colnames(hts_data$trip)))){
+  if(!all(grepl("^distance_miles$|^travelers_total$|^mode_class$", colnames(hts_data$trip)))){
     print("`distance_miles`, `travelers_total` and/or `mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>%

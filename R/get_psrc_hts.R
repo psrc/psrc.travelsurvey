@@ -128,9 +128,10 @@ hts_wgt_var <- function(tblname){
 #' @export
 psrc_hts_varsearch <- function(regex){
   variable_list <- variable <- description <- NULL
-  rs <- variable_list %>%
-    .[grepl(regex, description, ignore.case=TRUE)|
-      grepl(regex, variable,    ignore.case=TRUE), 
-      .(variable, description)] %>% unique()
+  rs <- psrc.travelsurvey:::variable_list %>%
+    .[(grepl(regex, description, ignore.case=TRUE)|
+         grepl(regex, variable, ignore.case=TRUE)), 
+      .(variable, description)] %>%
+    unique()
   return(rs)
 }

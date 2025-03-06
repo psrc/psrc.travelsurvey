@@ -4,7 +4,8 @@ pkgdown_sha: ~
 articles:
   add-standard-groupings: add-standard-groupings.html
   retrieve-and-summarize-data: retrieve-and-summarize-data.html
-last_built: 2025-03-05T01:26Z
+  summarize-trip-and-vmt-rates: summarize-trip-and-vmt-rates.html
+last_built: 2025-03-06T16:05Z
 urls:
   reference: https://psrc.github.io/psrc.travelsurvey/reference
   article: https://psrc.github.io/psrc.travelsurvey/articles

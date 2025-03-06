@@ -207,10 +207,10 @@ hts_bin_telecommute_freq <- function(hts_data){
     hts_data$person %<>% setDT() %>%
       .[, telecommute_freq_bin4:=factor(
         fcase(grepl("^(N|Less|A few)", telecommute_freq),             "Never or less than weekly",
-              as.integer(safegsub("^(\\d) days?", as.character(telecommute_freq))) >=5, "5+ days",
-              as.integer(safegsub("^(\\d) days?", 
+              as.integer(safegsub("^(\\d)\\+? days?( a week)?", as.character(telecommute_freq))) >=5, "5+ days",
+              as.integer(safegsub("^(\\d)\\+? days?( a week)?", 
                                   as.character(telecommute_freq))) %between% c(3,4),   "3-4 days",
-              as.integer(safegsub("^(\\d) days?", 
+              as.integer(safegsub("^(\\d)\\+? days?( a week)?", 
                                   as.character(telecommute_freq))) %between% c(1,2),  "1-2 days"),
         levels=c("5+ days","3-4 days","1-2 days","Never or less than weekly"))]
     labelled::var_label(hts_data$person$telecommute_freq_bin4) <- "How many days typically working from home"

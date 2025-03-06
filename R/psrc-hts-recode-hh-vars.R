@@ -22,7 +22,7 @@ safegsub <- function(rgx, x){
 #' @export
 hts_bin_income <- function(hts_data){
   hhincome_broad <- hhincome_bin5 <- hhincome_bin3 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^hhincome_broad$", colnames(hts_data$hh)))){
+  if("hhincome_broad" %not_in% colnames(hts_data$hh)){
     print("`hhincome_broad` variable missing from data")
   }else{
     hts_data$hh %<>% setDT() %>%
@@ -53,7 +53,7 @@ hts_bin_income <- function(hts_data){
 #' @export
 hts_bin_hhsize <- function(hts_data){
   hhsize <- hhsize_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^hhsize$", colnames(hts_data$hh)))){
+  if("hhsize" %not_in% colnames(hts_data$hh)){
     print("`hhsize` variable missing from data")
   }else{
     rgx_size <- "^(\\d+) (or more )?pe(ople|rson)"
@@ -76,7 +76,7 @@ hts_bin_hhsize <- function(hts_data){
 #' @export
 hts_bin_vehicle_count <- function(hts_data){
   vehicle_count <- vehicle_count_bin4 <- veh_yn <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^vehicle_count$", colnames(hts_data$hh)))){
+  if("vehicle_count" %not_in% colnames(hts_data$hh)){
     print("`vehicle_count` variable missing from data")
   }else{
     rgx_veh <- "^(\\d+).*"
@@ -104,7 +104,7 @@ hts_bin_vehicle_count <- function(hts_data){
 #' @export
 hts_bin_rent_own <- function(hts_data){
   rent_own <- rent_own_bin2 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^rent_own$", colnames(hts_data$hh)))){
+  if("rent_own" %not_in% colnames(hts_data$hh)){
     print("`rent_own` variable missing from data")
   }else{
     hts_data$hh %<>% setDT() %>%

@@ -22,7 +22,7 @@ safegsub <- function(rgx, x){
 hts_bin_age <- function(hts_data){
   age <- age_bin3 <- age_bin5 <- adult <- NULL # Bind variables locally for CMD check
   rgx_yr <- "^.*\\b(\\d+) years.*$"
-  if(!any(grepl("^age$", colnames(hts_data$person)))){
+  if("age" %in% colnames(hts_data$person)){
     print("`age` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -59,7 +59,7 @@ hts_bin_age <- function(hts_data){
 #' @export
 hts_bin_worker <- function(hts_data){
   employment <- worker <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^employment$", colnames(hts_data$person)))){
+  if("employment" %not_in% colnames(hts_data$person)){
     print("`employment` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -81,7 +81,7 @@ hts_bin_worker <- function(hts_data){
 #' @export
 hts_bin_edu <- function(hts_data){
   education <- edu_bin2 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^education$", colnames(hts_data$person)))){
+  if("education" %not_in% colnames(hts_data$person)){
     print("`education` variable missing from data")
   }else{
   hts_data$person %<>% setDT() %>%
@@ -104,7 +104,7 @@ hts_bin_edu <- function(hts_data){
 #' @export
 hts_bin_gender <- function(hts_data){
   gender <- gender_bin3 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^gender$", colnames(hts_data$person)))){
+  if("gender" %not_in% colnames(hts_data$person)){
     print("`gender` variable missing from data")
   }else{
   hts_data$person %<>% setDT() %>%
@@ -127,7 +127,7 @@ hts_bin_gender <- function(hts_data){
 #' @export
 hts_bin_sexuality <- function(hts_data){
   sexuality <- sexuality_bin3 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^sexuality$", colnames(hts_data$person)))){
+  if("sexuality" %not_in% colnames(hts_data$person)){
     print("`sexuality` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -149,7 +149,7 @@ hts_bin_sexuality <- function(hts_data){
 #' @export
 hts_bin_commute_freq <- function(hts_data){
   commute_freq <- commute_freq_bin6 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^commute_freq$", colnames(hts_data$person)))){
+  if("commute_freq" %not_in% colnames(hts_data$person)){
     print("`commute_freq` variable missing from data")
   }else{
     rgx_days <- ".*(\\d+) day.* ?"
@@ -174,7 +174,7 @@ hts_bin_commute_freq <- function(hts_data){
 #' @export
 hts_bin_commute_mode <- function(hts_data){
   commute_mode <- commute_mode_bin5 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^commute_mode$", colnames(hts_data$person)))){
+  if("commute_mode" %not_in% colnames(hts_data$person)){
     print("`commute_mode` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -192,45 +192,19 @@ hts_bin_commute_mode <- function(hts_data){
   return(hts_data)
 }
 
-#' Add simplified telework time variable
-#' Requires `telework_time` variable
-#'
-#' @param hts_data the hts_data list object
-#' @return hts_data with a simplified telework time variable
-#' @author Michael Jensen
-#' @export
-hts_bin_telework_time <- function(hts_data){
-  telework_time <- telework_time_bin3 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^telework_time$", colnames(hts_data$day)))){
-    print("`telework_time` variable missing from data")
-  }else{
-    hts_data$day %<>% setDT() %>%
-      .[, telework_time_bin3:=factor(
-        fcase(as.integer(safegsub("^(\\d+) hours?( \\d+ minutes)?", 
-                                  as.character(telework_time))) >5,               "6+ hours",
-              as.integer(safegsub("^(\\d+) hours?( \\d+ minutes)?", 
-                                  as.character(telework_time))) %between% c(3,6), "3-6 hours",
-              as.character(telework_time)=="1-6 hours",                           "3-6 hours",
-              !is.na(telework_time),                                              "0-3 hours"),
-        levels=c("0-3 hours","3-6 hours","6+ hours"))]
-    labelled::var_label(hts_data$day$telework_time_bin3) <- "Telework time on travel day"
-  }
-  return(hts_data)
-}
-
-#' Add simplified telework time variable
+#' Add simplified telework frequency variable
 #' Requires `telecommute_freq` variable
 #'
 #' @param hts_data the hts_data list object
-#' @return hts_data with a simplified telework time variable
+#' @return hts_data with a simplified telework frequency variable
 #' @author Michael Jensen
 #' @export
 hts_bin_telecommute_freq <- function(hts_data){
   telecommute_freq <- telecommute_freq_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^telecommute_freq$", colnames(hts_data$day)))){
+  if("telecommute_freq" %not_in% colnames(hts_data$person)){
     print("`telecommute_freq` variable missing from data")
   }else{
-    hts_data$day %<>% setDT() %>%
+    hts_data$person %<>% setDT() %>%
       .[, telecommute_freq_bin4:=factor(
         fcase(grepl("^(N|Less|A few)", telecommute_freq),             "Never or less than weekly",
               as.integer(safegsub("^(\\d) days?", as.character(telecommute_freq))) >=5, "5+ days",
@@ -239,7 +213,7 @@ hts_bin_telecommute_freq <- function(hts_data){
               as.integer(safegsub("^(\\d) days?", 
                                   as.character(telecommute_freq))) %between% c(1,2),  "1-2 days"),
         levels=c("5+ days","3-4 days","1-2 days","Never or less than weekly"))]
-    labelled::var_label(hts_data$day$telecommute_freq_bin4) <- "How many days typically working from home"
+    labelled::var_label(hts_data$person$telecommute_freq_bin4) <- "How many days typically working from home"
   }
   return(hts_data)
 }
@@ -253,9 +227,9 @@ hts_bin_telecommute_freq <- function(hts_data){
 #' @export
 hts_bin_telecommute_trichotomy <- function(hts_data){
   telecommute_freq <- workplace <- telecommute_trichotomy <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^telecommute_freq$", colnames(hts_data$person)))){
+  if("telecommute_freq" %not_in% colnames(hts_data$person)){
     print("`telecommute_freq` variable missing from data")
-  }else if(!any(grepl("^workplace$", colnames(hts_data$person)))){
+  }else if("workplace" %not_in% colnames(hts_data$person)){
     print("`workplace` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -279,7 +253,7 @@ hts_bin_telecommute_trichotomy <- function(hts_data){
 #' @export
 hts_bin_lum_sector <- function(hts_data){
   industry <- lum_sector <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^industry$", colnames(hts_data$person)))){
+  if("industry" %not_in% colnames(hts_data$person)){
     print("`industry` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -312,7 +286,7 @@ hts_bin_lum_sector <- function(hts_data){
 #' @export
 hts_bin_industry_sector <- function(hts_data){
   industry <- industry_sector <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^industry$", colnames(hts_data$person)))){
+  if("industry" %not_in% colnames(hts_data$person)){
     print("`industry` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -341,7 +315,7 @@ hts_bin_industry_sector <- function(hts_data){
 #' @export
 hts_bin_transit_frequency <- function(hts_data){
   transit_frequency <- transit_frequency_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^transit_frequency$", colnames(hts_data$person)))){
+  if("transit_frequency" %not_in% colnames(hts_data$person)){
     print("`transit_frequency` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -364,7 +338,7 @@ hts_bin_transit_frequency <- function(hts_data){
 #' @export
 hts_bin_walk_frequency <- function(hts_data){
   walk_frequency <- walk_frequency_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^walk_frequency$", colnames(hts_data$person)))){
+  if("walk_frequency" %not_in% colnames(hts_data$person)){
     print("`walk_frequency` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
@@ -387,7 +361,7 @@ hts_bin_walk_frequency <- function(hts_data){
 #' @export
 hts_bin_bike_frequency <- function(hts_data){
   bike_frequency <- bike_frequency_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^bike_frequency$", colnames(hts_data$person)))){
+  if("bike_frequency" %not_in% colnames(hts_data$person)){
     print("`bike_frequency` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%

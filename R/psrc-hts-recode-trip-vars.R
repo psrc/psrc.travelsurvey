@@ -21,7 +21,7 @@ safegsub <- function(rgx, x){
 #' @export
 hts_bin_dest_purpose <- function(hts_data){
   dest_purpose<- dest_purpose_bin12 <- dest_purpose_bin9 <- dest_purpose_bin4 <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^dest_purpose$", colnames(hts_data$trip)))){
+  if("dest_purpose" %not_in% colnames(hts_data$trip)){
     print("`dest_purpose` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 
@@ -71,7 +71,7 @@ hts_bin_dest_purpose <- function(hts_data){
 #' @export
 hts_bin_mode <- function(hts_data){
   mode_class <- mode_basic <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^mode_class$", colnames(hts_data$trip)))){
+  if("mode_class" %not_in% colnames(hts_data$trip)){
     print("`mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 
@@ -95,7 +95,7 @@ hts_bin_mode <- function(hts_data){
 #' @export
 hts_bin_transit_mode_acc <- function(hts_data){
   transit_mode_acc <- mode_acc <- mode_class <- NULL # Bind variables locally for CMD check
-  if(!any(grepl("^mode_acc$|^mode_class$", colnames(hts_data$trip)))){
+  if(!all(c("mode_acc","mode_class") %in% colnames(hts_data$trip))){
     print("`mode_acc` and/or `mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>% 

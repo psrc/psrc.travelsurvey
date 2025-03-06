@@ -80,6 +80,8 @@ head(dplyr::select(rs2[survey_year==2023 & as.character(mode_class_5)=="Transit"
                    -c(survey_year, mode_class_5)))
 ```
 
+Average daily trip rates and average daily VMT rates are special cases with their own summary functions, as described in [their own vignette](summarize-trip-and-vmt-rates.html).
+
 ## Custom variables and filtering
 
 Since each `hts_data` element is a data.table, they can be manipulated with any combination of base r, tidyverse (e.g. `mutate()`), or data.table (e.g `:=`) syntax. The example below illustrates adding variables specific to the `hts_data$trip` element. Notice, the inheritance capability mentioned earlier applies to custom variables as well, so if you want to recode a household-level variable to feature in a trip-level analysis, just add it to `hts_data$hh` (not to `hts_data$trip`).  

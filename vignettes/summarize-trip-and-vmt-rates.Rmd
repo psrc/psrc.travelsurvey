@@ -1,0 +1,71 @@
+---
+title: "Summarize trip and VMT rates"
+description: >
+  Specific functions for average daily trip count and vehicle miles traveled
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Summarize trip and VMT rates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r, include = FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+suppressWarnings(library(psrc.travelsurvey))
+```
+
+## Why rates? A convenient way to examine and compare
+
+In addition to [aggregate counts and shares](retrieve-and-summarize-data.html#summarization), **psrc.travelsurvey** includes functions to calculate average daily trip- and VMT (vehicle miles traveled) rates. These metrics are often used in travel analysis and modeling. As a ratio (mean amount per person per day), these rates are normalized in respect to both population and days reported, while maintaining a unit scale so they can be interpreted or compared in both absolute and relative terms. (In contrast, shares have no unit and can only be compared in relative terms; counts aren't normalized and by themselves can't be meaningfully compared across subgroups or surveys.)
+
+## psrc.travelsurvey functions
+
+Trip and VMT rates involve summarization at the day level prior to aggregate summarization across respondents, and have their own functions:
+
+  * **`psrc_hts_triprate()`**
+  * **`psrc_hts_vmtrate()`**
+
+Each function is simplified from `psrc_hts_stat()`; since `analysis_unit` and `stat_var` for each are fixed/inherent, there are only two arguments:
+
+  * **hts_data**  - the `hts_data` object
+  * **group_vars** - any grouping variables, in nesting order (share summaries are calculated per categories of the variable listed last).
+  
+### Requirements
+
+Because VMT is calculated from distance, is limited to vehicular travel, and accounts for co-travelers, the preceding `get_psrc_hts()` call must include the following among the `survey_vars` argument:
+
+  * **`mode_class`**
+  * **`trip_distance`**
+  * **`travelers_total`**. 
+  
+If the hts_data object is missing one or more of these, **`psrc_hts_vmtrate()`** will report that to the user and return NULL.
+
+Because count is an implicit trip attribute, it requires no additional variables.
+
+### Examples
+
+```{r triprate, message=FALSE, eval=TRUE}
+library(psrc.travelsurvey)
+library(data.table)
+
+# Specify which variables to retrieve
+vars <- c("hhsize", "telecommute_freq", "workplace",
+          "mode_class", "distance_miles", "travelers_total")
+
+# Retrieve the data
+hts_data <- get_psrc_hts(survey_vars = vars)  # default includes all survey_years
+hts_data <- hts_bin_telecommute_trichotomy(hts_data)
+
+# Calculate a trip rate
+rs1 <- psrc_hts_triprate(hts_data, group_vars="hhsize")
+
+head(dplyr::select(rs1[survey_year==2023], -c(survey_year, min, max, median)))
+
+# Calculate a VMT rate
+rs2 <- psrc_hts_vmtrate(hts_data, group_vars="telecommute_trichotomy")
+
+head(dplyr::select(rs2[survey_year==2023], -c(survey_year, min, max, median)))
+```

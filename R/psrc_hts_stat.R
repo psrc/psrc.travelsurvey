@@ -22,7 +22,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   options(survey.adjust.domain.lonely=TRUE)
   options(survey.lonely.psu="adjust")
   hts_tblnames <- c("hh", "person", "day", "trip", "vehicle")
-  if(!"survey_year" %in% group_vars){group_vars <- c("survey_year", group_vars)}
+  group_vars <- c("survey_year", group_vars) %>% unique()
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   
     statvar <- group_vars[length(group_vars)]
     grpvars <- if(rlang::is_empty(group_vars[-length(group_vars)])){NULL}else{group_vars[-length(group_vars)]}
@@ -191,18 +191,20 @@ psrc_hts_triprate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
 #'
 #' @export
 psrc_hts_vmtrate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
-  if(!all(grepl("^distance_miles$|^travelers_total$|^mode_class$", colnames(hts_data$trip)))){
+  rs <- NULL
+  if(!all(c("distance_miles","travelers_total","mode_class") %in% colnames(hts_data$trip))){
     print("`distance_miles`, `travelers_total` and/or `mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>%
       .[, travelers_num:=as.numeric(ifelse(str_detect(as.character(travelers_total), "^\\d+"), 
                                            str_extract(as.character(travelers_total), "^\\d+"), 1))]
+    rs <- psrc_hts_stat (hts_data, analysis_unit="trip", group_vars=group_vars, stat_var="vmt_wtd", incl_na=incl_na)
   }
-  rs <- psrc_hts_stat (hts_data, analysis_unit="trip", group_vars=group_vars, stat_var="vmt_wtd", incl_na=incl_na)
   return(rs)
 }
 
 ## quiets concerns of R CMD check
 utils::globalVariables(c("statvar","grpvars","codebook_vars","found_idx",
-    "found_tbl","found_classes","found_dtype","var_row","newvars","newrows","hh",
-    "vehicle","variable","data_type ","statvartype","prepped_dt","summary_dt"))
+    "found_tbl","found_classes","found_dtype","var_row","newvars","newrows",
+    "hh","vehicle","travelers_num","travelers_total","variable","data_type",
+    "statvartype","prepped_dt","summary_dt"))

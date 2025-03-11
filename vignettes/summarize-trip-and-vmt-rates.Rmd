@@ -39,7 +39,7 @@ The `incl_na=FALSE` option is also available in both functions.
 
 These functions rely on additional functionality submitted to the **travelSurveyTools** package that has not yet been merged, so you'll need to install a branch of that package: 
 
-  `remotes::install_github("RSGInc/travelSurveyTools", ref="add_vmt_rate")`.
+    `remotes::install_github("RSGInc/travelSurveyTools", ref="add_vmt_rate")`
 
 Because VMT is calculated from distance, is limited to vehicular travel, and accounts for co-travelers, the preceding `get_psrc_hts()` call must include the following among the `survey_vars` argument:
 

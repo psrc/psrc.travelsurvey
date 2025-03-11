@@ -22,7 +22,7 @@ safegsub <- function(rgx, x){
 hts_bin_age <- function(hts_data){
   age <- age_bin3 <- age_bin5 <- adult <- NULL # Bind variables locally for CMD check
   rgx_yr <- "^.*\\b(\\d+) years.*$"
-  if("age" %in% colnames(hts_data$person)){
+  if("age" %not_in% colnames(hts_data$person)){
     print("`age` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%

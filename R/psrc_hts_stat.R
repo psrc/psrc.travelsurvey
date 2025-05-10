@@ -109,7 +109,7 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         traveler_count_var="travelers_num",
         dist_var="distance_miles",
         mode_var="mode_class",
-        mode_regex="^Ride|Drive",
+        veh_regex="^Ride|Drive",
         wts = paste0(names(hts_data_relevant),"_weight"),
         weighted = TRUE,
         remove_outliers = FALSE,

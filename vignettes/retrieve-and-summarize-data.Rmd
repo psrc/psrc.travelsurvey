@@ -63,20 +63,20 @@ vars <- c("hhsize", "employment", "commute_mode", "dest_purpose",
           "mode_class_5", "distance_miles")
 
 # Retrieve the data
-hts_data <- get_psrc_hts(survey_vars = vars)  # default includes all survey_years
+hts_data <- get_psrc_hts(survey_vars = vars, survey_year=2025)  # default includes all survey_years
   
 # Calculate a numeric summary, i.e. min/max/median/mean
-rs1 <- psrc_hts_stat(hts_data, 
+rs1 <- psrc_hts_stat(hts_data,
                      analysis_unit="trip", 
                      group_vars="hhsize", 
                      stat_var="distance_miles")
 
-head(dplyr::select(rs1[survey_year==2023], -c(survey_year, min, max)))
+head(dplyr::select(rs1, -c(survey_year, min, max)))
 
 # Calculate a categorical summary, i.e. count/share
 rs2 <- psrc_hts_stat(hts_data, "trip", c("hhsize", "mode_class_5"))
 
-head(dplyr::select(rs2[survey_year==2023 & as.character(mode_class_5)=="Transit"],
+head(dplyr::select(rs2[as.character(mode_class_5)=="Transit"],
                    -c(survey_year, mode_class_5)))
 ```
 
@@ -108,7 +108,7 @@ hts_data$trip <- mutate(
 # Calculate a categorical summary, i.e. count/share
 rs3 <- psrc_hts_stat(hts_data, "trip", c("purpose_work", "mode_class_5"), incl_na=FALSE)
 
-head(dplyr::select(rs3[survey_year==2023],
+head(dplyr::select(rs3,
                    -c(survey_year, purpose_work)))
 
 ```

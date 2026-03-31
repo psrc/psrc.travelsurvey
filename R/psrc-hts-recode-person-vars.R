@@ -166,28 +166,28 @@ hts_bin_commute_freq <- function(hts_data){
 }
 
 #' Add simplified commute mode variable
-#' Requires `commute_mode` variable
+#' Requires `work_mode` variable
 #'
 #' @param hts_data the hts_data list object
 #' @return hts_data with a simplified commute mode variable
 #' @author Michael Jensen
 #' @export
-hts_bin_commute_mode <- function(hts_data){
-  commute_mode <- commute_mode_bin5 <- NULL # Bind variables locally for CMD check
-  if("commute_mode" %not_in% colnames(hts_data$person)){
-    print("`commute_mode` variable missing from data")
+hts_bin_work_mode <- function(hts_data){
+  work_mode <- work_mode_bin5 <- NULL # Bind variables locally for CMD check
+  if("work_mode" %not_in% colnames(hts_data$person)){
+    print("`work_mode` variable missing from data")
   }else{
     hts_data$person %<>% setDT() %>%
-      .[, commute_mode_bin5:=factor(
-        fcase(grepl("^(Walk|Bicycle)", as.character(commute_mode)),   "Walk/Bike",
-              grepl("^Carpool ",       as.character(commute_mode)),   "Carpool",
+      .[, work_mode_bin5:=factor(
+        fcase(grepl("^(Walk|Bicycle)", as.character(work_mode)),   "Walk/Bike",
+              grepl("^Carpool ",       as.character(work_mode)),   "Carpool",
               grepl("\\b(bus|rail|ferry|streetcar|paratransit|vanpool)\\b", 
-                    as.character(commute_mode), ignore.case=TRUE),    "Transit",
+                    as.character(work_mode), ignore.case=TRUE),    "Transit",
               grepl("^(Drive alone|Household vehicle|Other vehicle)", 
-                    as.character(commute_mode)),                      "Drive alone",
-              !is.na(commute_mode),                                   "Other"),
+                    as.character(work_mode)),                      "Drive alone",
+              !is.na(work_mode),                                   "Other"),
         levels=c("Drive alone","Carpool","Walk/Bike","Transit","Other"))]
-    labelled::var_label(hts_data$person$commute_mode_bin5) <- "Method of commuting to work location/office last week"
+    labelled::var_label(hts_data$person$work_mode_bin5) <- "Method of commuting to work location/office last week"
   }
   return(hts_data)
 }

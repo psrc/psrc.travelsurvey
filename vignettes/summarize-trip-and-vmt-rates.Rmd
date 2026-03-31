@@ -62,16 +62,16 @@ vars <- c("telecommute_freq", "workplace",
           "mode_class", "distance_miles", "travelers_total")
 
 # Retrieve the data
-hts_data <- get_psrc_hts(survey_vars = vars)  # default includes all survey_years
+hts_data <- get_psrc_hts(survey_vars = vars, survey_year = 2025)
 hts_data <- hts_bin_telecommute_trichotomy(hts_data)
 
 # Calculate a trip rate
 rs1 <- psrc_hts_triprate(hts_data, group_vars="telecommute_trichotomy")
 
-head(dplyr::select(rs1[survey_year==2023], -c(survey_year, count, min, max, median)))
+head(dplyr::select(rs1, -c(survey_year, count, min, max, median)))
 
 # Calculate a VMT rate
 rs2 <- psrc_hts_vmtrate(hts_data, "telecommute_trichotomy", incl_na=FALSE)
 
-head(dplyr::select(rs2[survey_year==2023], -c(survey_year, count, min, max, median)))
+head(dplyr::select(rs2, -c(survey_year, count, min, max, median)))
 ```

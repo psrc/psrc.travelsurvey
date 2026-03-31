@@ -83,7 +83,7 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023), survey_vars){
         sql_vars %<>% paste(", ", hts_wgt_var(tblname))
       }
       sql <- paste0("SELECT ", sql_vars, 
-                    " FROM HHSurvey.v_", tblname, "s_labels", 
+                    " FROM HHSurvey.v_", tblname, "s", 
                     " WHERE survey_year IN(", stuff(survey_years),")",
                     wgt_filter)
       rs <- psrcelmer::get_query(sql) %>% setDT() %>% 

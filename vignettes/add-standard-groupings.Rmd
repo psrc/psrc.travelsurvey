@@ -30,7 +30,7 @@ library(data.table)
 vars <- c("age", "hhsize")
 
 # Retrieve the data
-hts_data <- get_psrc_hts(survey_year=2023, survey_vars = vars) 
+hts_data <- get_psrc_hts(survey_year=2025, survey_vars = vars) 
 
 # Add standard groupings for age and household size
 # -- Notice age and hhsize use different tables (person, hh)

@@ -11,7 +11,7 @@ Description: Functions paired with RSG's travelSurveyTools package to pull, proc
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     data.table,
     dplyr,
@@ -19,7 +19,6 @@ Imports:
     labelled,
     pkgcond,
     psrcelmer,
-    readxl,
     rlang,
     stringr,
     tidyr,

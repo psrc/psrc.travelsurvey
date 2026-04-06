@@ -4,10 +4,10 @@
 \alias{get_psrc_hts}
 \title{Retrieve PSRC travel survey data}
 \usage{
-get_psrc_hts(survey_years = c(2017, 2019, 2021, 2023), survey_vars)
+get_psrc_hts(survey_years = c(1719, 2017, 2019, 2021, 2023, 2025), survey_vars)
 }
 \arguments{
-\item{survey_years}{vector with values that may include 2017, 2019, 2021, 2023}
+\item{survey_years}{vector with values that may include 1719, 2017, 2019, 2021, 2023, 2025}
 
 \item{survey_vars}{desired variables (in addition to id fields, which are returned by default)}
 }

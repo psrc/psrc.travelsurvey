@@ -93,7 +93,7 @@ denoting the number of categories.</p>
 <span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age"</span>, <span class="st">"hhsize"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Retrieve the data</span></span>
-<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_year<span class="op">=</span><span class="fl">2023</span>, survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span> </span>
+<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_year<span class="op">=</span><span class="fl">2025</span>, survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># Add standard groupings for age and household size</span></span>
 <span><span class="co"># -- Notice age and hhsize use different tables (person, hh)</span></span>
@@ -101,17 +101,16 @@ denoting the number of categories.</p>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="va">hts_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="../reference/hts_bin_age.html">hts_bin_age</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/hts_bin_hhsize.html">hts_bin_hhsize</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "`age` variable missing from data"</span></span>
 <span></span>
-<span><span class="va">hts_data</span><span class="op">$</span><span class="va">person</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols<span class="op">=</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/patterns.html" class="external-link">patterns</a></span><span class="op">(</span><span class="st">"^age"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;            age</span></span>
-<span><span class="co">#&gt;          &lt;ord&gt;</span></span>
-<span><span class="co">#&gt; 1: 45-54 years</span></span>
-<span><span class="co">#&gt; 2: 16-17 years</span></span>
-<span><span class="co">#&gt; 3: 12-15 years</span></span>
-<span><span class="co">#&gt; 4: 35-44 years</span></span>
-<span><span class="co">#&gt; 5: 25-34 years</span></span>
-<span><span class="co">#&gt; 6: 45-54 years</span></span></code></pre></div>
+<span><span class="va">hts_data</span><span class="op">$</span><span class="va">person</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">.SD</span><span class="op">)</span>, .SDcols<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/patterns.html" class="external-link">patterns</a></span><span class="op">(</span><span class="st">"^age"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;            age          age_bin5          age_bin3</span></span>
+<span><span class="co">#&gt;          &lt;ord&gt;            &lt;fctr&gt;            &lt;fctr&gt;</span></span>
+<span><span class="co">#&gt; 1: 65-74 years 65 years or older 65 years or older</span></span>
+<span><span class="co">#&gt; 2: 65-74 years 65 years or older 65 years or older</span></span>
+<span><span class="co">#&gt; 3: 75-84 years 65 years or older 65 years or older</span></span>
+<span><span class="co">#&gt; 4: 55-64 years       45-64 Years       18-64 Years</span></span>
+<span><span class="co">#&gt; 5: 75-84 years 65 years or older 65 years or older</span></span>
+<span><span class="co">#&gt; 6: 45-54 years       45-64 Years       18-64 Years</span></span></code></pre></div>
 <p>These functions each require a disaggregate input variable to be
 requested in the earlier <code><a href="../reference/get_psrc_hts.html">get_psrc_hts()</a></code> call. Both the
 input variable and the output variable are included in the resulting
@@ -195,7 +194,7 @@ $75K ]( $100K</td>
 <td align="center">Less • 1 • 2 • 3 • 4 • 5+ days/week</td>
 </tr>
 <tr class="odd">
-<td align="left"><strong><code><a href="../reference/hts_bin_commute_mode.html">hts_bin_commute_mode()</a></code></strong></td>
+<td align="left"><strong><code>hts_bin_commute_mode()</code></strong></td>
 <td align="center">commute_mode</td>
 <td align="center">commute_mode_bin5</td>
 <td align="center">SOV • HOV • trnst • w/b • oth</td>
@@ -263,7 +262,7 @@ Vehicular</td>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

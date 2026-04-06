@@ -11,7 +11,6 @@
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_age.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_bike_frequency.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_commute_freq.html</loc></url>
-<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_commute_mode.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_dest_purpose.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_edu.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_gender.html</loc></url>
@@ -30,6 +29,7 @@
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_vehicle_count.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_walk_frequency.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_worker.html</loc></url>
+<url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_work_mode.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/hts_wgt_var.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/index.html</loc></url>
 <url><loc>https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_stat.html</loc></url>

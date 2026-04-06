@@ -1,0 +1,104 @@
+# psrc.travelsurvey
+
+Various functions to pull, process and visualize PSRC’s Household Travel
+Survey data for geographies in the Central Puget Sound Region.
+
+Install with the following command:
+`remotes::install_github("psrc/psrc.travelsurvey")`
+
+[Running with sqlite
+data](https://github.com/psrc/psrc.travelsurvey/wiki/Running-psrc.travelsurvey-using-the-sqlite-configuration)
+
+# Package index
+
+## All functions
+
+- [`get_psrc_hts()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.md)
+  : Retrieve PSRC travel survey data
+- [`hts_bin_age()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_age.md)
+  : Add binned age variables Requires \`age\` variable
+- [`hts_bin_bike_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_bike_frequency.md)
+  : Add generalized bike frequency Requires \`bike_frequency\` variable
+- [`hts_bin_commute_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_commute_freq.md)
+  : Add simplified commute frequency variable Requires \`commute_freq\`
+  variable
+- [`hts_bin_dest_purpose()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_dest_purpose.md)
+  : Add destination purpose classifications Requires \`dest_purpose\`
+  variable
+- [`hts_bin_edu()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_edu.md)
+  : Add simplified education variable Requires \`education\` variable
+- [`hts_bin_gender()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_gender.md)
+  : Add simplified gender variable Requires \`gender\` variable
+- [`hts_bin_hhsize()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_hhsize.md)
+  : Add simplified household size variable Requires \`hhsize\` variable
+- [`hts_bin_income()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_income.md)
+  : Add binned income variables Requires \`hhincome_broad\` variable
+- [`hts_bin_industry_sector()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_industry_sector.md)
+  : Add generalized industry classification Requires \`industry\`
+  variable
+- [`hts_bin_lum_sector()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_lum_sector.md)
+  : Add land use modeling industry classification Requires \`industry\`
+  variable
+- [`hts_bin_mode()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_mode.md)
+  : Add simplified mode classification Requires \`mode_class\` variable
+- [`hts_bin_rent_own()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_rent_own.md)
+  : Add simplified tenure variable Requires \`rent_own\` variable
+- [`hts_bin_sexuality()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_sexuality.md)
+  : Add simplified sexuality variable Requires \`sexuality\` variable
+- [`hts_bin_telecommute_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_telecommute_freq.md)
+  : Add simplified telework frequency variable Requires
+  \`telecommute_freq\` variable
+- [`hts_bin_telecommute_trichotomy()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_telecommute_trichotomy.md)
+  : Add telecommute status variable Requires \`telecommute_freq\` and
+  \`workplace\` variables
+- [`hts_bin_telework_time()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_telework_time.md)
+  : Add simplified telework time variable Requires \`telework_time\`
+  variable
+- [`hts_bin_transit_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_frequency.md)
+  : Add generalized transit frequency Requires \`transit_frequency\`
+  variable
+- [`hts_bin_transit_mode_acc()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_mode_acc.md)
+  : Add simplified transit access mode classification Requires
+  \`mode_acc\` variable
+- [`hts_bin_vehicle_count()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_vehicle_count.md)
+  : Add simplified vehicle count variables Requires \`vehicle_count\`
+  variable
+- [`hts_bin_walk_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_walk_frequency.md)
+  : Add generalized walk frequency Requires \`walk_frequency\` variable
+- [`hts_bin_worker()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_worker.md)
+  : Add simplified worker status variable Requires \`employment\`
+  variable
+- [`hts_bin_work_mode()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_work_mode.md)
+  : Add simplified commute mode variable Requires \`work_mode\` variable
+- [`hts_wgt_var()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_wgt_var.md)
+  : Return weight variable name
+- [`psrc_hts_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_stat.md)
+  : Summarize PSRC travel survey data
+- [`psrc_hts_triprate()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_triprate.md)
+  : Summarize PSRC travel survey trip rates
+- [`psrc_hts_varsearch()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_varsearch.md)
+  : Search PSRC travel survey variable definitions
+- [`psrc_hts_vmtrate()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_vmtrate.md)
+  : Summarize PSRC travel survey vmt rates
+- [`variable_value_lookup`](https://psrc.github.io/psrc.travelsurvey/reference/variable_value_lookup.md)
+  : steps for internal acs table lookup
+
+# Articles
+
+### All vignettes
+
+- [Add Standard
+  Groupings](https://psrc.github.io/psrc.travelsurvey/articles/add-standard-groupings.md):
+
+  Add variables with standard PSRC category groupings
+
+- [Retrieve and summarize
+  data](https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-data.md):
+
+  Retrieve and summarize household travel survey data
+
+- [Summarize trip and VMT
+  rates](https://psrc.github.io/psrc.travelsurvey/articles/summarize-trip-and-vmt-rates.md):
+
+  Specific functions for average daily trip count and vehicle miles
+  traveled

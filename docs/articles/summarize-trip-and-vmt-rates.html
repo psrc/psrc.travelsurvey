@@ -112,7 +112,7 @@ functions.</p>
 <p>These functions rely on additional functionality submitted to the
 <strong>travelSurveyTools</strong> package that has not yet been merged,
 so you’ll need to install a branch of that package:</p>
-<p><code>remotes::install_github("RSGInc/travelSurveyTools", ref="add_vmt_rate")</code>.</p>
+<pre><code><span><span class="va">`remotes::install_github("RSGInc/travelSurveyTools", ref="add_vmt_rate")`</span></span></code></pre>
 <p>Because VMT is calculated from distance, is limited to vehicular
 travel, and accounts for co-travelers, the preceding
 <code><a href="../reference/get_psrc_hts.html">get_psrc_hts()</a></code> call must include the following among the
@@ -133,7 +133,7 @@ variables.</p>
 <div class="section level3">
 <h3 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://psrc.github.io/psrc.travelsurvey/">psrc.travelsurvey</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span></span>
@@ -142,29 +142,27 @@ variables.</p>
 <span>          <span class="st">"mode_class"</span>, <span class="st">"distance_miles"</span>, <span class="st">"travelers_total"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Retrieve the data</span></span>
-<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span>  <span class="co"># default includes all survey_years</span></span>
+<span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_hts.html">get_psrc_hts</a></span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span>, survey_year <span class="op">=</span> <span class="fl">2025</span><span class="op">)</span></span>
 <span><span class="va">hts_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hts_bin_telecommute_trichotomy.html">hts_bin_telecommute_trichotomy</a></span><span class="op">(</span><span class="va">hts_data</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Calculate a trip rate</span></span>
 <span><span class="va">rs1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_triprate.html">psrc_hts_triprate</a></span><span class="op">(</span><span class="va">hts_data</span>, group_vars<span class="op">=</span><span class="st">"telecommute_trichotomy"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs1</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span><span class="op">]</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">count</span>, <span class="va">min</span>, <span class="va">max</span>, <span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs1</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">count</span>, <span class="va">min</span>, <span class="va">max</span>, <span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    telecommute_trichotomy     mean  mean_moe</span></span>
 <span><span class="co">#&gt;                    &lt;fctr&gt;    &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          Fully At Home 3.429360 0.5138521</span></span>
-<span><span class="co">#&gt; 2:                 Hybrid 4.003980 0.3685396</span></span>
-<span><span class="co">#&gt; 3:        Fully In Person 4.334025 0.2826659</span></span>
-<span><span class="co">#&gt; 4:                   &lt;NA&gt; 3.505400 0.1940856</span></span>
+<span><span class="co">#&gt; 1:                 Hybrid 4.269087 0.3116074</span></span>
+<span><span class="co">#&gt; 2:        Fully In Person 4.453841 0.2493623</span></span>
+<span><span class="co">#&gt; 3:                   &lt;NA&gt; 3.705679 0.1628969</span></span>
 <span></span>
 <span><span class="co"># Calculate a VMT rate</span></span>
 <span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_vmtrate.html">psrc_hts_vmtrate</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"telecommute_trichotomy"</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span><span class="op">[</span><span class="va">survey_year</span><span class="op">==</span><span class="fl">2023</span><span class="op">]</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">count</span>, <span class="va">min</span>, <span class="va">max</span>, <span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    telecommute_trichotomy     mean mean_moe</span></span>
-<span><span class="co">#&gt;                    &lt;fctr&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:          Fully At Home 15.78928 2.359958</span></span>
-<span><span class="co">#&gt; 2:                 Hybrid 24.21145 2.599772</span></span>
-<span><span class="co">#&gt; 3:        Fully In Person 31.97204 3.300489</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">count</span>, <span class="va">min</span>, <span class="va">max</span>, <span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    telecommute_trichotomy  mean mean_moe</span></span>
+<span><span class="co">#&gt;                    &lt;fctr&gt; &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                 Hybrid   Inf      NaN</span></span>
+<span><span class="co">#&gt; 2:        Fully In Person   Inf      NaN</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -178,7 +176,7 @@ variables.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

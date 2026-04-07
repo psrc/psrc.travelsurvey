@@ -100,6 +100,12 @@ get_psrc_hts <- function(survey_years=c(1719,2017,2019,2021,2023,2025), survey_v
   split_vars <- sapply(tblnames, hts_split_vars, survey_vars, simplify = FALSE, USE.NAMES = TRUE)
   hts_data <- mapply(hts_query_elmer, names(split_vars), split_vars, USE.NAMES = TRUE) %>%
   rlang::set_names(c("hh","person","day","trip","vehicle"))                     # travelSurveyTools uses "hh"
+  valid_hh_ids <- hts_data$hh$hh_id                                            # Drop orphan records from child tables
+  for(tbl in c("person","day","trip","vehicle")){                               # (e.g. trips from zero-weight households)
+    if(!is.null(hts_data[[tbl]])){
+      hts_data[[tbl]] <- hts_data[[tbl]][hh_id %in% valid_hh_ids]
+    }
+  }
   return(hts_data)
 }
 

@@ -23,6 +23,13 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   options(survey.lonely.psu="adjust")
   hts_tblnames <- c("hh", "person", "day", "trip", "vehicle")
   group_vars <- c("survey_year", group_vars) %>% unique()
+  drop_missing_rows <- function(dt, cols){
+    cols <- intersect(cols, colnames(dt))
+    if(is.null(dt) || rlang::is_empty(cols)){
+      return(dt)
+    }
+    dt[stats::complete.cases(dt[, ..cols])]
+  }
   if(is.null(stat_var)){                                                       # Separate last grouping var for counts   
     statvar <- group_vars[length(group_vars)]
     grpvars <- if(rlang::is_empty(group_vars[-length(group_vars)])){NULL}else{group_vars[-length(group_vars)]}
@@ -131,7 +138,9 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
   }
   if(is.null(stat_var)){
     statvartype <- codebook_vars[variable==(statvar), data_type] %>% unique()
-    if(incl_na==FALSE){prepped_dt$cat %<>% tidyr::drop_na()}
+    if(incl_na==FALSE){
+      prepped_dt$cat <- drop_missing_rows(prepped_dt$cat, c(grpvars, statvar))
+    }
     pkgcond::suppress_warnings(
       summary_dt <- travelSurveyTools::hts_summary_cat(                        # count
         prepped_dt = prepped_dt$cat,                 
@@ -146,7 +155,9 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
       pattern="(NAs introduced by coercion|PSU)"
     )
   }else{
-    if(incl_na==FALSE){prepped_dt$num %<>% tidyr::drop_na()}
+    if(incl_na==FALSE){
+      prepped_dt$num <- drop_missing_rows(prepped_dt$num, c(grpvars, statvar))
+    }
     pkgcond::suppress_warnings(    
       summary_dt <- travelSurveyTools::hts_summary_num(                        # min/max/median/mean
         prepped_dt = prepped_dt$num,                 
@@ -158,6 +169,9 @@ psrc_hts_stat <- function(hts_data, analysis_unit, group_vars=NULL, stat_var=NUL
         se = TRUE),
       pattern="(NAs introduced by coercion|PSU)"
     )
+  }
+  if(incl_na==FALSE){
+    summary_dt$wtd <- drop_missing_rows(summary_dt$wtd, c(grpvars, if(is.null(stat_var)){statvar}))
   }
   summary_dt$wtd %<>%                                                          # convert se to moe
     .[, grep("_se$", colnames(.)):=lapply(.SD, function(x) x * 1.645), .SDcols=grep("_se$", colnames(.))] %>%
@@ -196,8 +210,8 @@ psrc_hts_vmtrate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
     print("`distance_miles`, `travelers_total` and/or `mode_class` variable missing from data")
   }else{
     hts_data$trip %<>% setDT() %>%
-      .[, travelers_num:=as.numeric(ifelse(str_detect(as.character(travelers_total), "^\\d+"), 
-                                           str_extract(as.character(travelers_total), "^\\d+"), 1))]
+      .[, travelers_num:=as.numeric(ifelse(str_detect(as.character(travelers_total), "^[1-9]\\d?"), 
+                                           str_extract(as.character(travelers_total), "^[1-9]\\d?"), 1))]
     rs <- psrc_hts_stat (hts_data, analysis_unit="trip", group_vars=group_vars, stat_var="vmt_wtd", incl_na=incl_na)
   }
   return(rs)

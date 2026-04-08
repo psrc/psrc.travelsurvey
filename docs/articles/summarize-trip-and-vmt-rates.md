@@ -81,9 +81,8 @@ head(dplyr::select(rs1, -c(survey_year, count, min, max, median)))
 rs2 <- psrc_hts_vmtrate(hts_data, "telecommute_trichotomy", incl_na=FALSE)
 
 head(dplyr::select(rs2, -c(survey_year, count, min, max, median)))
-#>    telecommute_trichotomy  mean mean_moe
-#>                    <fctr> <num>    <num>
-#> 1:                 Hybrid   Inf      NaN
-#> 2:        Fully In Person   Inf      NaN
-#> 3:                   <NA>   Inf      NaN
+#>    telecommute_trichotomy     mean mean_moe
+#>                    <fctr>    <num>    <num>
+#> 1:                 Hybrid 29.65166 3.886681
+#> 2:        Fully In Person 33.23133 2.739796
 ```

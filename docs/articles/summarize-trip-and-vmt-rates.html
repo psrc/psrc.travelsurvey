@@ -155,11 +155,10 @@ variables.</p>
 <span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_hts_vmtrate.html">psrc_hts_vmtrate</a></span><span class="op">(</span><span class="va">hts_data</span>, <span class="st">"telecommute_trichotomy"</span>, incl_na<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">rs2</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">survey_year</span>, <span class="va">count</span>, <span class="va">min</span>, <span class="va">max</span>, <span class="va">median</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    telecommute_trichotomy  mean mean_moe</span></span>
-<span><span class="co">#&gt;                    &lt;fctr&gt; &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:                 Hybrid   Inf      NaN</span></span>
-<span><span class="co">#&gt; 2:        Fully In Person   Inf      NaN</span></span>
-<span><span class="co">#&gt; 3:                   &lt;NA&gt;   Inf      NaN</span></span></code></pre></div>
+<span><span class="co">#&gt;    telecommute_trichotomy     mean mean_moe</span></span>
+<span><span class="co">#&gt;                    &lt;fctr&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                 Hybrid 29.65166 3.886681</span></span>
+<span><span class="co">#&gt; 2:        Fully In Person 33.23133 2.739796</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

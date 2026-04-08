@@ -67,9 +67,10 @@ hts_data <- get_psrc_hts(survey_vars = vars, survey_year=2025)  # default includ
   
 # Calculate a numeric summary, i.e. min/max/median/mean
 rs1 <- psrc_hts_stat(hts_data,
-                     analysis_unit="trip", 
-                     group_vars="hhsize", 
-                     stat_var="distance_miles")
+                     analysis_unit = "trip",
+                     group_vars = "hhsize",
+                     stat_var = "distance_miles",
+                     incl_na = FALSE)
 
 head(dplyr::select(rs1, -c(survey_year, min, max)))
 

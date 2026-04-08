@@ -98,14 +98,15 @@ hts_data <- get_psrc_hts(survey_vars = vars, survey_year=2025)  # default includ
   
 # Calculate a numeric summary, i.e. min/max/median/mean
 rs1 <- psrc_hts_stat(hts_data,
-                     analysis_unit="trip", 
-                     group_vars="hhsize", 
-                     stat_var="distance_miles")
+                     analysis_unit = "trip",
+                     group_vars = "hhsize",
+                     stat_var = "distance_miles",
+                     incl_na = FALSE)
 
 head(dplyr::select(rs1, -c(survey_year, min, max)))
 #>      hhsize count      mean  mean_moe   median
 #>       <ord> <int>     <num>     <num>    <num>
-#> 1: 1 person  6330  7.533816 1.0839162 2.484248
+#> 1: 1 person  6329  7.533816 1.0839162 2.484248
 #> 2: 2 people  9714 10.246266 2.2408366 4.009718
 #> 3: 3 people  4143  8.100510 1.3662251 3.999776
 #> 4: 4 people  3849  6.154936 0.5416001 2.487976

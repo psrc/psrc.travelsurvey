@@ -36,12 +36,6 @@ The `incl_na=FALSE` option is also available in both functions.
 
 ### Requirements
 
-These functions rely on additional functionality submitted to the
-**travelSurveyTools** package that has not yet been merged, so you’ll
-need to install a branch of that package:
-
-    `remotes::install_github("RSGInc/travelSurveyTools", ref="add_vmt_rate")`
-
 Because VMT is calculated from distance, is limited to vehicular travel,
 and accounts for co-travelers, the preceding
 [`get_psrc_hts()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.md)
@@ -91,4 +85,5 @@ head(dplyr::select(rs2, -c(survey_year, count, min, max, median)))
 #>                    <fctr> <num>    <num>
 #> 1:                 Hybrid   Inf      NaN
 #> 2:        Fully In Person   Inf      NaN
+#> 3:                   <NA>   Inf      NaN
 ```

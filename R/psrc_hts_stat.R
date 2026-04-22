@@ -221,4 +221,4 @@ psrc_hts_vmtrate <- function(hts_data, group_vars=NULL, incl_na=TRUE){
 utils::globalVariables(c("statvar","grpvars","codebook_vars","found_idx",
     "found_tbl","found_classes","found_dtype","var_row","newvars","newrows",
     "hh","vehicle","travelers_num","travelers_total","variable","data_type",
-    "statvartype","prepped_dt","summary_dt"))
+    "statvartype","prepped_dt","summary_dt", "..cols"))

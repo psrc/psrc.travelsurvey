@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Retrieve and summarize TSSS data • psrc.travelsurvey</title>
+<title>Retrieve and summarize sss data • psrc.travelsurvey</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Retrieve and summarize TSSS data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Retrieve and summarize sss data">
 <meta name="description" content="Retrieve and summarize transportation safety and security survey data
 ">
 <meta property="og:description" content="Retrieve and summarize transportation safety and security survey data
@@ -61,7 +61,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Retrieve and summarize TSSS data</h1>
+      <h1>Retrieve and summarize sss data</h1>
             
       
 
@@ -71,21 +71,23 @@
     
     
 <div class="section level2">
-<h2 id="transportation-safety-and-security-survey-workflow">Transportation safety and security survey workflow<a class="anchor" aria-label="anchor" href="#transportation-safety-and-security-survey-workflow"></a>
+<h2 id="for-use-with-the-2025-psrc-safety-security-survey">For use with the 2025 PSRC Safety &amp; Security Survey<a class="anchor" aria-label="anchor" href="#for-use-with-the-2025-psrc-safety-security-survey"></a>
 </h2>
-<p>The transportation safety and security survey (TSSS) workflow is
-simpler than the household travel survey workflow because the retrieved
-object is a single person-level table rather than a multi-table
-relational object. Use <code>get_psrc_tsss()</code> to retrieve the
-variables you need, then use <code>psrc_tsss_stat()</code> to calculate
-weighted counts, shares, or numeric summaries.</p>
+<p>The Safety &amp; Security Survey is a more traditional attitudinal
+survey, with responses at a person level, rather than multiple related
+tables. (The <strong>travelSurveyTools</strong> package is not used in
+handling it.) Use <code><a href="../reference/get_psrc_sss.html">get_psrc_sss()</a></code> to retrieve the variables
+you need, then use <code><a href="../reference/psrc_sss_stat.html">psrc_sss_stat()</a></code> to calculate weighted
+counts, shares, or numeric summaries.</p>
 <p>Because the package queries Elmer, you’ll need to be connected in
 office or through VPN to run the retrieval step.</p>
 </div>
 <div class="section level2">
 <h2 id="data-retrieval">Data retrieval<a class="anchor" aria-label="anchor" href="#data-retrieval"></a>
 </h2>
-<p><code>get_psrc_tsss()</code> takes one primary argument:</p>
+<p>Since psrc.travelsurvey uses Elmer, the agency’s central database,
+you’ll need to be connected in office or through VPN. Then use
+<code><a href="../reference/get_psrc_sss.html">get_psrc_sss()</a></code>, which takes a single argument:</p>
 <ul>
 <li>
 <strong>survey_vars</strong> - a vector of desired survey variable
@@ -102,21 +104,17 @@ not need to be added to <code>survey_vars</code>.</p>
 <span></span>
 <span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"employment"</span>, <span class="st">"crash_participant"</span>, <span class="st">"travel_anxiety"</span>, <span class="st">"safety_choices"</span>, <span class="st">"crash_number_people"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tsss_data</span> <span class="op">&lt;-</span> <span class="fu">get_psrc_tsss</span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sss_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_psrc_sss.html">get_psrc_sss</a></span><span class="op">(</span>survey_vars <span class="op">=</span> <span class="va">vars</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="summarization">Summarization<a class="anchor" aria-label="anchor" href="#summarization"></a>
 </h2>
-<p><code>psrc_tsss_stat()</code> assumes a person-level analysis unit
-and uses <code>person_weight</code> with <code>sample_segment</code> as
-the survey strata. Like <code><a href="../reference/psrc_hts_stat.html">psrc_hts_stat()</a></code>, it uses the last
-grouping variable as the share variable when <code>stat_var</code> is
-omitted.</p>
-<p>The main arguments are:</p>
+<p><code><a href="../reference/psrc_sss_stat.html">psrc_sss_stat()</a></code> assumes a person-level analysis unit.
+The main arguments are:</p>
 <ul>
 <li>
-<strong>tsss_data</strong> - the table returned by
-<code>get_psrc_tsss()</code>
+<strong>sss_data</strong> - the table returned by
+<code><a href="../reference/get_psrc_sss.html">get_psrc_sss()</a></code>
 </li>
 <li>
 <strong>group_vars</strong> - one or more grouping variables, in
@@ -125,6 +123,8 @@ nesting order</li>
 <strong>stat_var</strong> (optional) - a numeric variable for min,
 max, median, and mean summaries</li>
 </ul>
+<p>Like <code><a href="../reference/psrc_hts_stat.html">psrc_hts_stat()</a></code>, it uses the last grouping variable
+as the share variable when <code>stat_var</code> is omitted.</p>
 <div class="section level3">
 <h3 id="count-and-share-example">Count and share example<a class="anchor" aria-label="anchor" href="#count-and-share-example"></a>
 </h3>
@@ -132,8 +132,8 @@ max, median, and mean summaries</li>
 <code>travel_anxiety</code> responses within each
 <code>crash_participant</code> category.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rs1</span> <span class="op">&lt;-</span> <span class="fu">psrc_tsss_stat</span><span class="op">(</span></span>
-<span>  <span class="va">tsss_data</span>,</span>
+<code class="sourceCode R"><span><span class="va">rs1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_sss_stat.html">psrc_sss_stat</a></span><span class="op">(</span></span>
+<span>  <span class="va">sss_data</span>,</span>
 <span>  group_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"crash_participant"</span>, <span class="st">"travel_anxiety"</span><span class="op">)</span>,</span>
 <span>  incl_na <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
@@ -147,14 +147,14 @@ across <code>travel_anxiety</code> response levels.</p>
 <h3 id="numeric-summary-example">Numeric summary example<a class="anchor" aria-label="anchor" href="#numeric-summary-example"></a>
 </h3>
 <p>TSS variables are primarily dichotomous or ordinal, but
-<code>psrc_tsss_stat()</code> can also calculate handle weighted means
+<code><a href="../reference/psrc_sss_stat.html">psrc_sss_stat()</a></code> can also calculate handle weighted means
 for any numeric variables, using the <code>stat_var</code> argument.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tsss_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">tsss_data</span>, crash_number_people_numeric <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">sss_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span><span class="va">sss_data</span>, crash_number_people_numeric <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html" class="external-link">if_else</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">crash_number_people</span><span class="op">)</span>, <span class="cn">NA_integer_</span>, <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html" class="external-link">str_extract</a></span><span class="op">(</span><span class="va">crash_number_people</span>, <span class="st">"^\\d+"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu">psrc_tsss_stat</span><span class="op">(</span></span>
-<span>  <span class="va">tsss_data</span>,</span>
+<span><span class="va">rs2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/psrc_sss_stat.html">psrc_sss_stat</a></span><span class="op">(</span></span>
+<span>  <span class="va">sss_data</span>,</span>
 <span>  group_vars <span class="op">=</span> <span class="st">"crash_participant"</span>,</span>
 <span>  stat_var <span class="op">=</span> <span class="st">"crash_number_people_numeric"</span>,</span>
 <span>  incl_na <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -166,12 +166,9 @@ for any numeric variables, using the <code>stat_var</code> argument.</p>
 <div class="section level2">
 <h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
 </h2>
-<p>Unlike the household travel survey helpers, the TSSS summary workflow
-does not need <code>travelSurveyTools</code> preparation because the
-input data is already a flat person-level table. Margin-of-error columns
-are returned where the underlying survey calculation produces standard
-errors; if a statistic cannot support a variance estimate, its MOE field
-will be <code>NA</code>.</p>
+<p>Margin-of-error columns are returned where the underlying survey
+calculation produces standard errors; if a statistic cannot support a
+variance estimate, its MOE field will be <code>NA</code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

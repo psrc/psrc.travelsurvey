@@ -1,20 +1,24 @@
-# Retrieve and summarize TSSS data
+# Retrieve and summarize sss data
 
-## Transportation safety and security survey workflow
+## For use with the 2025 PSRC Safety & Security Survey
 
-The transportation safety and security survey (TSSS) workflow is simpler
-than the household travel survey workflow because the retrieved object
-is a single person-level table rather than a multi-table relational
-object. Use `get_psrc_tsss()` to retrieve the variables you need, then
-use `psrc_tsss_stat()` to calculate weighted counts, shares, or numeric
-summaries.
+The Safety & Security Survey is a more traditional attitudinal survey,
+with responses at a person level, rather than multiple related tables.
+(The **travelSurveyTools** package is not used in handling it.) Use
+[`get_psrc_sss()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_sss.md)
+to retrieve the variables you need, then use
+[`psrc_sss_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_sss_stat.md)
+to calculate weighted counts, shares, or numeric summaries.
 
 Because the package queries Elmer, you’ll need to be connected in office
 or through VPN to run the retrieval step.
 
 ## Data retrieval
 
-`get_psrc_tsss()` takes one primary argument:
+Since psrc.travelsurvey uses Elmer, the agency’s central database,
+you’ll need to be connected in office or through VPN. Then use
+[`get_psrc_sss()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_sss.md),
+which takes a single argument:
 
 - **survey_vars** - a vector of desired survey variable names
 
@@ -30,23 +34,24 @@ library(dplyr)
 
 vars <- c("employment", "crash_participant", "travel_anxiety", "safety_choices", "crash_number_people")
 
-tsss_data <- get_psrc_tsss(survey_vars = vars)
+sss_data <- get_psrc_sss(survey_vars = vars)
 ```
 
 ## Summarization
 
-`psrc_tsss_stat()` assumes a person-level analysis unit and uses
-`person_weight` with `sample_segment` as the survey strata. Like
-[`psrc_hts_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_stat.md),
-it uses the last grouping variable as the share variable when `stat_var`
-is omitted.
+[`psrc_sss_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_sss_stat.md)
+assumes a person-level analysis unit. The main arguments are:
 
-The main arguments are:
-
-- **tsss_data** - the table returned by `get_psrc_tsss()`
+- **sss_data** - the table returned by
+  [`get_psrc_sss()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_sss.md)
 - **group_vars** - one or more grouping variables, in nesting order
 - **stat_var** (optional) - a numeric variable for min, max, median, and
   mean summaries
+
+Like
+[`psrc_hts_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_stat.md),
+it uses the last grouping variable as the share variable when `stat_var`
+is omitted.
 
 ### Count and share example
 
@@ -55,8 +60,8 @@ responses within each `crash_participant` category.
 
 ``` r
 
-rs1 <- psrc_tsss_stat(
-  tsss_data,
+rs1 <- psrc_sss_stat(
+  sss_data,
   group_vars = c("crash_participant", "travel_anxiety"),
   incl_na = FALSE
 )
@@ -71,16 +76,17 @@ The resulting table can be read as an association summary: within each
 ### Numeric summary example
 
 TSS variables are primarily dichotomous or ordinal, but
-`psrc_tsss_stat()` can also calculate handle weighted means for any
-numeric variables, using the `stat_var` argument.
+[`psrc_sss_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_sss_stat.md)
+can also calculate handle weighted means for any numeric variables,
+using the `stat_var` argument.
 
 ``` r
 
-tsss_data <- mutate(tsss_data, crash_number_people_numeric = if_else(
+sss_data <- mutate(sss_data, crash_number_people_numeric = if_else(
     is.na(crash_number_people), NA_integer_, as.integer(stringr::str_extract(crash_number_people, "^\\d+"))))
 
-rs2 <- psrc_tsss_stat(
-  tsss_data,
+rs2 <- psrc_sss_stat(
+  sss_data,
   group_vars = "crash_participant",
   stat_var = "crash_number_people_numeric",
   incl_na = FALSE
@@ -91,9 +97,6 @@ head(rs2)
 
 ## Notes
 
-Unlike the household travel survey helpers, the TSSS summary workflow
-does not need `travelSurveyTools` preparation because the input data is
-already a flat person-level table. Margin-of-error columns are returned
-where the underlying survey calculation produces standard errors; if a
-statistic cannot support a variance estimate, its MOE field will be
-`NA`.
+Margin-of-error columns are returned where the underlying survey
+calculation produces standard errors; if a statistic cannot support a
+variance estimate, its MOE field will be `NA`.

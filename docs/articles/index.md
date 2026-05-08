@@ -8,11 +8,11 @@
   Add variables with standard PSRC category groupings
 
 - [Retrieve and summarize
-  data](https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-data.md):
+  data](https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-hts-data.md):
 
   Retrieve and summarize household travel survey data
 
-- [Retrieve and summarize TSSS
+- [Retrieve and summarize sss
   data](https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-sss-data.md):
 
   Retrieve and summarize transportation safety and security survey data

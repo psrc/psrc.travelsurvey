@@ -13,7 +13,7 @@
   Retrieve and summarize household travel survey data
 
 - [Retrieve and summarize TSSS
-  data](https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-tsss-data.md):
+  data](https://psrc.github.io/psrc.travelsurvey/articles/retrieve-and-summarize-sss-data.md):
 
   Retrieve and summarize transportation safety and security survey data
 

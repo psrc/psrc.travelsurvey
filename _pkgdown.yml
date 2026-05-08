@@ -6,11 +6,11 @@ navbar:
    articles:
     text: Articles
     menu:
-    - text: Retrieve and summarize data
-      href: articles/retrieve-and-summarize-data.html
+    - text: Retrieve and summarize travel survey data
+      href: articles/retrieve-and-summarize-hts-data.html
     - text: Add standard groupings
       href: articles/add-standard-groupings.html
     - text: Summarize trip and VMT rates
       href: articles/summarize-trip-and-vmt-rates.html
-    - text: Retrieve and summarize SSS data
+    - text: Retrieve and summarize safety survey data
       href: articles/retrieve-and-summarize-sss-data.html

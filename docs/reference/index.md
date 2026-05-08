@@ -4,6 +4,8 @@
 
 - [`get_psrc_hts()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_hts.md)
   : Retrieve PSRC travel survey data
+- [`get_psrc_sss()`](https://psrc.github.io/psrc.travelsurvey/reference/get_psrc_sss.md)
+  : Retrieve PSRC transportation safety & security survey data
 - [`hts_bin_age()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_age.md)
   : Add binned age variables Requires \`age\` variable
 - [`hts_bin_bike_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_bike_frequency.md)
@@ -43,7 +45,7 @@
 - [`hts_bin_telework_time()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_telework_time.md)
   : Add simplified telework time variable Requires \`telework_time\`
   variable
-- [`hts_bin_transit_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_frequency.md)
+- [`hts_bin_transit_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_freq.md)
   : Add generalized transit frequency Requires \`transit_frequency\`
   variable
 - [`hts_bin_transit_mode_acc()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_mode_acc.md)
@@ -69,5 +71,7 @@
   : Search PSRC travel survey variable definitions
 - [`psrc_hts_vmtrate()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_hts_vmtrate.md)
   : Summarize PSRC travel survey vmt rates
+- [`psrc_sss_stat()`](https://psrc.github.io/psrc.travelsurvey/reference/psrc_sss_stat.md)
+  : Summarize PSRC transportation safety & security survey data
 - [`variable_value_lookup`](https://psrc.github.io/psrc.travelsurvey/reference/variable_value_lookup.md)
   : steps for internal acs table lookup

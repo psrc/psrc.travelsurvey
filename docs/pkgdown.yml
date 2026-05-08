@@ -1,11 +1,12 @@
-pandoc: 3.6.3
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   add-standard-groupings: add-standard-groupings.html
   retrieve-and-summarize-data: retrieve-and-summarize-data.html
+  retrieve-and-summarize-tsss-data: retrieve-and-summarize-tsss-data.html
   summarize-trip-and-vmt-rates: summarize-trip-and-vmt-rates.html
-last_built: 2026-04-08T22:02Z
+last_built: 2026-05-08T01:47Z
 urls:
   reference: https://psrc.github.io/psrc.travelsurvey/reference
   article: https://psrc.github.io/psrc.travelsurvey/articles

@@ -6,7 +6,7 @@ variable
 ## Usage
 
 ``` r
-hts_bin_transit_frequency(hts_data)
+hts_bin_transit_freq(hts_data)
 ```
 
 ## Arguments

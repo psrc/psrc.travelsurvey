@@ -56,6 +56,7 @@ requires no additional variables.
 ### Examples
 
 ``` r
+
 library(psrc.travelsurvey)
 library(data.table)
 

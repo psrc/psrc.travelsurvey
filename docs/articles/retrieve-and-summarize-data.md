@@ -47,6 +47,7 @@ word boundary operator `\\b` can be used to omit vehicle model from
 results when searching for “mode”.
 
 ``` r
+
 View(psrc_hts_varsearch("\\bmode\\b"))
 ```
 
@@ -54,6 +55,7 @@ To browse the entire variable list, open the internal data object
 `variable_list`:
 
 ``` r
+
 View(psrc.travelsurvey:::variable_list)
 ```
 
@@ -86,6 +88,7 @@ from those above them (such as `hh`); this is a handy feature and avoids
 unnecessary data duplication among tables.
 
 ``` r
+
 library(psrc.travelsurvey)
 library(data.table)
 
@@ -163,6 +166,7 @@ non-work-related trips, then using the `incl_na=FALSE` option to limit
 statistics to that category.
 
 ``` r
+
 library(dplyr)
 library(stringr)
 

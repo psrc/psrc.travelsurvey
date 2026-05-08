@@ -15,6 +15,7 @@ them all, for convenience; they can be distinguished by a suffix
 denoting the number of categories.
 
 ``` r
+
 library(psrc.travelsurvey)
 library(magrittr)
 library(data.table)

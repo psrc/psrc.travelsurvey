@@ -7,7 +7,12 @@
 #'
 #' @export
 get_psrc_sss <- function(survey_vars = NULL){
-  query_vars <- unique(c("person_id", "hhid", "sample_segment", survey_vars, "person_weight"))
+  query_all <- "*" %in% survey_vars
+  query_vars <- if(query_all){
+    "*"
+  }else{
+    unique(c("person_id", "hhid", "sample_segment", survey_vars, "person_weight"))
+  }
   sql <- paste0(
     "SELECT ",
     paste(query_vars, collapse = ", "),

@@ -20,51 +20,13 @@ stuff <- function(x){unique(x) %>% paste(collapse=",")}
 #' @export
 get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023,2025), survey_vars){
   tblnames <- tblname <- variable <- hts_split_vars <- hts_query_elmer <-  NULL # For CMD check
-  data_type <- sample_segment <- hh_id <- label <- description <- NULL # For CMD check
+  hh_id <- NULL # For CMD check
   tblnames <- c("household","person","day","trip","vehicle")
-  na_rgx <- c("^Missing(:? ([tT]echnical [eE]rror|[nN]on-response|[sS]kip [lL]ogic|[dD]ata|[rR]esponse))?$",
-              "Not [iI]mputable",
-              "^Children or [mM]issing$",
-              "^-999[78]$",
-              "^-?995$",
-              "^$") %>%
-    unique() %>% paste0(collapse="|")
   
   # Helper function; identifies which tables the desired variables are in, using codebook
   hts_split_vars <- function(tblname, survey_vars){
     rs <- copy(variable_list) %>% setnames("hh","household") %>%
     .[get(tblname)==1 & variable %in% c("sample_segment", "survey_year", survey_vars), variable] %>% unlist()
-  }
-  # Helper function: recode missing values to NA
-  psrc_hts_recode_na <- function(dt){
-    for(col in colnames(dt))
-      set(dt, i=grep(na_rgx, dt[[col]]), j=col, value=NA)
-    return (dt)
-  }
-  # Helper function: Convert a column to factor datatype w/ levels specified from codebook
-  psrc_hts_to_factor <- function(dt){
-    data_type <- variable <- value <- NULL
-    lbl_ftrs <- value_labels$variable %>% unique()
-    ftr_cols <- variable_list[data_type=="integer/categorical" & 
-                                   variable %in% lbl_ftrs, variable] %>% 
-      unlist() %>% paste(collapse="$|^") %>% grep(colnames(dt), value = TRUE)
-    for(col in ftr_cols){
-      levels <- value_labels[variable==col & !grepl(na_rgx, label), label] %>% 
-        as.vector() %>% unique() %>% trimws()
-      datavalues <- dt[!is.na(get(col)), get(col)] %>% as.vector() %>% unique() %>% trimws()
-      if(all(datavalues %in% levels)){
-        set(dt, i=NULL, j=col, value=factor(dt[[col]], levels=levels, exclude = NA, ordered = TRUE))
-      }
-    }
-    return (dt)
-  }
-  # Helper function: apply descriptive labels
-  psrc_hts_desc_labels <- function(dt){
-    for(col in colnames(dt))
-      if(col %in% variable_list$variable){
-        labelled::var_label(dt[[col]]) <- variable_list[variable==col, description]
-      }
-    return (dt)
   }
   # Helper function; queries Elmer for specified variables
   hts_query_elmer <- function(tblname, tblvars){
@@ -88,9 +50,9 @@ get_psrc_hts <- function(survey_years=c(2017,2019,2021,2023,2025), survey_vars){
                     wgt_filter)
       rs <- psrcelmer::get_query(sql) %>% setDT() %>% 
         setnames("household_id","hh_id") %>%                                    # travelSurveyTools uses "hh_id"
-        psrc_hts_recode_na() %>% 
-        psrc_hts_to_factor() %>% 
-        psrc_hts_desc_labels()
+        psrc_survey_recode_na() %>% 
+        psrc_survey_to_factor() %>% 
+        psrc_survey_desc_labels()
       return(rs)
     }else{
      return(NULL)

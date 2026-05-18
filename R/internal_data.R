@@ -9,6 +9,9 @@ NULL
 
 # variable_list <- fread("final_variable_list_2025.csv") %>% setDT() %>% .[, logic:=NULL]
 # variable_list[is.na(shared_name), shared_name:=variable]
+# source("data-raw/update_variable_list.R")
+# variable_list <- refresh_variable_list()
 # value_labels <- fread("final_value_labels_2025.csv") %>% setDT()
-
+# source("data-raw/update_variable_list.R")
+# variable_list <- refresh_variable_list()
 # usethis::use_data(variable_list, value_labels, internal=TRUE, overwrite=TRUE)           # Makes part of the package; push this to repo

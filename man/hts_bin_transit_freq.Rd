@@ -3,7 +3,7 @@
 \name{hts_bin_transit_freq}
 \alias{hts_bin_transit_freq}
 \title{Add generalized transit frequency
-Requires `transit_frequency` variable}
+Requires `transit_freq` variable}
 \usage{
 hts_bin_transit_freq(hts_data)
 }
@@ -15,7 +15,7 @@ hts_data with a generalized transit frequency variable
 }
 \description{
 Add generalized transit frequency
-Requires `transit_frequency` variable
+Requires `transit_freq` variable
 }
 \author{
 Michael Jensen

@@ -1,7 +1,6 @@
-# Add generalized transit frequency Requires \`transit_frequency\` variable
+# Add generalized transit frequency Requires \`transit_freq\` variable
 
-Add generalized transit frequency Requires \`transit_frequency\`
-variable
+Add generalized transit frequency Requires \`transit_freq\` variable
 
 ## Usage
 

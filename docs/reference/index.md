@@ -8,8 +8,8 @@
   : Retrieve PSRC transportation safety & security survey data
 - [`hts_bin_age()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_age.md)
   : Add binned age variables Requires \`age\` variable
-- [`hts_bin_bike_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_bike_frequency.md)
-  : Add generalized bike frequency Requires \`bike_frequency\` variable
+- [`hts_bin_bike_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_bike_freq.md)
+  : Add generalized bike frequency Requires \`bike_freq\` variable
 - [`hts_bin_commute_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_commute_freq.md)
   : Add simplified commute frequency variable Requires \`commute_freq\`
   variable
@@ -46,16 +46,15 @@
   : Add simplified telework time variable Requires \`telework_time\`
   variable
 - [`hts_bin_transit_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_freq.md)
-  : Add generalized transit frequency Requires \`transit_frequency\`
-  variable
+  : Add generalized transit frequency Requires \`transit_freq\` variable
 - [`hts_bin_transit_mode_acc()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_transit_mode_acc.md)
   : Add simplified transit access mode classification Requires
   \`mode_acc\` variable
 - [`hts_bin_vehicle_count()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_vehicle_count.md)
   : Add simplified vehicle count variables Requires \`vehicle_count\`
   variable
-- [`hts_bin_walk_frequency()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_walk_frequency.md)
-  : Add generalized walk frequency Requires \`walk_frequency\` variable
+- [`hts_bin_walk_freq()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_walk_freq.md)
+  : Add generalized walk frequency Requires \`walk_freq\` variable
 - [`hts_bin_worker()`](https://psrc.github.io/psrc.travelsurvey/reference/hts_bin_worker.md)
   : Add simplified worker status variable Requires \`employment\`
   variable

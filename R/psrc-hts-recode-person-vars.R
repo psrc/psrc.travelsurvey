@@ -33,13 +33,13 @@ hts_bin_age <- function(hts_data){
                 as.integer(safegsub(rgx_yr, as.character(age))) >64, "65 years or older",
                 !is.na(as.character(age)), as.character(age)),
           levels=c("Under 18 Years","18-24 Years","25-44 Years",
-                   "45-64 Years","65 years or older"))]        
+                   "45-64 Years","65 years or older"), ordered = TRUE)]        
     labelled::var_label(hts_data$person$age_bin5) <- "Age"       
     hts_data$person %<>%
       .[, age_bin3:=factor(
         fcase(grepl("^(18|25|45)", as.character(age_bin5)), "18-64 Years",
               !is.na(age_bin5), as.character(age_bin5)),
-        levels=c("Under 18 Years","18-64 Years","65 years or older"))]
+        levels=c("Under 18 Years","18-64 Years","65 years or older"), ordered = TRUE)]
     labelled::var_label(hts_data$person$age_bin3) <- "Age"
     hts_data$person %<>%
       .[, adult:=fcase(any(substr(age_bin3, 1L, 2L) %in% c("18","65")), "Adult", 
@@ -158,7 +158,7 @@ hts_bin_commute_freq <- function(hts_data){
               as.integer(safegsub(rgx_days, as.character(commute_freq)))>=5,               "5+ days",
               !is.na(commute_freq),                                                      "0 days or less than weekly"),
                            levels=c("5+ days","4 days a week","3 days a week","2 days a week",
-                                    "1 day a week","0 days or less than weekly"))]
+                                    "1 day a week","0 days or less than weekly"), ordered = TRUE)]
     labelled::var_label(hts_data$person$commute_freq_bin6) <- "How often commuted to workplace last week"
   }
   return(hts_data)
@@ -211,7 +211,7 @@ hts_bin_telecommute_freq <- function(hts_data){
                                   as.character(telecommute_freq))) %between% c(3,4),   "3-4 days",
               as.integer(safegsub("^(\\d)\\+? days?( a week)?", 
                                   as.character(telecommute_freq))) %between% c(1,2),  "1-2 days"),
-        levels=c("5+ days","3-4 days","1-2 days","Never or less than weekly"))]
+        levels=c("5+ days","3-4 days","1-2 days","Never or less than weekly"), ordered = TRUE)]
     labelled::var_label(hts_data$person$telecommute_freq_bin4) <- "How many days typically working from home"
   }
   return(hts_data)
@@ -237,7 +237,7 @@ hts_bin_telecommute_trichotomy <- function(hts_data){
               workplace=="At home (telecommute or self-employed with home office)", "Fully At Home", 
               grepl("^\\d+", as.character(telecommute_freq)), "Hybrid",
               !is.na(telecommute_freq), "Fully In Person"),
-        levels=c("Fully At Home","Hybrid","Fully In Person"))]
+        levels=c("Fully At Home","Hybrid","Fully In Person"), ordered = TRUE)]
     #labelled::var_label(hts_data$person$telecommute_trichotomy) <- ""
   }
   return(hts_data)
@@ -298,8 +298,7 @@ hts_bin_industry_sector <- function(hts_data){
               grepl("(care\\b|education$)", as.character(industry)),                  "Healthcare & Education",
               !is.na(industry),                                                       as.character(industry),
               grepl("^(Gov|Mil)", as.character(industry)),                            "Gov"),
-        levels=c("Construction & Manufacturing","Professional & Business Services","Retail & Personal Services",
-                 "Healthcare & Education","Arts & Media","Other","Gov"))]
+        levels=c("Construction & Manufacturing","Professional & Business Services","Retail & Personal Services")]
     labelled::var_label(hts_data$person$industry_sector) <- "Industry Sector"
   }
   return(hts_data)
@@ -322,7 +321,8 @@ hts_bin_transit_freq <- function(hts_data){
         fcase(safegsub("\\d?-?(\\d) days? a week$", as.character(transit_freq)) %between% c(1,4), "1-4 days a week",
               safegsub("\\d?-?(\\d) days a week$", as.character(transit_freq)) %between% c(5,7), "5-7 days a week",
               !is.na(transit_freq), as.character(transit_freq)),
-        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
+        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"), 
+        ordered = TRUE)]
     labelled::var_label(hts_data$person$transit_freq_bin4) <- "Frequency of transit use"
   }
   return(hts_data)
@@ -345,7 +345,8 @@ hts_bin_walk_freq <- function(hts_data){
         fcase(safegsub("\\d?-?(\\d) days? a week$", as.character(walk_freq)) %between% c(1,4), "1-4 days a week",
               safegsub("\\d?-?(\\d) days a week$", as.character(walk_freq)) %between% c(5,7), "5-7 days a week",
               !is.na(walk_freq), as.character(walk_freq)),
-        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
+        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"), 
+        ordered = TRUE)]
     labelled::var_label(hts_data$person$walk_freq_bin4) <- "Frequency of walk use"
   }
   return(hts_data)
@@ -368,7 +369,8 @@ hts_bin_bike_freq <- function(hts_data){
         fcase(safegsub("\\d?-?(\\d) days? a week$", as.character(bike_freq)) %between% c(1,4), "1-4 days a week",
               safegsub("\\d?-?(\\d) days a week$", as.character(bike_freq)) %between% c(5,7), "5-7 days a week",
               !is.na(bike_freq), as.character(bike_freq)),
-        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"))]
+        levels=c("1-4 days a week", "5-7 days a week", "1-3 days in the past month", "Never in the past 30 days"), 
+        ordered = TRUE)]
     labelled::var_label(hts_data$person$bike_freq_bin4) <- "Frequency of bike use"
   }
   return(hts_data)

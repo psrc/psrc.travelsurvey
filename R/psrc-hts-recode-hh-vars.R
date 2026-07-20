@@ -30,7 +30,8 @@ hts_bin_income <- function(hts_data){
         fcase(grepl("\\$(1|2)00,", as.character(hhincome_broad)), "$100,000 or more",
               !is.na(hhincome_broad),                   as.character(hhincome_broad)),
         levels=c("Under $25,000","$25,000-$49,999","$50,000-$74,999",
-                 "$75,000-$99,999","$100,000 or more","Prefer not to answer"))]
+                 "$75,000-$99,999","$100,000 or more","Prefer not to answer"), 
+        ordered = TRUE)]
     labelled::var_label(hts_data$hh$hhincome_bin5) <- "Nominal Household Income"
     hts_data$hh %<>%
       .[, hhincome_bin3:=factor(
@@ -38,7 +39,8 @@ hts_bin_income <- function(hts_data){
             grepl("\\$7", as.character(hhincome_bin5)), "$50,000-$99,999",
             !is.na(hhincome_bin5), as.character(hhincome_bin5)),
       levels= c("Less than $50,000","$50,000-$99,999",
-                "$100,000 or more","Prefer not to answer"))]
+                "$100,000 or more","Prefer not to answer"), 
+      ordered = TRUE)]
     labelled::var_label(hts_data$hh$hhincome_bin3) <- "Nominal Household Income"
   }
   return(hts_data)
@@ -61,7 +63,8 @@ hts_bin_hhsize <- function(hts_data){
       .[, hhsize_bin4:=factor(
         fcase(as.integer(safegsub(rgx_size, as.character(hhsize))) > 3, "4+ people",
               as.integer(safegsub(rgx_size, as.character(hhsize))) %between% c(1,3), as.character(hhsize)),
-        levels=c("1 person","2 people","3 people","4+ people"))]
+        levels=c("1 person","2 people","3 people","4+ people"), 
+        ordered = TRUE)]
     labelled::var_label(hts_data$hh$hhsize_bin4) <- "Household size"
   }
   return(hts_data)
@@ -84,11 +87,11 @@ hts_bin_vehicle_count <- function(hts_data){
       vehicle_count_bin4=factor(
         fcase(as.integer(safegsub(rgx_veh, as.character(vehicle_count))) >3, "4+",
               !is.na(vehicle_count), safegsub(rgx_veh, as.character(vehicle_count))),
-        levels=c("0","1","2","3","4+")),
+        levels=c("0","1","2","3","4+"), ordered = TRUE),
       veh_yn=factor(
         fcase(grepl("^0",     as.character(vehicle_count)), "No vehicle",
               grepl("^[1-9]", as.character(vehicle_count)), "1+ vehicle"),
-        levels= c("No vehicle","1+ vehicle")))]
+        levels= c("No vehicle","1+ vehicle"))]
     labelled::var_label(hts_data$hh$vehicle_count_bin4) <- "Number of vehicles"
     labelled::var_label(hts_data$hh$veh_yn) <- "Presence or absence of own vehicle(s)"   
   }

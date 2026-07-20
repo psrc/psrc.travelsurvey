@@ -32,7 +32,7 @@ hts_bin_telework_time <- function(hts_data){
                                   as.character(telework_time))) %between% c(3,6), "3-6 hours",
               as.character(telework_time)=="1-6 hours",                           "3-6 hours",
               !is.na(telework_time),                                              "0-3 hours"),
-        levels=c("0-3 hours","3-6 hours","6+ hours"))]
+        levels=c("0-3 hours","3-6 hours","6+ hours"), ordered = TRUE)]
     labelled::var_label(hts_data$day$telework_time_bin3) <- "Telework time on travel day"
   }
   return(hts_data)
